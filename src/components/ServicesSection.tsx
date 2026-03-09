@@ -1,0 +1,67 @@
+import { motion } from "framer-motion";
+import braidsImg from "@/assets/service-braids.jpg";
+import haircutImg from "@/assets/service-haircut.jpg";
+import locsImg from "@/assets/service-locs.jpg";
+import makeupImg from "@/assets/service-makeup.jpg";
+import naturalImg from "@/assets/service-natural.jpg";
+
+const services = [
+  { name: "Braids", image: braidsImg, price: "From $85", description: "Box braids, cornrows, knotless & more" },
+  { name: "Weave & Sew-In", image: naturalImg, price: "From $120", description: "Full sew-in, quick weave, closures" },
+  { name: "Haircuts", image: haircutImg, price: "From $45", description: "Precision cuts, fades, styling" },
+  { name: "Locs", image: locsImg, price: "From $95", description: "Starter locs, retwist, styling" },
+  { name: "Makeup", image: makeupImg, price: "From $65", description: "Glam, bridal, editorial looks" },
+  { name: "Natural Hair", image: naturalImg, price: "From $55", description: "Twist outs, wash & go, treatments" },
+];
+
+const ServicesSection = () => {
+  return (
+    <section id="services" className="py-24 bg-background">
+      <div className="container mx-auto px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-16"
+        >
+          <span className="text-sm font-semibold text-primary uppercase tracking-widest font-body">Our Services</span>
+          <h2 className="text-4xl md:text-5xl font-display font-bold text-foreground mt-3">
+            What Are You <span className="text-gradient-rose">Looking For?</span>
+          </h2>
+          <p className="text-muted-foreground mt-4 max-w-md mx-auto font-body">
+            Select a service to virtually try on styles and get matched with expert stylists near you.
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+          {services.map((service, index) => (
+            <motion.div
+              key={service.name}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              className="group relative rounded-2xl overflow-hidden cursor-pointer shadow-card hover:shadow-elevated transition-all duration-500"
+            >
+              <div className="aspect-[3/4] overflow-hidden">
+                <img
+                  src={service.image}
+                  alt={service.name}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-charcoal/90 via-charcoal/20 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-5">
+                <div className="text-xs text-gold font-semibold font-body mb-1">{service.price}</div>
+                <h3 className="text-xl font-display font-bold text-cream">{service.name}</h3>
+                <p className="text-cream/60 text-sm font-body mt-1">{service.description}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default ServicesSection;
