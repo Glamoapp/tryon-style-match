@@ -78,11 +78,7 @@ const StylistsSection = () => {
               className="bg-card rounded-3xl overflow-hidden shadow-card hover:shadow-elevated transition-all duration-500 border border-border/50"
             >
               <div className="relative h-48 overflow-hidden">
-                <div className="flex h-full">
-                  {stylist.portfolio.map((img, i) => (
-                    <img key={i} src={img} alt="Portfolio" className="w-1/2 h-full object-cover" />
-                  ))}
-                </div>
+                <img src={stylist.portfolio[0]} alt="Portfolio" className="w-full h-full object-cover" />
                 <button className="absolute top-3 right-3 w-8 h-8 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center">
                   <Heart className="w-4 h-4 text-primary" />
                 </button>
