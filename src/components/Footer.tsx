@@ -1,4 +1,4 @@
-import { Sparkles } from "lucide-react";
+import { Scissors } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -7,8 +7,8 @@ const Footer = () => {
         <div className="grid md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="w-5 h-5 text-gold" />
-              <span className="font-display text-lg font-bold text-cream">GlamOnDemand</span>
+              <Scissors className="w-5 h-5 text-gold" />
+              <span className="font-display text-lg font-bold text-cream">NEXTLOOK</span>
             </div>
             <p className="text-cream/50 text-sm font-body leading-relaxed">
               Beauty that comes to you. Try on styles, match with stylists, and get pampered at your doorstep.
@@ -18,7 +18,7 @@ const Footer = () => {
           {[
             {
               title: "Services",
-              links: ["Braids", "Weave & Sew-In", "Haircuts", "Locs", "Makeup", "Natural Hair"],
+              links: ["Weave Installations", "Braids", "K-Tips", "Wigs", "Makeup"],
             },
             {
               title: "Company",
@@ -45,7 +45,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-cream/10 mt-12 pt-8 text-center">
-          <p className="text-cream/30 text-sm font-body">© 2026 GlamOnDemand. All rights reserved.</p>
+          <p className="text-cream/30 text-sm font-body">© 2026 NEXTLOOK. All rights reserved.</p>
         </div>
       </div>
     </footer>

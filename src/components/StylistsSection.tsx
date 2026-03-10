@@ -5,9 +5,9 @@ import { Star, MapPin, Clock, Heart, ChevronRight } from "lucide-react";
 import stylist1 from "@/assets/stylist-1.jpg";
 import stylist2 from "@/assets/stylist-2.jpg";
 import stylist3 from "@/assets/stylist-3.jpg";
+import weaveImg from "@/assets/service-weave.jpg";
 import braidsImg from "@/assets/service-braids.jpg";
-import haircutImg from "@/assets/service-haircut.jpg";
-import locsImg from "@/assets/service-locs.jpg";
+import wigsImg from "@/assets/service-wigs.jpg";
 
 const stylists = [
   {
@@ -15,11 +15,11 @@ const stylists = [
     avatar: stylist1,
     rating: 4.9,
     reviews: 247,
-    specialties: ["Braids", "Natural Hair"],
+    specialties: ["Weave", "Braids"],
     distance: "1.2 mi",
     eta: "25 min",
-    price: "$85+",
-    portfolio: [braidsImg, locsImg],
+    price: "$120+",
+    portfolio: [weaveImg, braidsImg],
     available: true,
   },
   {
@@ -27,11 +27,11 @@ const stylists = [
     avatar: stylist2,
     rating: 4.8,
     reviews: 189,
-    specialties: ["Makeup", "Locs"],
+    specialties: ["Wigs", "Makeup"],
     distance: "2.5 mi",
     eta: "30 min",
-    price: "$65+",
-    portfolio: [locsImg, braidsImg],
+    price: "$95+",
+    portfolio: [wigsImg, weaveImg],
     available: true,
   },
   {
@@ -39,18 +39,16 @@ const stylists = [
     avatar: stylist3,
     rating: 5.0,
     reviews: 312,
-    specialties: ["Haircuts", "Fades"],
+    specialties: ["K-Tips", "Weave"],
     distance: "0.8 mi",
     eta: "15 min",
-    price: "$45+",
-    portfolio: [haircutImg, braidsImg],
+    price: "$150+",
+    portfolio: [weaveImg, braidsImg],
     available: true,
   },
 ];
 
 const StylistsSection = () => {
-  const [selectedStylist, setSelectedStylist] = useState<number | null>(null);
-
   return (
     <section id="stylists" className="py-24 bg-background">
       <div className="container mx-auto px-6">
@@ -79,7 +77,6 @@ const StylistsSection = () => {
               transition={{ delay: index * 0.15 }}
               className="bg-card rounded-3xl overflow-hidden shadow-card hover:shadow-elevated transition-all duration-500 border border-border/50"
             >
-              {/* Portfolio preview */}
               <div className="relative h-48 overflow-hidden">
                 <div className="flex h-full">
                   {stylist.portfolio.map((img, i) => (
@@ -97,7 +94,6 @@ const StylistsSection = () => {
                 )}
               </div>
 
-              {/* Info */}
               <div className="p-5">
                 <div className="flex items-center gap-3 mb-3">
                   <img src={stylist.avatar} alt={stylist.name} className="w-12 h-12 rounded-full object-cover ring-2 ring-primary/20" />
