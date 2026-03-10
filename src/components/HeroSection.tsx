@@ -30,7 +30,7 @@ const HeroSection = () => {
             <h1 className="text-5xl md:text-7xl font-display font-bold text-cream leading-tight mb-6">
               Beauty That
               <br />
-              <span className="text-gradient-gold">Comes to You</span>
+              <span className="text-gradient-rose">Comes to You</span>
             </h1>
 
             <p className="text-lg text-cream/70 font-body mb-8 max-w-lg leading-relaxed">
