@@ -55,9 +55,19 @@ export default {
           DEFAULT: "hsl(var(--gold))",
           foreground: "hsl(var(--gold-foreground))",
         },
+        pink: {
+          DEFAULT: "hsl(var(--pink))",
+          light: "hsl(var(--pink-light))",
+          glow: "hsl(var(--pink-glow))",
+        },
+        purple: {
+          DEFAULT: "hsl(var(--purple))",
+          deep: "hsl(var(--purple-deep))",
+          light: "hsl(var(--purple-light))",
+        },
         rose: {
-          DEFAULT: "hsl(var(--rose))",
-          light: "hsl(var(--rose-light))",
+          DEFAULT: "hsl(var(--pink))",
+          light: "hsl(var(--pink-light))",
         },
         charcoal: "hsl(var(--charcoal))",
         cream: "hsl(var(--cream))",
@@ -92,8 +102,8 @@ export default {
           to: { opacity: "1", transform: "translateY(0)" },
         },
         "pulse-glow": {
-          "0%, 100%": { boxShadow: "0 0 20px hsl(350 45% 55% / 0.3)" },
-          "50%": { boxShadow: "0 0 40px hsl(350 45% 55% / 0.5)" },
+          "0%, 100%": { boxShadow: "0 0 20px hsl(320 70% 55% / 0.3)" },
+          "50%": { boxShadow: "0 0 40px hsl(320 70% 55% / 0.5)" },
         },
       },
       animation: {
