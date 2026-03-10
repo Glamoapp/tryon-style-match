@@ -1,17 +1,16 @@
 import { motion } from "framer-motion";
+import weaveImg from "@/assets/service-weave.jpg";
 import braidsImg from "@/assets/service-braids.jpg";
-import haircutImg from "@/assets/service-haircut.jpg";
-import locsImg from "@/assets/service-locs.jpg";
+import ktipsImg from "@/assets/service-ktips.jpg";
+import wigsImg from "@/assets/service-wigs.jpg";
 import makeupImg from "@/assets/service-makeup.jpg";
-import naturalImg from "@/assets/service-natural.jpg";
 
 const services = [
+  { name: "Weave Installations", image: weaveImg, price: "From $120", description: "Full sew-in, quick weave, closures & frontals" },
   { name: "Braids", image: braidsImg, price: "From $85", description: "Box braids, cornrows, knotless & more" },
-  { name: "Weave & Sew-In", image: naturalImg, price: "From $120", description: "Full sew-in, quick weave, closures" },
-  { name: "Haircuts", image: haircutImg, price: "From $45", description: "Precision cuts, fades, styling" },
-  { name: "Locs", image: locsImg, price: "From $95", description: "Starter locs, retwist, styling" },
+  { name: "K-Tips", image: ktipsImg, price: "From $150", description: "Keratin tip extensions, fusion bonds" },
+  { name: "Wigs", image: wigsImg, price: "From $95", description: "Lace front, full lace, custom wig installs" },
   { name: "Makeup", image: makeupImg, price: "From $65", description: "Glam, bridal, editorial looks" },
-  { name: "Natural Hair", image: naturalImg, price: "From $55", description: "Twist outs, wash & go, treatments" },
 ];
 
 const ServicesSection = () => {
@@ -41,7 +40,9 @@ const ServicesSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="group relative rounded-2xl overflow-hidden cursor-pointer shadow-card hover:shadow-elevated transition-all duration-500"
+              className={`group relative rounded-2xl overflow-hidden cursor-pointer shadow-card hover:shadow-elevated transition-all duration-500 ${
+                index === 4 ? "col-span-2 md:col-span-1" : ""
+              }`}
             >
               <div className="aspect-[3/4] overflow-hidden">
                 <img

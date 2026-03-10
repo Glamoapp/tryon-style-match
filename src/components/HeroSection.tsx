@@ -6,9 +6,8 @@ import heroImage from "@/assets/hero-beauty.jpg";
 const HeroSection = () => {
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-hero">
-      {/* Background image with overlay */}
       <div className="absolute inset-0">
-        <img src={heroImage} alt="Beauty on demand" className="w-full h-full object-cover opacity-40" />
+        <img src={heroImage} alt="Stylist doing weave installation at home" className="w-full h-full object-cover opacity-40" />
         <div className="absolute inset-0 bg-gradient-to-r from-charcoal/90 via-charcoal/70 to-transparent" />
       </div>
 
@@ -35,7 +34,7 @@ const HeroSection = () => {
             </h1>
 
             <p className="text-lg text-cream/70 font-body mb-8 max-w-lg leading-relaxed">
-              Try on styles virtually, match with top-rated stylists in your area, and get pampered at your doorstep. Braids, weaves, cuts, makeup & more.
+              Try on styles virtually, match with top-rated stylists in your area, and get pampered at your doorstep. Weaves, braids, K-tips, wigs, makeup & more.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
