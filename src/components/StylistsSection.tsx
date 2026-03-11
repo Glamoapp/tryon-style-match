@@ -119,9 +119,14 @@ const StylistsSection = () => {
                   <span className="font-semibold text-foreground">{stylist.price}</span>
                 </div>
 
-                <Button variant="hero" className="w-full" size="sm">
-                  Book Now <ChevronRight className="w-4 h-4" />
-                </Button>
+                <BookingDialog
+                  stylistName={stylist.name}
+                  trigger={
+                    <Button variant="hero" className="w-full" size="sm">
+                      Book Now <ChevronRight className="w-4 h-4" />
+                    </Button>
+                  }
+                />
               </div>
             </motion.div>
           ))}

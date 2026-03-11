@@ -284,9 +284,14 @@ const VirtualTryOn = () => {
                     </Button>
                   )}
                   {userPhoto && faceDetected && (
-                    <Button variant="hero" className="w-full">
-                      Book This Style <ChevronRight className="w-4 h-4" />
-                    </Button>
+                    <BookingDialog
+                      styleName={styles[selectedStyle].name}
+                      trigger={
+                        <Button variant="hero" className="w-full">
+                          Book This Style <ChevronRight className="w-4 h-4" />
+                        </Button>
+                      }
+                    />
                   )}
                   <Button
                     variant="outline"
