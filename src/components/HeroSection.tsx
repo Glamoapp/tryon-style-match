@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { ArrowRight, Star } from "lucide-react";
@@ -38,13 +39,17 @@ const HeroSection = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button variant="hero" size="lg" className="text-base px-8 py-6">
-                Try Virtual Styles
-                <ArrowRight className="w-5 h-5 ml-1" />
-              </Button>
-              <Button variant="hero-outline" size="lg" className="text-base px-8 py-6">
-                Find a Stylist
-              </Button>
+              <Link to="/tryon">
+                <Button variant="hero" size="lg" className="text-base px-8 py-6">
+                  Try Virtual Styles
+                  <ArrowRight className="w-5 h-5 ml-1" />
+                </Button>
+              </Link>
+              <Link to="/stylists">
+                <Button variant="hero-outline" size="lg" className="text-base px-8 py-6">
+                  Find a Stylist
+                </Button>
+              </Link>
             </div>
           </motion.div>
 
