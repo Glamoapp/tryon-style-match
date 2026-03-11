@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Camera, Upload, Sparkles, ChevronRight, X, ScanFace, RefreshCw } from "lucide-react";
+import BookingDialog from "@/components/BookingDialog";
 import weaveImg from "@/assets/service-weave.jpg";
 import braidsImg from "@/assets/service-braids.jpg";
 import ktipsImg from "@/assets/service-ktips.jpg";
@@ -283,9 +284,14 @@ const VirtualTryOn = () => {
                     </Button>
                   )}
                   {userPhoto && faceDetected && (
-                    <Button variant="hero" className="w-full">
-                      Book This Style <ChevronRight className="w-4 h-4" />
-                    </Button>
+                    <BookingDialog
+                      styleName={styles[selectedStyle].name}
+                      trigger={
+                        <Button variant="hero" className="w-full">
+                          Book This Style <ChevronRight className="w-4 h-4" />
+                        </Button>
+                      }
+                    />
                   )}
                   <Button
                     variant="outline"
