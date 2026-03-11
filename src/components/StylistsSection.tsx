@@ -1,52 +1,11 @@
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Star, MapPin, Clock, Heart, ChevronRight } from "lucide-react";
 import BookingDialog from "@/components/BookingDialog";
-import stylist1 from "@/assets/stylist-1.jpg";
-import stylist2 from "@/assets/stylist-2.jpg";
-import stylist3 from "@/assets/stylist-3.jpg";
-import weaveImg from "@/assets/service-weave.jpg";
-import braidsImg from "@/assets/service-braids.jpg";
-import wigsImg from "@/assets/service-wigs.jpg";
+import { allStylists } from "@/data/stylistsData";
 
-const stylists = [
-  {
-    name: "Keisha Williams",
-    avatar: stylist1,
-    rating: 4.9,
-    reviews: 247,
-    specialties: ["Weave", "Braids"],
-    distance: "1.2 mi",
-    eta: "25 min",
-    price: "$120+",
-    portfolio: [weaveImg, braidsImg],
-    available: true,
-  },
-  {
-    name: "Amara Johnson",
-    avatar: stylist2,
-    rating: 4.8,
-    reviews: 189,
-    specialties: ["Wigs", "Makeup"],
-    distance: "2.5 mi",
-    eta: "30 min",
-    price: "$95+",
-    portfolio: [wigsImg, weaveImg],
-    available: true,
-  },
-  {
-    name: "Marcus Davis",
-    avatar: stylist3,
-    rating: 5.0,
-    reviews: 312,
-    specialties: ["K-Tips", "Weave"],
-    distance: "0.8 mi",
-    eta: "15 min",
-    price: "$150+",
-    portfolio: [weaveImg, braidsImg],
-    available: true,
-  },
-];
+const topStylists = allStylists.slice(0, 3);
 
 const StylistsSection = () => {
   return (
@@ -68,7 +27,7 @@ const StylistsSection = () => {
         </motion.div>
 
         <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {stylists.map((stylist, index) => (
+          {topStylists.map((stylist, index) => (
             <motion.div
               key={stylist.name}
               initial={{ opacity: 0, y: 30 }}
@@ -84,8 +43,8 @@ const StylistsSection = () => {
                 </button>
                 {stylist.available && (
                   <div className="absolute top-3 left-3 bg-emerald-500/90 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1">
-                    <div className="w-2 h-2 rounded-full bg-cream animate-pulse" />
-                    <span className="text-xs font-semibold text-cream font-body">Available</span>
+                    <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                    <span className="text-xs font-semibold text-white font-body">Available</span>
                   </div>
                 )}
               </div>
@@ -130,6 +89,14 @@ const StylistsSection = () => {
               </div>
             </motion.div>
           ))}
+        </div>
+
+        <div className="text-center mt-10">
+          <Link to="/stylists">
+            <Button variant="outline" size="lg" className="px-8">
+              View All {allStylists.length}+ Stylists <ChevronRight className="w-5 h-5" />
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
