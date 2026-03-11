@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Camera, Upload, Sparkles, ChevronRight, X, ScanFace, RefreshCw } from "lucide-react";
+import BookingDialog from "@/components/BookingDialog";
 import weaveImg from "@/assets/service-weave.jpg";
 import braidsImg from "@/assets/service-braids.jpg";
 import ktipsImg from "@/assets/service-ktips.jpg";
