@@ -1,7 +1,7 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Star, MapPin, Clock, Heart, ChevronRight } from "lucide-react";
+import BookingDialog from "@/components/BookingDialog";
 import stylist1 from "@/assets/stylist-1.jpg";
 import stylist2 from "@/assets/stylist-2.jpg";
 import stylist3 from "@/assets/stylist-3.jpg";
