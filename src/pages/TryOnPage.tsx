@@ -20,9 +20,7 @@ const TryOnPage = () => {
   const streamRef = useRef<MediaStream | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const filteredStyles = activeCategory === "All"
-    ? styles
-    : styles.filter((s) => s.category === activeCategory);
+  const filteredStyles = styles.filter((s) => s.category === activeCategory);
 
   const stopCamera = useCallback(() => {
     if (streamRef.current) {

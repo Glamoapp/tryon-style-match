@@ -21,9 +21,7 @@ const StylistsPage = () => {
       const q = search.toLowerCase();
       list = list.filter(s => s.name.toLowerCase().includes(q) || s.specialties.some(sp => sp.toLowerCase().includes(q)));
     }
-    if (activeFilter !== "All") {
-      list = list.filter(s => s.specialties.some(sp => sp.toLowerCase().includes(activeFilter.toLowerCase())));
-    }
+    list = list.filter(s => s.specialties.some(sp => sp.toLowerCase().includes(activeFilter.toLowerCase())));
     list = [...list].sort((a, b) => {
       if (sortBy === "rating") return b.rating - a.rating;
       if (sortBy === "distance") return parseFloat(a.distance) - parseFloat(b.distance);
