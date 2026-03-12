@@ -96,7 +96,7 @@ const ExtensionsPage = () => {
                           <img
                             src={image.url}
                             alt={image.altText || product.node.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            className="w-full h-full object-cover"
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
