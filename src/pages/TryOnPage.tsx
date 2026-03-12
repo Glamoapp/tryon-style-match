@@ -9,7 +9,7 @@ import { styles, categories, type StyleCategory } from "@/data/tryOnStyles";
 
 const TryOnPage = () => {
   const [selectedStyle, setSelectedStyle] = useState(0);
-  const [activeCategory, setActiveCategory] = useState<StyleCategory>("All");
+  const [activeCategory, setActiveCategory] = useState<StyleCategory>("Braids");
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
@@ -20,9 +20,7 @@ const TryOnPage = () => {
   const streamRef = useRef<MediaStream | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const filteredStyles = activeCategory === "All"
-    ? styles
-    : styles.filter((s) => s.category === activeCategory);
+  const filteredStyles = styles.filter((s) => s.category === activeCategory);
 
   const stopCamera = useCallback(() => {
     if (streamRef.current) {
@@ -298,7 +296,7 @@ const TryOnPage = () => {
                 Choose a Style
               </h3>
               <p className="text-sm text-muted-foreground font-body mb-6">
-                {filteredStyles.length} styles in {activeCategory === "All" ? "all categories" : activeCategory}
+                {filteredStyles.length} styles in {activeCategory}
               </p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[700px] overflow-y-auto pr-2 scrollbar-thin">
                 {filteredStyles.map((style, index) => (

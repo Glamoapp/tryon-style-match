@@ -8,11 +8,11 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { allStylists } from "@/data/stylistsData";
 
-const specialtyFilters = ["All", "Weave", "Braids", "Wigs", "K-Tips", "Makeup", "Natural Hair", "Frontals", "Locs"];
+const specialtyFilters = ["Weave", "Braids", "Wigs", "K-Tips", "Makeup", "Natural Hair", "Frontals", "Locs"];
 
 const StylistsPage = () => {
   const [search, setSearch] = useState("");
-  const [activeFilter, setActiveFilter] = useState("All");
+  const [activeFilter, setActiveFilter] = useState("Weave");
   const [sortBy, setSortBy] = useState<"rating" | "distance" | "price">("rating");
 
   const filtered = useMemo(() => {
@@ -21,9 +21,7 @@ const StylistsPage = () => {
       const q = search.toLowerCase();
       list = list.filter(s => s.name.toLowerCase().includes(q) || s.specialties.some(sp => sp.toLowerCase().includes(q)));
     }
-    if (activeFilter !== "All") {
-      list = list.filter(s => s.specialties.some(sp => sp.toLowerCase().includes(activeFilter.toLowerCase())));
-    }
+    list = list.filter(s => s.specialties.some(sp => sp.toLowerCase().includes(activeFilter.toLowerCase())));
     list = [...list].sort((a, b) => {
       if (sortBy === "rating") return b.rating - a.rating;
       if (sortBy === "distance") return parseFloat(a.distance) - parseFloat(b.distance);
