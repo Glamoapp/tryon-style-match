@@ -9,6 +9,7 @@ import StylistsPage from "./pages/StylistsPage.tsx";
 import TryOnPage from "./pages/TryOnPage.tsx";
 import ExtensionsPage from "./pages/ExtensionsPage.tsx";
 import ProductPage from "./pages/ProductPage.tsx";
+import BookingTrackerPage from "./pages/BookingTrackerPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
