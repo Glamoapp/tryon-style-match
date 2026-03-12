@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Scissors } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { CartDrawer } from "@/components/CartDrawer";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,6 +12,7 @@ const Navbar = () => {
     { label: "Services", href: "/#services" },
     { label: "Virtual Try-On", href: "/tryon" },
     { label: "Find Stylists", href: "/stylists" },
+    { label: "Shop Extensions", href: "/extensions" },
     { label: "How It Works", href: "/#how-it-works" },
   ];
 
@@ -25,19 +27,11 @@ const Navbar = () => {
         <div className="hidden md:flex items-center gap-8">
           {links.map((link) =>
             link.href.startsWith("/") && !link.href.startsWith("/#") ? (
-              <Link
-                key={link.label}
-                to={link.href}
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-              >
+              <Link key={link.label} to={link.href} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                 {link.label}
               </Link>
             ) : (
-              <a
-                key={link.label}
-                href={link.href}
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-              >
+              <a key={link.label} href={link.href} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                 {link.label}
               </a>
             )
@@ -45,15 +39,19 @@ const Navbar = () => {
         </div>
 
         <div className="hidden md:flex items-center gap-3">
+          <CartDrawer />
           <Button variant="ghost" size="sm">Log In</Button>
           <Link to="/stylists">
             <Button variant="hero" size="sm">Book Now</Button>
           </Link>
         </div>
 
-        <button className="md:hidden text-foreground" onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
+        <div className="flex md:hidden items-center gap-2">
+          <CartDrawer />
+          <button className="text-foreground" onClick={() => setIsOpen(!isOpen)}>
+            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
       </div>
 
       <AnimatePresence>
@@ -67,21 +65,11 @@ const Navbar = () => {
             <div className="px-6 py-4 flex flex-col gap-3">
               {links.map((link) =>
                 link.href.startsWith("/") && !link.href.startsWith("/#") ? (
-                  <Link
-                    key={link.label}
-                    to={link.href}
-                    className="text-sm font-medium text-muted-foreground hover:text-foreground py-2"
-                    onClick={() => setIsOpen(false)}
-                  >
+                  <Link key={link.label} to={link.href} className="text-sm font-medium text-muted-foreground hover:text-foreground py-2" onClick={() => setIsOpen(false)}>
                     {link.label}
                   </Link>
                 ) : (
-                  <a
-                    key={link.label}
-                    href={link.href}
-                    className="text-sm font-medium text-muted-foreground hover:text-foreground py-2"
-                    onClick={() => setIsOpen(false)}
-                  >
+                  <a key={link.label} href={link.href} className="text-sm font-medium text-muted-foreground hover:text-foreground py-2" onClick={() => setIsOpen(false)}>
                     {link.label}
                   </a>
                 )
