@@ -1,4 +1,4 @@
-/// <reference types="google.maps" />
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
