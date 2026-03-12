@@ -14,7 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      stylist_locations: {
+        Row: {
+          booking_id: string
+          heading: number | null
+          id: string
+          latitude: number
+          longitude: number
+          speed: number | null
+          status: string
+          stylist_name: string
+          updated_at: string
+        }
+        Insert: {
+          booking_id: string
+          heading?: number | null
+          id?: string
+          latitude: number
+          longitude: number
+          speed?: number | null
+          status?: string
+          stylist_name: string
+          updated_at?: string
+        }
+        Update: {
+          booking_id?: string
+          heading?: number | null
+          id?: string
+          latitude?: number
+          longitude?: number
+          speed?: number | null
+          status?: string
+          stylist_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
