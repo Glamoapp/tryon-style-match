@@ -36,6 +36,8 @@ serve(async (req) => {
       customerId = customer.id;
     }
 
+    const origin = req.headers.get("origin") || "https://tryon-style-match.lovable.app";
+
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       line_items: [
@@ -46,8 +48,8 @@ serve(async (req) => {
       ],
       mode: "payment",
       payment_method_types: ["card", "cashapp"],
-      success_url: `${req.headers.get("origin")}/booking-tracker?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.get("origin")}/#stylists`,
+      success_url: `${origin}/booking-tracker?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/#stylists`,
       metadata: {
         styleName,
         stylistName,
