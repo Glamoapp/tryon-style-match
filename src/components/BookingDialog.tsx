@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
-import { CalendarIcon, Clock, ChevronRight, User, Mail, Phone, MapPin, CreditCard, Smartphone, Banknote } from "lucide-react";
+import { CalendarIcon, Clock, ChevronRight, User, Mail, Phone, MapPin, CreditCard, Smartphone, Banknote, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -14,6 +14,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const timeSlots = [
   "9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM",
@@ -38,6 +39,7 @@ const BookingDialog = ({ trigger, stylistName, styleName }: BookingDialogProps) 
   const [date, setDate] = useState<Date>();
   const [time, setTime] = useState<string>();
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Contact info
   const [name, setName] = useState("");
@@ -57,9 +59,10 @@ const BookingDialog = ({ trigger, stylistName, styleName }: BookingDialogProps) 
     setPhone("");
     setAddress("");
     setPaymentMethod(undefined);
+    setLoading(false);
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!date || !time || !name || !email || !phone || !address || !paymentMethod) return;
 
     const bookingData = {
@@ -75,7 +78,40 @@ const BookingDialog = ({ trigger, stylistName, styleName }: BookingDialogProps) 
       paymentMethod,
     };
 
+    // Save booking data for tracker page
     localStorage.setItem("currentBooking", JSON.stringify(bookingData));
+
+    if (paymentMethod === "card" || paymentMethod === "cashapp") {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase.functions.invoke("create-booking-payment", {
+          body: {
+            customerName: name,
+            email,
+            phone,
+            address,
+            styleName: styleName || "Hair Service",
+            stylistName: stylistName || "Assigned Stylist",
+            date: format(date, "PPP"),
+            time,
+          },
+        });
+
+        if (error) throw error;
+        if (data?.url) {
+          window.location.href = data.url;
+          return;
+        }
+        throw new Error("No checkout URL returned");
+      } catch (err) {
+        console.error("Payment error:", err);
+        toast.error("Payment failed. Please try again.");
+        setLoading(false);
+        return;
+      }
+    }
+
+    // For Apple Pay (or other non-Stripe methods), go directly to tracker
     setOpen(false);
     resetForm();
     toast.success("Booking confirmed! Redirecting to tracker...");
@@ -103,7 +139,6 @@ const BookingDialog = ({ trigger, stylistName, styleName }: BookingDialogProps) 
               {stylistName && <span className="font-semibold">{stylistName}</span>}
             </p>
           )}
-          {/* Step indicator */}
           <div className="flex items-center gap-2 pt-2">
             {[1, 2, 3].map((s) => (
               <div key={s} className="flex items-center gap-2">
@@ -120,7 +155,6 @@ const BookingDialog = ({ trigger, stylistName, styleName }: BookingDialogProps) 
         </DialogHeader>
 
         <div className="space-y-5 pt-2">
-          {/* Step 1: Date & Time */}
           {step === 1 && (
             <>
               <div>
@@ -162,7 +196,6 @@ const BookingDialog = ({ trigger, stylistName, styleName }: BookingDialogProps) 
             </>
           )}
 
-          {/* Step 2: Contact Info */}
           {step === 2 && (
             <>
               <div className="space-y-3">
@@ -200,7 +233,6 @@ const BookingDialog = ({ trigger, stylistName, styleName }: BookingDialogProps) 
             </>
           )}
 
-          {/* Step 3: Payment */}
           {step === 3 && (
             <>
               <div className="space-y-3">
@@ -227,7 +259,6 @@ const BookingDialog = ({ trigger, stylistName, styleName }: BookingDialogProps) 
                 })}
               </div>
 
-              {/* Booking Summary */}
               {date && time && (
                 <div className="bg-secondary/50 rounded-xl p-4 text-sm font-body text-foreground space-y-1">
                   <p><span className="font-semibold">Date:</span> {format(date, "EEEE, MMMM d, yyyy")}</p>
@@ -242,8 +273,12 @@ const BookingDialog = ({ trigger, stylistName, styleName }: BookingDialogProps) 
 
               <div className="flex gap-3">
                 <Button variant="outline" className="flex-1" onClick={() => setStep(2)}>Back</Button>
-                <Button variant="hero" className="flex-1" disabled={!canConfirm} onClick={handleConfirm}>
-                  Confirm & Pay <ChevronRight className="w-4 h-4" />
+                <Button variant="hero" className="flex-1" disabled={!canConfirm || loading} onClick={handleConfirm}>
+                  {loading ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</>
+                  ) : (
+                    <>Confirm & Pay <ChevronRight className="w-4 h-4" /></>
+                  )}
                 </Button>
               </div>
             </>

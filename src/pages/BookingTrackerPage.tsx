@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState, useRef, useCallback } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { MapPin, Clock, Phone, MessageCircle, CheckCircle2, Circle, ArrowLeft, User, Mail, CreditCard, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { supabase } from "@/integrations/supabase/client";
 import stylist1 from "@/assets/stylist-1.jpg";
 
 interface BookingData {
@@ -27,8 +28,12 @@ const paymentLabels: Record<string, string> = {
 };
 
 const BookingTrackerPage = () => {
+  const [searchParams] = useSearchParams();
   const [booking, setBooking] = useState<BookingData | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
+  const [mapsKey, setMapsKey] = useState<string | null>(null);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<any>(null);
 
   useEffect(() => {
     const data = localStorage.getItem("currentBooking");
@@ -36,6 +41,130 @@ const BookingTrackerPage = () => {
       setBooking(JSON.parse(data));
     }
   }, []);
+
+  // Fetch Google Maps API key
+  useEffect(() => {
+    const fetchKey = async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke("get-maps-key");
+        if (!error && data?.key) {
+          setMapsKey(data.key);
+        }
+      } catch (err) {
+        console.error("Failed to load maps key:", err);
+      }
+    };
+    fetchKey();
+  }, []);
+
+  // Load Google Maps script
+  useEffect(() => {
+    if (!mapsKey || document.getElementById("google-maps-script")) return;
+    const script = document.createElement("script");
+    script.id = "google-maps-script";
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${mapsKey}&libraries=places`;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => initMap();
+    document.head.appendChild(script);
+
+    return () => {
+      // cleanup not strictly needed for script tags
+    };
+  }, [mapsKey]);
+
+  const initMap = useCallback(() => {
+    if (!mapRef.current || !booking?.address || !(window as any).google) return;
+
+    const g = (window as any).google;
+    const geocoder = new g.maps.Geocoder();
+    geocoder.geocode({ address: booking.address }, (results: any, status: any) => {
+      if (status === "OK" && results && results[0]) {
+        const location = results[0].geometry.location;
+        const map = new g.maps.Map(mapRef.current!, {
+          center: location,
+          zoom: 14,
+          disableDefaultUI: true,
+          zoomControl: true,
+          styles: [
+            { featureType: "all", elementType: "geometry", stylers: [{ saturation: -30 }] },
+            { featureType: "poi", stylers: [{ visibility: "off" }] },
+          ],
+        });
+        mapInstanceRef.current = map;
+
+        // Customer location marker
+        new g.maps.Marker({
+          position: location,
+          map,
+          title: "Your Location",
+          icon: {
+            path: g.maps.SymbolPath.CIRCLE,
+            scale: 10,
+            fillColor: "#e91e8c",
+            fillOpacity: 1,
+            strokeColor: "#fff",
+            strokeWeight: 3,
+          },
+        });
+
+        // Simulate stylist location nearby
+        const stylistLat = location.lat() + (Math.random() - 0.5) * 0.02;
+        const stylistLng = location.lng() + (Math.random() - 0.5) * 0.02;
+        const stylistMarker = new g.maps.Marker({
+          position: { lat: stylistLat, lng: stylistLng },
+          map,
+          title: booking.stylistName,
+          icon: {
+            url: stylist1,
+            scaledSize: new g.maps.Size(40, 40),
+            origin: new g.maps.Point(0, 0),
+            anchor: new g.maps.Point(20, 20),
+          },
+        });
+
+        // Info window for stylist
+        const infoWindow = new g.maps.InfoWindow({
+          content: `<div style="font-family:sans-serif;padding:4px"><strong>${booking.stylistName}</strong><br/><span style="color:#666">En route to you</span></div>`,
+        });
+        stylistMarker.addListener("click", () => infoWindow.open(map, stylistMarker));
+
+        // Draw route
+        const directionsService = new g.maps.DirectionsService();
+        const directionsRenderer = new g.maps.DirectionsRenderer({
+          map,
+          suppressMarkers: true,
+          polylineOptions: { strokeColor: "#e91e8c", strokeWeight: 4 },
+        });
+        directionsService.route(
+          {
+            origin: { lat: stylistLat, lng: stylistLng },
+            destination: location,
+            travelMode: g.maps.TravelMode.DRIVING,
+          },
+          (result: any, status: any) => {
+            if (status === "OK" && result) {
+              directionsRenderer.setDirections(result);
+            }
+          }
+        );
+      } else {
+        // Fallback: show a default map
+        new g.maps.Map(mapRef.current!, {
+          center: { lat: 33.749, lng: -84.388 },
+          zoom: 12,
+          disableDefaultUI: true,
+        });
+      }
+    });
+  }, [booking]);
+
+  // Initialize map when script is already loaded
+  useEffect(() => {
+    if (mapsKey && booking && (window as any).google) {
+      initMap();
+    }
+  }, [mapsKey, booking, initMap]);
 
   // Simulate progress
   useEffect(() => {
@@ -114,16 +243,18 @@ const BookingTrackerPage = () => {
               </div>
             </div>
 
-            {/* Live Map placeholder */}
-            <div className="h-48 bg-muted relative overflow-hidden">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-12 h-12 rounded-full bg-primary animate-pulse flex items-center justify-center mx-auto mb-2">
-                    <MapPin className="w-5 h-5 text-primary-foreground" />
+            {/* Live Google Map */}
+            <div ref={mapRef} className="h-64 bg-muted relative overflow-hidden">
+              {!mapsKey && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="w-12 h-12 rounded-full bg-primary animate-pulse flex items-center justify-center mx-auto mb-2">
+                      <MapPin className="w-5 h-5 text-primary-foreground" />
+                    </div>
+                    <p className="text-sm text-muted-foreground font-body">Loading map...</p>
                   </div>
-                  <p className="text-sm text-muted-foreground font-body">Live map tracking</p>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Timeline */}
