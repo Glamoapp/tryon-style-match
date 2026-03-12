@@ -34,7 +34,7 @@ const BookingTrackerPage = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [mapsKey, setMapsKey] = useState<string | null>(null);
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<google.maps.Map | null>(null);
+  const mapInstanceRef = useRef<any>(null);
 
   useEffect(() => {
     const data = localStorage.getItem("currentBooking");
