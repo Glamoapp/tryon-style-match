@@ -296,7 +296,7 @@ const TryOnPage = () => {
                 Choose a Style
               </h3>
               <p className="text-sm text-muted-foreground font-body mb-6">
-                {filteredStyles.length} styles in {activeCategory === "All" ? "all categories" : activeCategory}
+                {filteredStyles.length} styles in {activeCategory}
               </p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[700px] overflow-y-auto pr-2 scrollbar-thin">
                 {filteredStyles.map((style, index) => (
