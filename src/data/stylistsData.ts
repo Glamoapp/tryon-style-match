@@ -4,12 +4,14 @@ import stylist3 from "@/assets/stylist-3.jpg";
 import stylist4 from "@/assets/stylist-4.jpg";
 import stylist5 from "@/assets/stylist-5.jpg";
 import stylist6 from "@/assets/stylist-6.jpg";
-import weaveImg from "@/assets/service-weave.jpg";
-import braidsImg from "@/assets/service-braids.jpg";
-import wigsImg from "@/assets/service-wigs.jpg";
-import makeupImg from "@/assets/service-makeup.jpg";
-import ktipsImg from "@/assets/service-ktips.jpg";
-import naturalImg from "@/assets/service-natural.jpg";
+import portfolioWeave from "@/assets/portfolio-weave.jpg";
+import portfolioBraids from "@/assets/portfolio-braids.jpg";
+import portfolioKtips from "@/assets/portfolio-ktips.jpg";
+import portfolioWigs from "@/assets/portfolio-wigs.jpg";
+import portfolioMakeup from "@/assets/portfolio-makeup.jpg";
+import portfolioNatural from "@/assets/portfolio-natural.jpg";
+import portfolioLocs from "@/assets/portfolio-locs.jpg";
+import portfolioFrontals from "@/assets/portfolio-frontals.jpg";
 
 export interface Stylist {
   name: string;
@@ -25,7 +27,27 @@ export interface Stylist {
 }
 
 const avatars = [stylist1, stylist2, stylist3, stylist4, stylist5, stylist6];
-const portfolioImages = [weaveImg, braidsImg, wigsImg, makeupImg, ktipsImg, naturalImg];
+
+// Each specialty maps to a unique portfolio image
+const specialtyPortfolioMap: Record<string, string> = {
+  "Weave": portfolioWeave,
+  "Sew-In": portfolioWeave,
+  "Quick Weave": portfolioWeave,
+  "Braids": portfolioBraids,
+  "Box Braids": portfolioBraids,
+  "Cornrows": portfolioBraids,
+  "Knotless": portfolioBraids,
+  "K-Tips": portfolioKtips,
+  "Wigs": portfolioWigs,
+  "Closure": portfolioWigs,
+  "Closures": portfolioWigs,
+  "Makeup": portfolioMakeup,
+  "Lashes": portfolioMakeup,
+  "Bridal": portfolioMakeup,
+  "Natural Hair": portfolioNatural,
+  "Locs": portfolioLocs,
+  "Frontals": portfolioFrontals,
+};
 
 const firstNames = [
   "Keisha", "Amara", "Marcus", "Destiny", "Tiffany", "Jasmine", "Aaliyah", "DeAndre",
@@ -76,7 +98,12 @@ export const allStylists: Stylist[] = Array.from({ length: 54 }, (_, i) => {
   const basePrice = [75, 85, 95, 100, 110, 120, 130, 140, 150, 175][Math.floor(Math.random() * 10)];
   const avatar = avatars[i % avatars.length];
   const specs = specialtySets[i % specialtySets.length];
-  const port = [portfolioImages[i % portfolioImages.length], portfolioImages[(i + 2) % portfolioImages.length]];
+
+  // Use unique portfolio images based on stylist's specialties
+  const port = specs.map(s => specialtyPortfolioMap[s] || portfolioWeave)
+    .filter((v, idx, arr) => arr.indexOf(v) === idx)
+    .slice(0, 2);
+  if (port.length < 2) port.push(portfolioNatural);
 
   return {
     name: `${firstNames[i % firstNames.length]} ${lastNames[i % lastNames.length]}`,
