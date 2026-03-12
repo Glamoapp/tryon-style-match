@@ -75,9 +75,10 @@ const BookingTrackerPage = () => {
   }, [mapsKey]);
 
   const initMap = useCallback(() => {
-    if (!mapRef.current || !booking?.address || !window.google) return;
+    if (!mapRef.current || !booking?.address || !(window as any).google) return;
 
-    const geocoder = new google.maps.Geocoder();
+    const g = (window as any).google;
+    const geocoder = new g.maps.Geocoder();
     geocoder.geocode({ address: booking.address }, (results, status) => {
       if (status === "OK" && results && results[0]) {
         const location = results[0].geometry.location;
