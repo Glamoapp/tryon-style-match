@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { MapPin, Clock, Phone, MessageCircle, CheckCircle2, Circle, ArrowLeft, User, Mail, CreditCard, Calendar } from "lucide-react";
+import { MapPin, Clock, Phone, MessageCircle, CheckCircle2, Circle, ArrowLeft, User, Mail, CreditCard, Calendar, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -21,6 +21,14 @@ interface BookingData {
   paymentMethod: string;
 }
 
+interface StylistLocation {
+  latitude: number;
+  longitude: number;
+  heading: number;
+  speed: number;
+  status: string;
+}
+
 const paymentLabels: Record<string, string> = {
   cashapp: "Cash App",
   applepay: "Apple Pay",
@@ -32,8 +40,14 @@ const BookingTrackerPage = () => {
   const [booking, setBooking] = useState<BookingData | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [mapsKey, setMapsKey] = useState<string | null>(null);
+  const [stylistLocation, setStylistLocation] = useState<StylistLocation | null>(null);
+  const [eta, setEta] = useState<string | null>(null);
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
+  const stylistMarkerRef = useRef<any>(null);
+  const directionsRendererRef = useRef<any>(null);
+  const customerLocationRef = useRef<any>(null);
+  const simulationRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     const data = localStorage.getItem("currentBooking");
@@ -67,11 +81,66 @@ const BookingTrackerPage = () => {
     script.defer = true;
     script.onload = () => initMap();
     document.head.appendChild(script);
-
-    return () => {
-      // cleanup not strictly needed for script tags
-    };
   }, [mapsKey]);
+
+  // Smoothly animate marker to new position
+  const animateMarker = useCallback((marker: any, targetLat: number, targetLng: number) => {
+    if (!marker) return;
+    const g = (window as any).google;
+    if (!g) return;
+
+    const startPos = marker.getPosition();
+    const startLat = startPos.lat();
+    const startLng = startPos.lng();
+    const duration = 1000;
+    const startTime = Date.now();
+
+    const step = () => {
+      const elapsed = Date.now() - startTime;
+      const t = Math.min(elapsed / duration, 1);
+      // Ease-out cubic
+      const eased = 1 - Math.pow(1 - t, 3);
+      const lat = startLat + (targetLat - startLat) * eased;
+      const lng = startLng + (targetLng - startLng) * eased;
+      marker.setPosition(new g.maps.LatLng(lat, lng));
+      if (t < 1) {
+        requestAnimationFrame(step);
+      }
+    };
+    requestAnimationFrame(step);
+  }, []);
+
+  // Update route and ETA when stylist location changes
+  const updateRoute = useCallback((stylistLat: number, stylistLng: number) => {
+    const g = (window as any).google;
+    if (!g || !mapInstanceRef.current || !customerLocationRef.current) return;
+
+    if (!directionsRendererRef.current) {
+      directionsRendererRef.current = new g.maps.DirectionsRenderer({
+        map: mapInstanceRef.current,
+        suppressMarkers: true,
+        polylineOptions: { strokeColor: "#e91e8c", strokeWeight: 4 },
+      });
+    }
+
+    const directionsService = new g.maps.DirectionsService();
+    directionsService.route(
+      {
+        origin: { lat: stylistLat, lng: stylistLng },
+        destination: customerLocationRef.current,
+        travelMode: g.maps.TravelMode.DRIVING,
+      },
+      (result: any, status: any) => {
+        if (status === "OK" && result) {
+          directionsRendererRef.current.setDirections(result);
+          const leg = result.routes?.[0]?.legs?.[0];
+          if (leg) {
+            setEta(leg.duration?.text ?? null);
+          }
+        }
+      }
+    );
+  }, []);
 
   const initMap = useCallback(() => {
     if (!mapRef.current || !booking?.address || !(window as any).google) return;
@@ -81,6 +150,8 @@ const BookingTrackerPage = () => {
     geocoder.geocode({ address: booking.address }, (results: any, status: any) => {
       if (status === "OK" && results && results[0]) {
         const location = results[0].geometry.location;
+        customerLocationRef.current = location;
+
         const map = new g.maps.Map(mapRef.current!, {
           center: location,
           zoom: 14,
@@ -108,48 +179,34 @@ const BookingTrackerPage = () => {
           },
         });
 
-        // Simulate stylist location nearby
-        const stylistLat = location.lat() + (Math.random() - 0.5) * 0.02;
-        const stylistLng = location.lng() + (Math.random() - 0.5) * 0.02;
+        // Create stylist marker (will be positioned by realtime data or simulation)
+        const initialLat = location.lat() + (Math.random() - 0.5) * 0.02;
+        const initialLng = location.lng() + (Math.random() - 0.5) * 0.02;
+
         const stylistMarker = new g.maps.Marker({
-          position: { lat: stylistLat, lng: stylistLng },
+          position: { lat: initialLat, lng: initialLng },
           map,
           title: booking.stylistName,
           icon: {
             url: stylist1,
-            scaledSize: new g.maps.Size(40, 40),
+            scaledSize: new g.maps.Size(44, 44),
             origin: new g.maps.Point(0, 0),
-            anchor: new g.maps.Point(20, 20),
+            anchor: new g.maps.Point(22, 22),
           },
         });
+        stylistMarkerRef.current = stylistMarker;
 
-        // Info window for stylist
         const infoWindow = new g.maps.InfoWindow({
           content: `<div style="font-family:sans-serif;padding:4px"><strong>${booking.stylistName}</strong><br/><span style="color:#666">En route to you</span></div>`,
         });
         stylistMarker.addListener("click", () => infoWindow.open(map, stylistMarker));
 
-        // Draw route
-        const directionsService = new g.maps.DirectionsService();
-        const directionsRenderer = new g.maps.DirectionsRenderer({
-          map,
-          suppressMarkers: true,
-          polylineOptions: { strokeColor: "#e91e8c", strokeWeight: 4 },
-        });
-        directionsService.route(
-          {
-            origin: { lat: stylistLat, lng: stylistLng },
-            destination: location,
-            travelMode: g.maps.TravelMode.DRIVING,
-          },
-          (result: any, status: any) => {
-            if (status === "OK" && result) {
-              directionsRenderer.setDirections(result);
-            }
-          }
-        );
+        // Initial route
+        updateRoute(initialLat, initialLng);
+
+        // Seed the database with initial location and start simulation
+        seedAndSimulate(booking.id, booking.stylistName, initialLat, initialLng, location.lat(), location.lng());
       } else {
-        // Fallback: show a default map
         new g.maps.Map(mapRef.current!, {
           center: { lat: 33.749, lng: -84.388 },
           zoom: 12,
@@ -157,7 +214,127 @@ const BookingTrackerPage = () => {
         });
       }
     });
-  }, [booking]);
+  }, [booking, updateRoute]);
+
+  // Seed stylist location and simulate movement toward customer
+  const seedAndSimulate = useCallback(async (
+    bookingId: string,
+    stylistName: string,
+    startLat: number,
+    startLng: number,
+    targetLat: number,
+    targetLng: number
+  ) => {
+    // Seed initial location
+    await supabase.functions.invoke("update-stylist-location", {
+      body: {
+        booking_id: bookingId,
+        stylist_name: stylistName,
+        latitude: startLat,
+        longitude: startLng,
+        status: "en_route",
+      },
+    });
+
+    // Simulate movement every 3 seconds
+    let currentLat = startLat;
+    let currentLng = startLng;
+    const steps = 30;
+    let step = 0;
+
+    if (simulationRef.current) clearInterval(simulationRef.current);
+
+    simulationRef.current = setInterval(async () => {
+      step++;
+      if (step >= steps) {
+        if (simulationRef.current) clearInterval(simulationRef.current);
+        await supabase.functions.invoke("update-stylist-location", {
+          body: {
+            booking_id: bookingId,
+            stylist_name: stylistName,
+            latitude: targetLat,
+            longitude: targetLng,
+            status: "arrived",
+          },
+        });
+        return;
+      }
+
+      // Move toward target with some jitter
+      const progress = step / steps;
+      const jitter = (Math.random() - 0.5) * 0.001;
+      currentLat = startLat + (targetLat - startLat) * progress + jitter;
+      currentLng = startLng + (targetLng - startLng) * progress + jitter;
+
+      const heading = Math.atan2(targetLng - currentLng, targetLat - currentLat) * (180 / Math.PI);
+
+      await supabase.functions.invoke("update-stylist-location", {
+        body: {
+          booking_id: bookingId,
+          stylist_name: stylistName,
+          latitude: currentLat,
+          longitude: currentLng,
+          heading,
+          speed: 25 + Math.random() * 15,
+          status: progress > 0.85 ? "arriving" : "en_route",
+        },
+      });
+    }, 3000);
+  }, []);
+
+  // Subscribe to realtime location updates
+  useEffect(() => {
+    if (!booking?.id) return;
+
+    const channel = supabase
+      .channel(`stylist-location-${booking.id}`)
+      .on(
+        "postgres_changes" as any,
+        {
+          event: "*",
+          schema: "public",
+          table: "stylist_locations",
+          filter: `booking_id=eq.${booking.id}`,
+        },
+        (payload: any) => {
+          const loc = payload.new as any;
+          if (!loc) return;
+
+          const newLocation: StylistLocation = {
+            latitude: loc.latitude,
+            longitude: loc.longitude,
+            heading: loc.heading ?? 0,
+            speed: loc.speed ?? 0,
+            status: loc.status ?? "en_route",
+          };
+
+          setStylistLocation(newLocation);
+
+          // Animate marker
+          if (stylistMarkerRef.current) {
+            animateMarker(stylistMarkerRef.current, newLocation.latitude, newLocation.longitude);
+          }
+
+          // Update route & ETA
+          updateRoute(newLocation.latitude, newLocation.longitude);
+
+          // Update tracking step based on status
+          if (newLocation.status === "arrived") {
+            setCurrentStep(3);
+          } else if (newLocation.status === "arriving") {
+            setCurrentStep(2);
+          } else if (newLocation.status === "en_route") {
+            setCurrentStep(1);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+      if (simulationRef.current) clearInterval(simulationRef.current);
+    };
+  }, [booking?.id, animateMarker, updateRoute]);
 
   // Initialize map when script is already loaded
   useEffect(() => {
@@ -165,16 +342,6 @@ const BookingTrackerPage = () => {
       initMap();
     }
   }, [mapsKey, booking, initMap]);
-
-  // Simulate progress
-  useEffect(() => {
-    if (!booking) return;
-    const timers = [
-      setTimeout(() => setCurrentStep(1), 2000),
-      setTimeout(() => setCurrentStep(2), 5000),
-    ];
-    return () => timers.forEach(clearTimeout);
-  }, [booking]);
 
   const trackingSteps = [
     { label: "Booking Confirmed", icon: CheckCircle2 },
@@ -243,6 +410,29 @@ const BookingTrackerPage = () => {
               </div>
             </div>
 
+            {/* Live ETA Banner */}
+            {eta && stylistLocation && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                className="bg-primary/10 border-b border-primary/20 px-6 py-3 flex items-center justify-between"
+              >
+                <div className="flex items-center gap-2">
+                  <Navigation className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-body font-semibold text-foreground">
+                    {stylistLocation.status === "arrived" ? "Stylist has arrived!" :
+                     stylistLocation.status === "arriving" ? "Almost there!" : "En route to you"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-body font-bold text-primary">
+                    ETA: {eta}
+                  </span>
+                </div>
+              </motion.div>
+            )}
+
             {/* Live Google Map */}
             <div ref={mapRef} className="h-64 bg-muted relative overflow-hidden">
               {!mapsKey && (
@@ -256,6 +446,14 @@ const BookingTrackerPage = () => {
                 </div>
               )}
             </div>
+
+            {/* Speed indicator */}
+            {stylistLocation && stylistLocation.speed > 0 && stylistLocation.status !== "arrived" && (
+              <div className="px-6 py-2 bg-muted/50 text-xs font-body text-muted-foreground flex items-center gap-2">
+                <span className="inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                Live tracking · {Math.round(stylistLocation.speed)} mph
+              </div>
+            )}
 
             {/* Timeline */}
             <div className="p-6">
