@@ -9,7 +9,7 @@ import { styles, categories, type StyleCategory } from "@/data/tryOnStyles";
 
 const TryOnPage = () => {
   const [selectedStyle, setSelectedStyle] = useState(0);
-  const [activeCategory, setActiveCategory] = useState<StyleCategory>("All");
+  const [activeCategory, setActiveCategory] = useState<StyleCategory>("Braids");
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
