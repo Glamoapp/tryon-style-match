@@ -79,10 +79,10 @@ const BookingTrackerPage = () => {
 
     const g = (window as any).google;
     const geocoder = new g.maps.Geocoder();
-    geocoder.geocode({ address: booking.address }, (results, status) => {
+    geocoder.geocode({ address: booking.address }, (results: any, status: any) => {
       if (status === "OK" && results && results[0]) {
         const location = results[0].geometry.location;
-        const map = new google.maps.Map(mapRef.current!, {
+        const map = new g.maps.Map(mapRef.current!, {
           center: location,
           zoom: 14,
           disableDefaultUI: true,
@@ -95,12 +95,12 @@ const BookingTrackerPage = () => {
         mapInstanceRef.current = map;
 
         // Customer location marker
-        new google.maps.Marker({
+        new g.maps.Marker({
           position: location,
           map,
           title: "Your Location",
           icon: {
-            path: google.maps.SymbolPath.CIRCLE,
+            path: g.maps.SymbolPath.CIRCLE,
             scale: 10,
             fillColor: "#e91e8c",
             fillOpacity: 1,
@@ -112,27 +112,27 @@ const BookingTrackerPage = () => {
         // Simulate stylist location nearby
         const stylistLat = location.lat() + (Math.random() - 0.5) * 0.02;
         const stylistLng = location.lng() + (Math.random() - 0.5) * 0.02;
-        const stylistMarker = new google.maps.Marker({
+        const stylistMarker = new g.maps.Marker({
           position: { lat: stylistLat, lng: stylistLng },
           map,
           title: booking.stylistName,
           icon: {
             url: stylist1,
-            scaledSize: new google.maps.Size(40, 40),
-            origin: new google.maps.Point(0, 0),
-            anchor: new google.maps.Point(20, 20),
+            scaledSize: new g.maps.Size(40, 40),
+            origin: new g.maps.Point(0, 0),
+            anchor: new g.maps.Point(20, 20),
           },
         });
 
         // Info window for stylist
-        const infoWindow = new google.maps.InfoWindow({
+        const infoWindow = new g.maps.InfoWindow({
           content: `<div style="font-family:sans-serif;padding:4px"><strong>${booking.stylistName}</strong><br/><span style="color:#666">En route to you</span></div>`,
         });
         stylistMarker.addListener("click", () => infoWindow.open(map, stylistMarker));
 
         // Draw route
-        const directionsService = new google.maps.DirectionsService();
-        const directionsRenderer = new google.maps.DirectionsRenderer({
+        const directionsService = new g.maps.DirectionsService();
+        const directionsRenderer = new g.maps.DirectionsRenderer({
           map,
           suppressMarkers: true,
           polylineOptions: { strokeColor: "#e91e8c", strokeWeight: 4 },
@@ -141,9 +141,9 @@ const BookingTrackerPage = () => {
           {
             origin: { lat: stylistLat, lng: stylistLng },
             destination: location,
-            travelMode: google.maps.TravelMode.DRIVING,
+            travelMode: g.maps.TravelMode.DRIVING,
           },
-          (result, status) => {
+          (result: any, status: any) => {
             if (status === "OK" && result) {
               directionsRenderer.setDirections(result);
             }
@@ -151,7 +151,7 @@ const BookingTrackerPage = () => {
         );
       } else {
         // Fallback: show a default map
-        new google.maps.Map(mapRef.current!, {
+        new g.maps.Map(mapRef.current!, {
           center: { lat: 33.749, lng: -84.388 },
           zoom: 12,
           disableDefaultUI: true,
