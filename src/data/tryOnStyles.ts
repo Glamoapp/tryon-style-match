@@ -21,7 +21,7 @@ import lowBunImg from "@/assets/style-low-bun.jpg";
 import nanoTipsImg from "@/assets/style-nano-tips.jpg";
 import closureWigImg from "@/assets/style-closure-wig.jpg";
 
-export type StyleCategory = "All" | "Braids" | "Weave" | "Updo" | "K-Tips" | "Wig Frontal & Closure" | "Makeup";
+export type StyleCategory = "Braids" | "Weave" | "Updo" | "K-Tips" | "Wig Frontal & Closure" | "Makeup";
 
 export interface TryOnStyle {
   name: string;
