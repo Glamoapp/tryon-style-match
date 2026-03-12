@@ -162,7 +162,7 @@ const BookingTrackerPage = () => {
 
   // Initialize map when script is already loaded
   useEffect(() => {
-    if (mapsKey && booking && window.google) {
+    if (mapsKey && booking && (window as any).google) {
       initMap();
     }
   }, [mapsKey, booking, initMap]);
