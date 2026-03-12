@@ -30,7 +30,7 @@ export interface TryOnStyle {
 }
 
 export const categories: StyleCategory[] = [
-  "All", "Braids", "Weave", "Updo", "K-Tips", "Wig Frontal & Closure", "Makeup",
+  "Braids", "Weave", "Updo", "K-Tips", "Wig Frontal & Closure", "Makeup",
 ];
 
 export const styles: TryOnStyle[] = [
