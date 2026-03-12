@@ -12,7 +12,7 @@ const specialtyFilters = ["Weave", "Braids", "Wigs", "K-Tips", "Makeup", "Natura
 
 const StylistsPage = () => {
   const [search, setSearch] = useState("");
-  const [activeFilter, setActiveFilter] = useState("All");
+  const [activeFilter, setActiveFilter] = useState("Weave");
   const [sortBy, setSortBy] = useState<"rating" | "distance" | "price">("rating");
 
   const filtered = useMemo(() => {
