@@ -8,7 +8,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { allStylists } from "@/data/stylistsData";
 
-const specialtyFilters = ["All", "Weave", "Braids", "Wigs", "K-Tips", "Makeup", "Natural Hair", "Frontals", "Locs"];
+const specialtyFilters = ["Weave", "Braids", "Wigs", "K-Tips", "Makeup", "Natural Hair", "Frontals", "Locs"];
 
 const StylistsPage = () => {
   const [search, setSearch] = useState("");
