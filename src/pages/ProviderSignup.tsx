@@ -30,7 +30,7 @@ const ProviderSignup = () => {
     phone: "",
     password: "",
     city: "",
-    serviceCategory: "",
+    serviceCategories: [] as string[],
   });
 
   const handleChange = (field: string, value: string) => {
