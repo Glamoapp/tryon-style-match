@@ -5,6 +5,7 @@ import { Star, MapPin, ArrowLeft, Clock, Camera, ChevronRight, MessageCircle } f
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import BookingDialog from "@/components/BookingDialog";
+import MessageDialog from "@/components/MessageDialog";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import type { ProviderListing } from "@/hooks/useProviders";
