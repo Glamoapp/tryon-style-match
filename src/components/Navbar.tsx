@@ -40,7 +40,9 @@ const Navbar = () => {
 
         <div className="hidden md:flex items-center gap-3">
           <CartDrawer />
-          <Button variant="ghost" size="sm">Log In</Button>
+          <Link to="/provider/login">
+            <Button variant="ghost" size="sm">For Providers</Button>
+          </Link>
           <Link to="/stylists">
             <Button variant="hero" size="sm">Book Now</Button>
           </Link>

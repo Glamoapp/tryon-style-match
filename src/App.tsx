@@ -28,6 +28,10 @@ const AppContent = () => {
       <Route path="/extensions" element={<ExtensionsPage />} />
       <Route path="/product/:handle" element={<ProductPage />} />
       <Route path="/booking-tracker" element={<BookingTrackerPage />} />
+      <Route path="/provider/signup" element={<ProviderSignup />} />
+      <Route path="/provider/login" element={<ProviderLogin />} />
+      <Route path="/provider/onboarding" element={<ProviderOnboarding />} />
+      <Route path="/provider/dashboard" element={<ProviderDashboard />} />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />
     </Routes>
