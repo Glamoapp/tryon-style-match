@@ -1,21 +1,17 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { Star, MapPin, Clock, Heart, ChevronRight } from "lucide-react";
-import BookingDialog from "@/components/BookingDialog";
-import { allStylists } from "@/data/stylistsData";
+import { Star, MapPin, Heart, ChevronRight } from "lucide-react";
 import { useProviders } from "@/hooks/useProviders";
 
 const StylistsSection = () => {
-  const { providers } = useProviders();
+  const { providers, loading } = useProviders();
 
-  // Show real providers first, then fill with mock data up to 3
-  const realCards = providers.slice(0, 3).map((p) => ({
-    type: "real" as const,
+  const topCards = providers.slice(0, 3).map((p) => ({
     id: p.id,
     name: p.full_name,
     avatar: p.avatar_url,
-    rating: p.rating || 4.8,
+    rating: p.rating || 0,
     reviews: p.reviewCount,
     specialties: p.specialties,
     coverPhoto: p.coverPhoto,
@@ -23,25 +19,6 @@ const StylistsSection = () => {
     city: p.city,
     available: true,
   }));
-
-  const mockNeeded = 3 - realCards.length;
-  const mockCards = allStylists.slice(0, mockNeeded).map((s, i) => ({
-    type: "mock" as const,
-    id: `mock-${i}`,
-    name: s.name,
-    avatar: s.avatar as string | null,
-    rating: s.rating,
-    reviews: s.reviews,
-    specialties: s.specialties,
-    coverPhoto: s.portfolio[0] as string | null,
-    price: s.price,
-    city: null as string | null,
-    available: s.available,
-    distance: s.distance,
-    eta: s.eta,
-  }));
-
-  const topCards = [...realCards, ...mockCards];
 
   return (
     <section id="stylists" className="py-24 bg-background">
@@ -56,6 +33,14 @@ const StylistsSection = () => {
           </p>
         </motion.div>
 
+        {loading && (
+          <p className="text-center text-muted-foreground font-body">Loading stylists...</p>
+        )}
+
+        {!loading && topCards.length === 0 && (
+          <p className="text-center text-muted-foreground font-body">No stylists available yet. Check back soon!</p>
+        )}
+
         <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {topCards.map((card, index) => (
             <motion.div
@@ -66,7 +51,7 @@ const StylistsSection = () => {
               transition={{ delay: index * 0.15 }}
               className="bg-card rounded-3xl overflow-hidden shadow-card hover:shadow-elevated transition-all duration-500 border border-border/50"
             >
-              <Link to={card.type === "real" ? `/stylist/${card.id}` : "/stylists"} className="block">
+              <Link to={`/stylist/${card.id}`} className="block">
                 <div className="relative h-48 overflow-hidden">
                   {card.coverPhoto ? (
                     <img src={card.coverPhoto} alt="Portfolio" className="w-full h-full object-cover" />
@@ -86,23 +71,25 @@ const StylistsSection = () => {
               </Link>
 
               <div className="p-5">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-12 h-12 rounded-full overflow-hidden ring-2 ring-primary/20 bg-muted flex items-center justify-center">
-                    {card.avatar ? (
-                      <img src={card.avatar} alt={card.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-lg font-bold text-muted-foreground">{card.name[0]}</span>
-                    )}
-                  </div>
-                  <div>
-                    <h3 className="font-display font-bold text-foreground">{card.name}</h3>
-                    <div className="flex items-center gap-1">
-                      <Star className="w-3.5 h-3.5 fill-gold text-gold" />
-                      <span className="text-sm font-semibold text-foreground font-body">{card.rating}</span>
-                      <span className="text-xs text-muted-foreground font-body">({card.reviews})</span>
+                <Link to={`/stylist/${card.id}`}>
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-12 h-12 rounded-full overflow-hidden ring-2 ring-primary/20 bg-muted flex items-center justify-center">
+                      {card.avatar ? (
+                        <img src={card.avatar} alt={card.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-lg font-bold text-muted-foreground">{card.name[0]}</span>
+                      )}
+                    </div>
+                    <div>
+                      <h3 className="font-display font-bold text-foreground">{card.name}</h3>
+                      <div className="flex items-center gap-1">
+                        <Star className="w-3.5 h-3.5 fill-gold text-gold" />
+                        <span className="text-sm font-semibold text-foreground font-body">{card.rating}</span>
+                        <span className="text-xs text-muted-foreground font-body">({card.reviews})</span>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </Link>
 
                 <div className="flex flex-wrap gap-2 mb-4">
                   {card.specialties.map((s) => (
@@ -114,31 +101,14 @@ const StylistsSection = () => {
                   {card.city && (
                     <div className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {card.city}</div>
                   )}
-                  {"distance" in card && card.distance && (
-                    <div className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {card.distance}</div>
-                  )}
-                  {"eta" in card && card.eta && (
-                    <div className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {card.eta}</div>
-                  )}
                   <span className="font-semibold text-foreground">{card.price}</span>
                 </div>
 
-                {card.type === "real" ? (
-                  <Link to={`/stylist/${card.id}`}>
-                    <Button variant="hero" className="w-full" size="sm">
-                      View Profile <ChevronRight className="w-4 h-4" />
-                    </Button>
-                  </Link>
-                ) : (
-                  <BookingDialog
-                    stylistName={card.name}
-                    trigger={
-                      <Button variant="hero" className="w-full" size="sm">
-                        Book Now <ChevronRight className="w-4 h-4" />
-                      </Button>
-                    }
-                  />
-                )}
+                <Link to={`/stylist/${card.id}`}>
+                  <Button variant="hero" className="w-full" size="sm">
+                    View Profile <ChevronRight className="w-4 h-4" />
+                  </Button>
+                </Link>
               </div>
             </motion.div>
           ))}
