@@ -4,22 +4,18 @@ import { motion } from "framer-motion";
 import { Star, MapPin, Clock, Heart, ChevronRight, Search, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import BookingDialog from "@/components/BookingDialog";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { allStylists } from "@/data/stylistsData";
 import { useProviders, ProviderListing } from "@/hooks/useProviders";
 
 const specialtyFilters = ["All", "Weave", "Braids", "Wigs", "K-Tips", "Makeup", "Natural Hair", "Frontals", "Locs"];
 
-// Merge real providers with mock data for a full marketplace feel
 function mapProviderToCard(p: ProviderListing) {
   return {
-    type: "real" as const,
     id: p.id,
     name: p.full_name,
     avatar: p.avatar_url,
-    rating: p.rating || 4.8,
+    rating: p.rating || 0,
     reviews: p.reviewCount,
     specialties: p.specialties,
     coverPhoto: p.coverPhoto,
@@ -33,28 +29,9 @@ const StylistsPage = () => {
   const { providers, loading } = useProviders();
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState("All");
-  const [sortBy, setSortBy] = useState<"rating" | "distance" | "price">("rating");
+  const [sortBy, setSortBy] = useState<"rating" | "price">("rating");
 
-  // Combine real providers + mock stylists
-  const allCards = useMemo(() => {
-    const realCards = providers.map(mapProviderToCard);
-    const mockCards = allStylists.map((s, i) => ({
-      type: "mock" as const,
-      id: `mock-${i}`,
-      name: s.name,
-      avatar: s.avatar as string | null,
-      rating: s.rating,
-      reviews: s.reviews,
-      specialties: s.specialties,
-      coverPhoto: s.portfolio[0] as string | null,
-      price: s.price,
-      city: null as string | null,
-      available: s.available,
-      distance: s.distance,
-      eta: s.eta,
-    }));
-    return [...realCards, ...mockCards];
-  }, [providers]);
+  const allCards = useMemo(() => providers.map(mapProviderToCard), [providers]);
 
   const filtered = useMemo(() => {
     let list = allCards;
@@ -98,12 +75,12 @@ const StylistsPage = () => {
                 <Input placeholder="Search by name or specialty..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10 bg-card border-border" />
               </div>
               <div className="flex gap-2">
-                {(["rating", "distance", "price"] as const).map(s => (
+                {(["rating", "price"] as const).map(s => (
                   <button key={s} onClick={() => setSortBy(s)}
                     className={`px-4 py-2 rounded-full text-xs font-body font-semibold transition-all capitalize ${
                       sortBy === s ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground border border-border hover:bg-secondary"
                     }`}>
-                    {s === "rating" ? "Top Rated" : s === "distance" ? "Nearest" : "Lowest Price"}
+                    {s === "rating" ? "Top Rated" : "Lowest Price"}
                   </button>
                 ))}
               </div>
@@ -124,6 +101,12 @@ const StylistsPage = () => {
             {loading ? "Loading stylists..." : `Showing ${filtered.length} stylists`}
           </p>
 
+          {!loading && filtered.length === 0 && (
+            <div className="text-center py-16">
+              <p className="text-muted-foreground font-body">No stylists found. Try adjusting your filters.</p>
+            </div>
+          )}
+
           {/* Stylist Grid */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {filtered.map((card, index) => (
@@ -134,7 +117,7 @@ const StylistsPage = () => {
                 transition={{ delay: Math.min(index * 0.03, 0.5) }}
                 className="bg-card rounded-2xl overflow-hidden shadow-card hover:shadow-elevated transition-all duration-500 border border-border/50"
               >
-                <Link to={card.type === "real" ? `/stylist/${card.id}` : "#"} className="block">
+                <Link to={`/stylist/${card.id}`} className="block">
                   <div className="relative h-40 overflow-hidden">
                     {card.coverPhoto ? (
                       <img src={card.coverPhoto} alt="Portfolio" className="w-full h-full object-cover" />
@@ -150,16 +133,11 @@ const StylistsPage = () => {
                         <span className="text-xs font-semibold text-white font-body">Available</span>
                       </div>
                     )}
-                    {!card.available && (
-                      <div className="absolute top-3 left-3 bg-muted/90 backdrop-blur-sm rounded-full px-3 py-1">
-                        <span className="text-xs font-semibold text-muted-foreground font-body">Booked</span>
-                      </div>
-                    )}
                   </div>
                 </Link>
 
                 <div className="p-4">
-                  <Link to={card.type === "real" ? `/stylist/${card.id}` : "#"}>
+                  <Link to={`/stylist/${card.id}`}>
                     <div className="flex items-center gap-3 mb-3">
                       <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-primary/20 bg-muted flex items-center justify-center shrink-0">
                         {card.avatar ? (
@@ -191,35 +169,14 @@ const StylistsPage = () => {
                         <MapPin className="w-3 h-3" /> {card.city}
                       </div>
                     )}
-                    {"distance" in card && card.distance && (
-                      <div className="flex items-center gap-1">
-                        <MapPin className="w-3 h-3" /> {card.distance}
-                      </div>
-                    )}
-                    {"eta" in card && card.eta && (
-                      <div className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" /> {card.eta}
-                      </div>
-                    )}
                     <span className="font-semibold text-foreground">{card.price}</span>
                   </div>
 
-                  {card.type === "real" ? (
-                    <Link to={`/stylist/${card.id}`}>
-                      <Button variant="hero" className="w-full" size="sm">
-                        View Profile <ChevronRight className="w-4 h-4" />
-                      </Button>
-                    </Link>
-                  ) : (
-                    <BookingDialog
-                      stylistName={card.name}
-                      trigger={
-                        <Button variant="hero" className="w-full" size="sm" disabled={!card.available}>
-                          {card.available ? <>Book Now <ChevronRight className="w-4 h-4" /></> : "Unavailable"}
-                        </Button>
-                      }
-                    />
-                  )}
+                  <Link to={`/stylist/${card.id}`}>
+                    <Button variant="hero" className="w-full" size="sm">
+                      View Profile <ChevronRight className="w-4 h-4" />
+                    </Button>
+                  </Link>
                 </div>
               </motion.div>
             ))}
