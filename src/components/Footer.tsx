@@ -1,4 +1,4 @@
-import { Scissors } from "lucide-react";
+import logoImg from "@/assets/logo.jpg";
 
 const Footer = () => {
   return (
