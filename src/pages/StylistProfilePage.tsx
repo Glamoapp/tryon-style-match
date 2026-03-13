@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Star, MapPin, ArrowLeft, Clock, Camera, ChevronRight } from "lucide-react";
+import { Star, MapPin, ArrowLeft, Clock, Camera, ChevronRight, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import BookingDialog from "@/components/BookingDialog";
+import MessageDialog from "@/components/MessageDialog";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import type { ProviderListing } from "@/hooks/useProviders";
@@ -148,6 +149,18 @@ const StylistProfilePage = () => {
                     {provider.specialties.map((s) => (
                       <span key={s} className="text-xs bg-secondary px-3 py-1 rounded-full font-body text-secondary-foreground">{s}</span>
                     ))}
+                  </div>
+                  <div className="flex gap-3 mt-4">
+                    <MessageDialog
+                      recipientId={provider.id}
+                      recipientName={provider.full_name}
+                      recipientAvatar={provider.avatar_url}
+                      trigger={
+                        <Button variant="outline" size="sm" className="gap-2">
+                          <MessageCircle className="w-4 h-4" /> Message
+                        </Button>
+                      }
+                    />
                   </div>
                 </div>
               </div>
