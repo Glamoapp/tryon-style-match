@@ -25,6 +25,7 @@ const AppContent = () => {
     <Routes>
       <Route path="/" element={<Index />} />
       <Route path="/stylists" element={<StylistsPage />} />
+      <Route path="/stylist/:id" element={<StylistProfilePage />} />
       <Route path="/tryon" element={<TryOnPage />} />
       <Route path="/extensions" element={<ExtensionsPage />} />
       <Route path="/product/:handle" element={<ProductPage />} />
