@@ -148,17 +148,27 @@ const ProviderSignup = () => {
             </div>
 
             <div>
-              <Label>Service Category *</Label>
-              <Select value={form.serviceCategory} onValueChange={(v) => handleChange("serviceCategory", v)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select your specialty" />
-                </SelectTrigger>
-                <SelectContent>
-                  {SERVICE_CATEGORIES.map((cat) => (
-                    <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label>Service Categories * <span className="text-muted-foreground font-normal">(select all that apply)</span></Label>
+              <div className="grid grid-cols-2 gap-3 mt-2">
+                {SERVICE_CATEGORIES.map((cat) => (
+                  <label key={cat} className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+                    form.serviceCategories.includes(cat) ? "border-primary/50 bg-primary/5" : "border-border bg-card hover:border-primary/30"
+                  }`}>
+                    <Checkbox
+                      checked={form.serviceCategories.includes(cat)}
+                      onCheckedChange={(checked) => {
+                        setForm((prev) => ({
+                          ...prev,
+                          serviceCategories: checked
+                            ? [...prev.serviceCategories, cat]
+                            : prev.serviceCategories.filter((c) => c !== cat),
+                        }));
+                      }}
+                    />
+                    <span className="text-sm font-medium">{cat}</span>
+                  </label>
+                ))}
+              </div>
             </div>
 
             <Button type="submit" variant="hero" className="w-full" size="lg" disabled={loading}>
