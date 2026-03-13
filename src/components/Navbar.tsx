@@ -76,6 +76,9 @@ const Navbar = () => {
                   </a>
                 )
               )}
+              <Link to="/provider/login" className="text-sm font-medium text-muted-foreground hover:text-foreground py-2" onClick={() => setIsOpen(false)}>
+                For Providers
+              </Link>
               <Link to="/stylists" onClick={() => setIsOpen(false)}>
                 <Button variant="hero" size="sm" className="mt-2 w-full">Book Now</Button>
               </Link>
