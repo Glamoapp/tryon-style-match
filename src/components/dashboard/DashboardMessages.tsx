@@ -133,6 +133,12 @@ export const DashboardMessages = ({ userId }: { userId: string }) => {
 
   const sendMessage = async () => {
     if (!newMessage.trim() || !selectedConvo) return;
+
+    if (containsContactInfo(newMessage)) {
+      toast.error(CONTACT_INFO_WARNING);
+      return;
+    }
+
     setSending(true);
     try {
       const conversationId = [userId, selectedConvo].sort().join("_");
