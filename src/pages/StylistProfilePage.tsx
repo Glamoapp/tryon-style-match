@@ -158,7 +158,7 @@ const StylistProfilePage = () => {
                       recipientAvatar={provider.avatar_url}
                       trigger={
                         <Button variant="outline" size="sm" className="gap-2">
-                          <MessageCircle className="w-4 h-4" /> Quick Message
+                          <MessageCircle className="w-4 h-4" /> Message {provider.full_name.split(" ")[0]}
                         </Button>
                       }
                     />
