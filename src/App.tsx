@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useCartSync } from "@/hooks/useCartSync";
 import Index from "./pages/Index.tsx";
 import StylistsPage from "./pages/StylistsPage.tsx";
+import StylistProfilePage from "./pages/StylistProfilePage.tsx";
 import TryOnPage from "./pages/TryOnPage.tsx";
 import ExtensionsPage from "./pages/ExtensionsPage.tsx";
 import ProductPage from "./pages/ProductPage.tsx";
@@ -24,6 +25,7 @@ const AppContent = () => {
     <Routes>
       <Route path="/" element={<Index />} />
       <Route path="/stylists" element={<StylistsPage />} />
+      <Route path="/stylist/:id" element={<StylistProfilePage />} />
       <Route path="/tryon" element={<TryOnPage />} />
       <Route path="/extensions" element={<ExtensionsPage />} />
       <Route path="/product/:handle" element={<ProductPage />} />
