@@ -225,6 +225,15 @@ const StylistProfilePage = () => {
             </div>
           </motion.div>
 
+          {/* Inline Chat */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="mt-8">
+            <ProfileChatSection
+              recipientId={provider.id}
+              recipientName={provider.full_name}
+              recipientAvatar={provider.avatar_url}
+            />
+          </motion.div>
+
           {/* Reviews */}
           {reviews.length > 0 && (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mt-8">
