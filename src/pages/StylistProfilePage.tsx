@@ -150,6 +150,18 @@ const StylistProfilePage = () => {
                       <span key={s} className="text-xs bg-secondary px-3 py-1 rounded-full font-body text-secondary-foreground">{s}</span>
                     ))}
                   </div>
+                  <div className="flex gap-3 mt-4">
+                    <MessageDialog
+                      recipientId={provider.id}
+                      recipientName={provider.full_name}
+                      recipientAvatar={provider.avatar_url}
+                      trigger={
+                        <Button variant="outline" size="sm" className="gap-2">
+                          <MessageCircle className="w-4 h-4" /> Message
+                        </Button>
+                      }
+                    />
+                  </div>
                 </div>
               </div>
             </div>
