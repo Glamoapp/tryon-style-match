@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import BookingDialog from "@/components/BookingDialog";
 import MessageDialog from "@/components/MessageDialog";
+import ProfileChatSection from "@/components/ProfileChatSection";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import type { ProviderListing } from "@/hooks/useProviders";
@@ -157,7 +158,7 @@ const StylistProfilePage = () => {
                       recipientAvatar={provider.avatar_url}
                       trigger={
                         <Button variant="outline" size="sm" className="gap-2">
-                          <MessageCircle className="w-4 h-4" /> Message
+                          <MessageCircle className="w-4 h-4" /> Quick Message
                         </Button>
                       }
                     />
@@ -222,6 +223,15 @@ const StylistProfilePage = () => {
                 </div>
               ))}
             </div>
+          </motion.div>
+
+          {/* Inline Chat */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="mt-8">
+            <ProfileChatSection
+              recipientId={provider.id}
+              recipientName={provider.full_name}
+              recipientAvatar={provider.avatar_url}
+            />
           </motion.div>
 
           {/* Reviews */}
