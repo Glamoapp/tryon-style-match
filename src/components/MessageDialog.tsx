@@ -3,9 +3,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Send } from "lucide-react";
+import { Send, ShieldAlert } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { containsContactInfo, CONTACT_INFO_WARNING } from "@/lib/messageFilter";
 
 type Message = {
   id: string;
@@ -82,7 +83,6 @@ const MessageDialog = ({ recipientId, recipientName, recipientAvatar, trigger }:
       .order("created_at", { ascending: true });
     setMessages(data || []);
 
-    // Mark as read
     await supabase
       .from("messages")
       .update({ is_read: true })
@@ -93,6 +93,12 @@ const MessageDialog = ({ recipientId, recipientName, recipientAvatar, trigger }:
 
   const sendMessage = async () => {
     if (!newMessage.trim() || !userId) return;
+
+    if (containsContactInfo(newMessage)) {
+      toast.error(CONTACT_INFO_WARNING);
+      return;
+    }
+
     setSending(true);
     try {
       const conversationId = [userId, recipientId].sort().join("_");
@@ -134,6 +140,14 @@ const MessageDialog = ({ recipientId, recipientName, recipientAvatar, trigger }:
             <DialogTitle className="font-display text-base">{recipientName}</DialogTitle>
           </div>
         </DialogHeader>
+
+        {/* Safety notice */}
+        <div className="mx-4 mt-3 px-3 py-2 bg-secondary/50 rounded-lg flex items-start gap-2">
+          <ShieldAlert className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+          <p className="text-xs text-muted-foreground font-body">
+            Sharing phone numbers, emails, or social media is not permitted.
+          </p>
+        </div>
 
         <div className="h-80 overflow-y-auto p-4 space-y-3">
           {messages.length === 0 && (
