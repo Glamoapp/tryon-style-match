@@ -39,8 +39,8 @@ const ProviderSignup = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.fullName || !form.email || !form.password || !form.city || !form.serviceCategory) {
-      toast.error("Please fill in all required fields");
+    if (!form.fullName || !form.email || !form.password || !form.city || form.serviceCategories.length === 0) {
+      toast.error("Please fill in all required fields and select at least one category");
       return;
     }
     if (form.password.length < 6) {
