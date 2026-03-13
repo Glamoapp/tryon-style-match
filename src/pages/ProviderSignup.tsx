@@ -72,7 +72,7 @@ const ProviderSignup = () => {
             phone: form.phone,
             city: form.city,
             role: "provider",
-            service_category: form.serviceCategory,
+            service_category: form.serviceCategories.join(", "),
           })
           .eq("id", data.user.id);
 
