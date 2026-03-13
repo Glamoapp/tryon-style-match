@@ -21,7 +21,7 @@ const Navbar = () => {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border/50">
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          <Scissors className="w-6 h-6 text-primary" />
+          <img src={logoImg} alt="NEXTLOOK" className="w-8 h-8 rounded-md object-cover" />
           <span className="font-display text-xl font-bold text-foreground">NEXTLOOK</span>
         </Link>
 

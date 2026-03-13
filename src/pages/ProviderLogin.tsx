@@ -58,7 +58,7 @@ const ProviderLogin = () => {
     <div className="min-h-screen bg-background flex">
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-hero items-center justify-center p-12">
         <div className="max-w-md text-center">
-          <Scissors className="w-16 h-16 text-primary mx-auto mb-6" />
+          <img src={logoImg} alt="NEXTLOOK" className="w-20 h-20 rounded-xl object-cover mx-auto mb-6" />
           <h1 className="font-display text-4xl font-bold text-primary-foreground mb-4">
             Welcome Back
           </h1>
