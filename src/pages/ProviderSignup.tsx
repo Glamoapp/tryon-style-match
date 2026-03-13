@@ -54,6 +54,10 @@ const ProviderSignup = () => {
         options: {
           data: {
             full_name: form.fullName,
+            phone: form.phone,
+            city: form.city,
+            role: "provider",
+            service_category: form.serviceCategories.join(", "),
           },
           emailRedirectTo: window.location.origin + "/provider/onboarding",
         },
@@ -61,24 +65,8 @@ const ProviderSignup = () => {
 
       if (error) throw error;
 
-      if (data.user) {
-        // Update profile with provider details
-        const { error: profileError } = await supabase
-          .from("profiles")
-          .update({
-            full_name: form.fullName,
-            phone: form.phone,
-            city: form.city,
-            role: "provider",
-            service_category: form.serviceCategories.join(", "),
-          })
-          .eq("id", data.user.id);
-
-        if (profileError) throw profileError;
-
-        toast.success("Account created! Please check your email to verify your account.");
-        navigate("/provider/login");
-      }
+      toast.success("Account created! Please check your email to verify your account.");
+      navigate("/provider/login");
     } catch (error: any) {
       toast.error(error.message || "Failed to create account");
     } finally {
