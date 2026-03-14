@@ -205,6 +205,8 @@ const ProviderDashboard = () => {
           <DashboardBookings bookings={bookings} onUpdate={() => userId && fetchBookings(userId)} />
         )}
         {activeTab === "calendar" && userId && <DashboardCalendar userId={userId} />}
+        {activeTab === "services" && userId && <DashboardServices userId={userId} />}
+        {activeTab === "portfolio" && userId && <DashboardPortfolio userId={userId} />}
         {activeTab === "messages" && userId && <DashboardMessages userId={userId} />}
         {activeTab === "ratings" && userId && <DashboardRatings userId={userId} />}
         {activeTab === "cashout" && userId && <DashboardCashout userId={userId} />}
