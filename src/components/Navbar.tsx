@@ -41,6 +41,7 @@ const Navbar = () => {
         </div>
 
         <div className="hidden md:flex items-center gap-3">
+          <MessageNotification />
           <CartDrawer />
           <Link to="/provider/login">
             <Button variant="ghost" size="sm">For Providers</Button>
