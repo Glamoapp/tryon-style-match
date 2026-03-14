@@ -1,22 +1,20 @@
 import Navbar from "@/components/Navbar";
-import HeroSection from "@/components/HeroSection";
-import ServicesSection from "@/components/ServicesSection";
-import VirtualTryOn from "@/components/VirtualTryOn";
-import StylistsSection from "@/components/StylistsSection";
-import HowItWorks from "@/components/HowItWorks";
-import BookingTracker from "@/components/BookingTracker";
+import HomepageHero from "@/components/HomepageHero";
+import NearbyStylists from "@/components/NearbyStylists";
+import BestDeals from "@/components/BestDeals";
+import TopRatedStylists from "@/components/TopRatedStylists";
+import FaceScanPromo from "@/components/FaceScanPromo";
 import Footer from "@/components/Footer";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <HeroSection />
-      <ServicesSection />
-      <VirtualTryOn />
-      <StylistsSection />
-      <HowItWorks />
-      <BookingTracker />
+      <HomepageHero />
+      <NearbyStylists />
+      <BestDeals />
+      <TopRatedStylists />
+      <FaceScanPromo />
       <Footer />
     </div>
   );
