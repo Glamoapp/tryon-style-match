@@ -39,8 +39,8 @@ const MessageDialog = ({ recipientId, recipientName, recipientAvatar, trigger }:
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        toast.error("Please sign in to send messages");
         setOpen(false);
+        navigate(`/auth?redirect=/stylist/${recipientId}`);
         return;
       }
       setUserId(user.id);
