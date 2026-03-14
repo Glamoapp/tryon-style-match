@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CartDrawer } from "@/components/CartDrawer";
+import MessageNotification from "@/components/MessageNotification";
 import logoImg from "@/assets/logo.png";
 
 const Navbar = () => {
@@ -40,6 +41,7 @@ const Navbar = () => {
         </div>
 
         <div className="hidden md:flex items-center gap-3">
+          <MessageNotification />
           <CartDrawer />
           <Link to="/provider/login">
             <Button variant="ghost" size="sm">For Providers</Button>
@@ -50,6 +52,7 @@ const Navbar = () => {
         </div>
 
         <div className="flex md:hidden items-center gap-2">
+          <MessageNotification />
           <CartDrawer />
           <button className="text-foreground" onClick={() => setIsOpen(!isOpen)}>
             {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
