@@ -276,7 +276,11 @@ const StylistProfilePage = () => {
       {/* Lightbox */}
       {selectedPhoto && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4" onClick={() => setSelectedPhoto(null)}>
-          <img src={selectedPhoto} alt="Full view" className="max-w-full max-h-[90vh] rounded-xl object-contain" />
+          {/\.(mp4|mov|webm|avi)$/i.test(selectedPhoto) ? (
+            <video src={selectedPhoto} controls autoPlay className="max-w-full max-h-[90vh] rounded-xl" />
+          ) : (
+            <img src={selectedPhoto} alt="Full view" className="max-w-full max-h-[90vh] rounded-xl object-contain" />
+          )}
         </div>
       )}
 
