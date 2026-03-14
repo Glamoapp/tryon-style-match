@@ -15,6 +15,7 @@ import ProviderSignup from "./pages/ProviderSignup.tsx";
 import ProviderLogin from "./pages/ProviderLogin.tsx";
 import ProviderOnboarding from "./pages/ProviderOnboarding.tsx";
 import ProviderDashboard from "./pages/ProviderDashboard.tsx";
+import CustomerAuth from "./pages/CustomerAuth.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const AppContent = () => {
       <Route path="/provider/login" element={<ProviderLogin />} />
       <Route path="/provider/onboarding" element={<ProviderOnboarding />} />
       <Route path="/provider/dashboard" element={<ProviderDashboard />} />
+      <Route path="/auth" element={<CustomerAuth />} />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />
     </Routes>

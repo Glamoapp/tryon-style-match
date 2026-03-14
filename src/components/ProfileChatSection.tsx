@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -23,6 +24,7 @@ interface ProfileChatSectionProps {
 }
 
 const ProfileChatSection = ({ recipientId, recipientName, recipientAvatar }: ProfileChatSectionProps) => {
+  const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
@@ -132,9 +134,16 @@ const ProfileChatSection = ({ recipientId, recipientName, recipientAvatar }: Pro
         <h2 className="text-xl font-display font-bold text-foreground mb-3 flex items-center gap-2">
           <MessageCircle className="w-5 h-5 text-primary" /> Message {recipientName}
         </h2>
-        <p className="text-sm text-muted-foreground font-body">
+        <p className="text-sm text-muted-foreground font-body mb-4">
           Sign in to send a message to {recipientName} before booking.
         </p>
+        <Button
+          variant="hero"
+          size="sm"
+          onClick={() => navigate(`/auth?redirect=/stylist/${recipientId}`)}
+        >
+          Sign In to Message
+        </Button>
       </div>
     );
   }

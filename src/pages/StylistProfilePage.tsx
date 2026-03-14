@@ -175,11 +175,23 @@ const StylistProfilePage = () => {
                 <Camera className="w-5 h-5 text-primary" /> Portfolio
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                {allPhotos.map((photo, i) => (
-                  <button key={i} onClick={() => setSelectedPhoto(photo)} className="aspect-square rounded-xl overflow-hidden hover:opacity-90 transition-opacity">
-                    <img src={photo} alt={`Work ${i + 1}`} className="w-full h-full object-cover" />
-                  </button>
-                ))}
+                {allPhotos.map((photo, i) => {
+                  const isVid = /\.(mp4|mov|webm|avi)$/i.test(photo);
+                  return (
+                    <button key={i} onClick={() => setSelectedPhoto(photo)} className="aspect-square rounded-xl overflow-hidden hover:opacity-90 transition-opacity relative">
+                      {isVid ? (
+                        <>
+                          <video src={photo} className="w-full h-full object-cover" muted playsInline />
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                            <span className="text-white text-2xl">▶</span>
+                          </div>
+                        </>
+                      ) : (
+                        <img src={photo} alt={`Work ${i + 1}`} className="w-full h-full object-cover" />
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </motion.div>
           )}
@@ -264,7 +276,11 @@ const StylistProfilePage = () => {
       {/* Lightbox */}
       {selectedPhoto && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4" onClick={() => setSelectedPhoto(null)}>
-          <img src={selectedPhoto} alt="Full view" className="max-w-full max-h-[90vh] rounded-xl object-contain" />
+          {/\.(mp4|mov|webm|avi)$/i.test(selectedPhoto) ? (
+            <video src={selectedPhoto} controls autoPlay className="max-w-full max-h-[90vh] rounded-xl" />
+          ) : (
+            <img src={selectedPhoto} alt="Full view" className="max-w-full max-h-[90vh] rounded-xl object-contain" />
+          )}
         </div>
       )}
 

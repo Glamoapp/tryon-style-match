@@ -13,6 +13,8 @@ import { DashboardProfile } from "@/components/dashboard/DashboardProfile";
 import { DashboardMessages } from "@/components/dashboard/DashboardMessages";
 import { DashboardRatings } from "@/components/dashboard/DashboardRatings";
 import { DashboardCashout } from "@/components/dashboard/DashboardCashout";
+import { DashboardServices } from "@/components/dashboard/DashboardServices";
+import { DashboardPortfolio } from "@/components/dashboard/DashboardPortfolio";
 
 type Booking = {
   id: string;
@@ -36,11 +38,13 @@ type Notification = {
   created_at: string;
 };
 
-type Tab = "bookings" | "calendar" | "messages" | "ratings" | "cashout" | "profile" | "notifications";
+type Tab = "bookings" | "calendar" | "services" | "portfolio" | "messages" | "ratings" | "cashout" | "profile" | "notifications";
 
 const NAV_ITEMS: { key: Tab; label: string; icon: any }[] = [
   { key: "bookings", label: "Bookings", icon: Calendar },
   { key: "calendar", label: "Calendar", icon: Clock },
+  { key: "services", label: "Services", icon: Scissors },
+  { key: "portfolio", label: "Portfolio", icon: Users },
   { key: "messages", label: "Messages", icon: MessageCircle },
   { key: "ratings", label: "Ratings", icon: Star },
   { key: "cashout", label: "Cash Out", icon: CreditCard },
@@ -201,6 +205,8 @@ const ProviderDashboard = () => {
           <DashboardBookings bookings={bookings} onUpdate={() => userId && fetchBookings(userId)} />
         )}
         {activeTab === "calendar" && userId && <DashboardCalendar userId={userId} />}
+        {activeTab === "services" && userId && <DashboardServices userId={userId} />}
+        {activeTab === "portfolio" && userId && <DashboardPortfolio userId={userId} />}
         {activeTab === "messages" && userId && <DashboardMessages userId={userId} />}
         {activeTab === "ratings" && userId && <DashboardRatings userId={userId} />}
         {activeTab === "cashout" && userId && <DashboardCashout userId={userId} />}

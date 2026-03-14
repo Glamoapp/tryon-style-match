@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ interface MessageDialogProps {
 }
 
 const MessageDialog = ({ recipientId, recipientName, recipientAvatar, trigger }: MessageDialogProps) => {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
@@ -37,8 +39,8 @@ const MessageDialog = ({ recipientId, recipientName, recipientAvatar, trigger }:
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        toast.error("Please sign in to send messages");
         setOpen(false);
+        navigate(`/auth?redirect=/stylist/${recipientId}`);
         return;
       }
       setUserId(user.id);
