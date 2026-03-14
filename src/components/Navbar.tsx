@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CartDrawer } from "@/components/CartDrawer";
+import MessageNotification from "@/components/MessageNotification";
 import logoImg from "@/assets/logo.png";
 
 const Navbar = () => {
