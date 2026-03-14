@@ -13,6 +13,8 @@ import { DashboardProfile } from "@/components/dashboard/DashboardProfile";
 import { DashboardMessages } from "@/components/dashboard/DashboardMessages";
 import { DashboardRatings } from "@/components/dashboard/DashboardRatings";
 import { DashboardCashout } from "@/components/dashboard/DashboardCashout";
+import { DashboardServices } from "@/components/dashboard/DashboardServices";
+import { DashboardPortfolio } from "@/components/dashboard/DashboardPortfolio";
 
 type Booking = {
   id: string;
