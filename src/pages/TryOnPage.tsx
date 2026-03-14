@@ -1,7 +1,8 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Camera, Upload, Sparkles, ChevronRight, X, ScanFace, RefreshCw, ArrowLeft } from "lucide-react";
+import { Sparkles, ChevronRight, ArrowLeft, ShoppingBag, Calendar } from "lucide-react";
 import BookingDialog from "@/components/BookingDialog";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -10,117 +11,25 @@ import { styles, categories, type StyleCategory } from "@/data/tryOnStyles";
 const TryOnPage = () => {
   const [selectedStyle, setSelectedStyle] = useState(0);
   const [activeCategory, setActiveCategory] = useState<StyleCategory>("Braids");
-  const [userPhoto, setUserPhoto] = useState<string | null>(null);
-  const [isCameraActive, setIsCameraActive] = useState(false);
-  const [isScanning, setIsScanning] = useState(false);
-  const [faceDetected, setFaceDetected] = useState(false);
-  const [showOverlay, setShowOverlay] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const filteredStyles = styles.filter((s) => s.category === activeCategory);
-
-  const stopCamera = useCallback(() => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
-      streamRef.current = null;
-    }
-    setIsCameraActive(false);
-    setIsScanning(false);
-  }, []);
-
-  const startCamera = useCallback(async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 800 } },
-      });
-      streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play();
-      }
-      setIsCameraActive(true);
-      setUserPhoto(null);
-      setIsScanning(true);
-      setTimeout(() => {
-        setFaceDetected(true);
-        setIsScanning(false);
-        setShowOverlay(true);
-      }, 2500);
-    } catch {
-      alert("Camera access denied. Please allow camera permissions.");
-    }
-  }, []);
-
-  useEffect(() => {
-    return () => stopCamera();
-  }, [stopCamera]);
-
-  const capturePhoto = () => {
-    if (!videoRef.current || !canvasRef.current) return;
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const ctx = canvas.getContext("2d");
-    if (ctx) {
-      ctx.drawImage(video, 0, 0);
-      setUserPhoto(canvas.toDataURL("image/jpeg"));
-      stopCamera();
-      setShowOverlay(true);
-      setFaceDetected(true);
-    }
-  };
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        setUserPhoto(ev.target?.result as string);
-        stopCamera();
-        setIsScanning(true);
-        setTimeout(() => {
-          setFaceDetected(true);
-          setIsScanning(false);
-          setShowOverlay(true);
-        }, 2000);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const clearAll = () => {
-    stopCamera();
-    setUserPhoto(null);
-    setFaceDetected(false);
-    setShowOverlay(false);
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  };
-
   const currentStyle = filteredStyles[selectedStyle] || filteredStyles[0];
-  const hasVisual = isCameraActive || userPhoto;
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="pt-24 pb-16">
         <div className="container mx-auto px-6">
-          <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
-          <canvas ref={canvasRef} className="hidden" />
-
           {/* Header */}
           <div className="mb-8">
             <a href="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4 font-body">
               <ArrowLeft className="w-4 h-4" /> Back to Home
             </a>
             <h1 className="text-4xl md:text-5xl font-display font-bold text-foreground">
-              Virtual <span className="text-gradient-rose">Try-On Studio</span>
+              Try On <span className="text-gradient-rose">Hair Styles</span>
             </h1>
             <p className="text-muted-foreground mt-3 max-w-lg font-body">
-              Take a photo or upload one, then browse styles to see how they look on you — the hairstyle blends onto your photo.
+              Browse different hair styles on our model. The face stays the same — only the hair changes. Find your perfect look, then book a stylist or shop the hair.
             </p>
           </div>
 
@@ -145,149 +54,82 @@ const TryOnPage = () => {
           </div>
 
           <div className="grid lg:grid-cols-2 gap-10 items-start">
-            {/* Left: Camera / Photo area */}
-            <div>
-              {!hasVisual ? (
-                <div className="aspect-[3/4] max-h-[700px] rounded-3xl border-2 border-dashed border-primary/30 bg-card flex flex-col items-center justify-center shadow-card">
-                  <div className="w-24 h-24 rounded-full bg-purple-light flex items-center justify-center mb-6 relative">
-                    <ScanFace className="w-10 h-10 text-purple" />
-                    <div className="absolute inset-0 rounded-full border-2 border-primary/40 animate-pulse" />
-                  </div>
-                  <h3 className="font-display text-xl font-semibold text-foreground mb-2">
-                    Take Your Photo
-                  </h3>
-                  <p className="text-muted-foreground text-sm font-body mb-6 text-center px-8">
-                    Use your camera to take a selfie or upload a front-facing photo to try on hairstyles
-                  </p>
-                  <div className="flex gap-3">
-                    <Button variant="hero" size="sm" onClick={startCamera}>
-                      <Camera className="w-4 h-4 mr-1" /> Open Camera
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
-                      <Upload className="w-4 h-4 mr-1" /> Upload Photo
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="aspect-[3/4] max-h-[700px] rounded-3xl overflow-hidden relative shadow-elevated bg-charcoal">
-                  {/* User's photo/video as the BASE layer */}
-                  {isCameraActive && (
-                    <video
-                      ref={videoRef}
-                      className="w-full h-full object-cover"
-                      autoPlay playsInline muted
-                      style={{ transform: "scaleX(-1)" }}
-                    />
-                  )}
-                  {userPhoto && (
-                    <img src={userPhoto} alt="Your photo" className="w-full h-full object-cover" />
-                  )}
+            {/* Left: Model preview with hair switching */}
+            <div className="sticky top-24">
+              <div className="aspect-[3/4] max-h-[700px] rounded-3xl overflow-hidden relative shadow-elevated bg-charcoal">
+                {/* Model image with smooth hair transition */}
+                <AnimatePresence mode="wait">
+                  <motion.img
+                    key={currentStyle.name}
+                    src={currentStyle.image}
+                    alt={currentStyle.name}
+                    className="w-full h-full object-cover"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.5, ease: "easeInOut" }}
+                  />
+                </AnimatePresence>
 
-                  {/* Scanning overlay */}
-                  <AnimatePresence>
-                    {isScanning && (
-                      <motion.div
-                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="absolute inset-0 flex items-center justify-center"
-                      >
-                        <div className="absolute inset-0 bg-charcoal/30" />
-                        <div className="relative w-48 h-60 md:w-56 md:h-72">
-                          <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-primary rounded-tl-lg" />
-                          <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-primary rounded-tr-lg" />
-                          <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-primary rounded-bl-lg" />
-                          <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-primary rounded-br-lg" />
-                          <motion.div
-                            className="absolute left-2 right-2 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent"
-                            animate={{ top: ["10%", "90%", "10%"] }}
-                            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                {/* Current style badge */}
+                <div className="absolute top-4 left-4 bg-charcoal/80 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-2 z-10">
+                  <Sparkles className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-semibold text-white font-body">{currentStyle?.name}</span>
+                </div>
+
+                {/* Category badge */}
+                <div className="absolute top-4 right-4 bg-primary/80 backdrop-blur-sm rounded-full px-3 py-1.5 z-10">
+                  <span className="text-xs font-semibold text-cream font-body">{currentStyle?.category}</span>
+                </div>
+
+                {/* Bottom gradient + action buttons */}
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-charcoal via-charcoal/80 to-transparent pt-16 pb-5 px-4 z-10">
+                  {/* Horizontal thumbnail row */}
+                  <div className="mb-4">
+                    <p className="text-xs text-cream/50 font-body mb-2">Tap to switch hair</p>
+                    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin">
+                      {filteredStyles.map((style, index) => (
+                        <motion.div
+                          key={`${style.name}-thumb`}
+                          className={`relative flex-shrink-0 w-12 h-14 rounded-lg overflow-hidden cursor-pointer transition-all duration-300 ${
+                            selectedStyle === index
+                              ? "ring-2 ring-primary scale-105"
+                              : "ring-1 ring-cream/30 opacity-60 hover:opacity-80"
+                          }`}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => setSelectedStyle(index)}
+                        >
+                          <img
+                            src={style.image}
+                            alt={style.name}
+                            className="w-full h-full object-cover"
                           />
-                        </div>
-                        <div className="absolute bottom-8 left-0 right-0 text-center">
-                          <div className="inline-flex items-center gap-2 bg-charcoal/80 backdrop-blur-sm px-4 py-2 rounded-full">
-                            <RefreshCw className="w-4 h-4 text-primary animate-spin" />
-                            <span className="text-sm font-body text-cream">Scanning your face...</span>
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
 
-                  {/* Hair style overlay — only the HAIR portion blended on top of user's face */}
-                  <AnimatePresence>
-                    {faceDetected && showOverlay && currentStyle && (
-                      <motion.div
-                        key={currentStyle.name}
-                        initial={{ opacity: 0 }} animate={{ opacity: 0.85 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.5 }}
-                        className="absolute inset-0 pointer-events-none"
-                      >
-                        {/* Hair overlay — uses multiply blend to keep user's face visible and only add hair texture */}
-                        <img
-                          src={currentStyle.image}
-                          alt={currentStyle.name}
-                          className="w-full h-full object-cover"
-                          style={{
-                            mixBlendMode: "multiply",
-                            opacity: 0.55,
-                            maskImage: "linear-gradient(to bottom, black 0%, black 45%, transparent 70%)",
-                            WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 45%, transparent 70%)",
-                          }}
-                        />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  {/* Status badges */}
-                  {faceDetected && showOverlay && (
-                    <>
-                      <div className="absolute top-4 left-4 bg-emerald-500/90 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-2 z-10">
-                        <ScanFace className="w-4 h-4 text-white" />
-                        <span className="text-sm font-semibold text-white font-body">Face Detected</span>
-                      </div>
-                      <div className="absolute top-4 left-44 bg-charcoal/80 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-2 z-10">
-                        <Sparkles className="w-4 h-4 text-primary" />
-                        <span className="text-sm font-semibold text-white font-body">{currentStyle?.name}</span>
-                      </div>
-                    </>
-                  )}
-
-                  {/* Close button */}
-                  <button
-                    onClick={clearAll}
-                    className="absolute top-4 right-4 w-8 h-8 rounded-full bg-charcoal/80 backdrop-blur-sm flex items-center justify-center z-10"
-                  >
-                    <X className="w-4 h-4 text-white" />
-                  </button>
-
-                  {/* Bottom actions */}
-                  <div className="absolute bottom-4 left-4 right-4 space-y-2 z-10">
-                    {isCameraActive && (
-                      <Button variant="hero" className="w-full" onClick={capturePhoto}>
-                        <Camera className="w-4 h-4 mr-1" /> Capture Photo
+                  {/* Action buttons */}
+                  <div className="flex gap-2">
+                    <BookingDialog
+                      styleName={currentStyle.name}
+                      trigger={
+                        <Button variant="hero" className="flex-1">
+                          <Calendar className="w-4 h-4 mr-1" />
+                          Book This Style
+                          <ChevronRight className="w-4 h-4" />
+                        </Button>
+                      }
+                    />
+                    <Link to="/extensions" className="flex-1">
+                      <Button variant="gold" className="w-full">
+                        <ShoppingBag className="w-4 h-4 mr-1" />
+                        Buy Hair
                       </Button>
-                    )}
-                    {userPhoto && faceDetected && currentStyle && (
-                      <BookingDialog
-                        styleName={currentStyle.name}
-                        trigger={
-                          <Button variant="hero" className="w-full">
-                            Book This Style <ChevronRight className="w-4 h-4" />
-                          </Button>
-                        }
-                      />
-                    )}
-                    <Button
-                      variant="outline"
-                      className="w-full bg-background/80 backdrop-blur-sm"
-                      size="sm"
-                      onClick={() => { clearAll(); startCamera(); }}
-                    >
-                      <RefreshCw className="w-4 h-4 mr-1" /> Retake Photo
-                    </Button>
+                    </Link>
                   </div>
                 </div>
-              )}
+              </div>
             </div>
 
             {/* Right: Style selection grid */}
@@ -296,16 +138,13 @@ const TryOnPage = () => {
                 Choose a Style
               </h3>
               <p className="text-sm text-muted-foreground font-body mb-6">
-                {filteredStyles.length} styles in {activeCategory}
+                {filteredStyles.length} styles in {activeCategory} — tap any to preview
               </p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[700px] overflow-y-auto pr-2 scrollbar-thin">
                 {filteredStyles.map((style, index) => (
                   <div
                     key={`${style.name}-${index}`}
-                    onClick={() => {
-                      setSelectedStyle(index);
-                      if (faceDetected) setShowOverlay(true);
-                    }}
+                    onClick={() => setSelectedStyle(index)}
                     className={`relative rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 group ${
                       selectedStyle === index
                         ? "ring-2 ring-primary shadow-soft scale-[1.02]"
