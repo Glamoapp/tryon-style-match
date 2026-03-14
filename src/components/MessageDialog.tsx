@@ -26,6 +26,7 @@ interface MessageDialogProps {
 }
 
 const MessageDialog = ({ recipientId, recipientName, recipientAvatar, trigger }: MessageDialogProps) => {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
