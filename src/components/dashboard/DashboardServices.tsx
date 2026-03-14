@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Pencil, Trash2, X, Save, Scissors } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Save, Scissors, Upload, ImageIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -16,6 +16,13 @@ type Service = {
   is_active: boolean;
 };
 
+type ServicePhoto = {
+  id: string;
+  photo_url: string;
+  service_id: string;
+  display_order: number;
+};
+
 type ServiceForm = {
   service_name: string;
   price: string;
@@ -24,13 +31,17 @@ type ServiceForm = {
 };
 
 const emptyForm: ServiceForm = { service_name: "", price: "", duration_minutes: "", description: "" };
+const MAX_PHOTOS_PER_SERVICE = 5;
 
 export const DashboardServices = ({ userId }: { userId: string }) => {
   const [services, setServices] = useState<Service[]>([]);
+  const [photos, setPhotos] = useState<Record<string, ServicePhoto[]>>({});
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showAdd, setShowAdd] = useState(false);
   const [form, setForm] = useState<ServiceForm>(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [pendingPhotos, setPendingPhotos] = useState<File[]>([]);
+  const [uploadingPhotos, setUploadingPhotos] = useState(false);
 
   useEffect(() => { fetchServices(); }, [userId]);
 
@@ -41,11 +52,26 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
       .eq("provider_id", userId)
       .order("created_at", { ascending: true });
     setServices(data || []);
+
+    // Fetch all photos for this provider's services
+    const { data: allPhotos } = await supabase
+      .from("service_photos")
+      .select("*")
+      .eq("provider_id", userId)
+      .order("display_order", { ascending: true });
+
+    const grouped: Record<string, ServicePhoto[]> = {};
+    (allPhotos || []).forEach((p) => {
+      if (!grouped[p.service_id]) grouped[p.service_id] = [];
+      grouped[p.service_id].push(p);
+    });
+    setPhotos(grouped);
   };
 
   const startEdit = (svc: Service) => {
     setEditingId(svc.id);
     setShowAdd(false);
+    setPendingPhotos([]);
     setForm({
       service_name: svc.service_name,
       price: String(svc.price),
@@ -57,6 +83,7 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
   const startAdd = () => {
     setEditingId(null);
     setShowAdd(true);
+    setPendingPhotos([]);
     setForm(emptyForm);
   };
 
@@ -64,6 +91,37 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
     setEditingId(null);
     setShowAdd(false);
     setForm(emptyForm);
+    setPendingPhotos([]);
+  };
+
+  const uploadPhotosForService = async (serviceId: string, files: File[]) => {
+    const existingCount = (photos[serviceId] || []).length;
+    const allowed = MAX_PHOTOS_PER_SERVICE - existingCount;
+    const toUpload = files.slice(0, allowed);
+
+    for (let i = 0; i < toUpload.length; i++) {
+      const file = toUpload[i];
+      const ext = file.name.split(".").pop();
+      const path = `${userId}/${serviceId}/${Date.now()}-${i}.${ext}`;
+
+      const { error: uploadErr } = await supabase.storage
+        .from("service-photos")
+        .upload(path, file, { upsert: true });
+
+      if (uploadErr) {
+        toast.error(`Failed to upload ${file.name}`);
+        continue;
+      }
+
+      const { data: urlData } = supabase.storage.from("service-photos").getPublicUrl(path);
+
+      await supabase.from("service_photos").insert({
+        provider_id: userId,
+        service_id: serviceId,
+        photo_url: urlData.publicUrl,
+        display_order: existingCount + i,
+      });
+    }
   };
 
   const handleSave = async () => {
@@ -73,6 +131,8 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
     }
     setSaving(true);
     try {
+      let serviceId = editingId;
+
       if (editingId) {
         const { error } = await supabase
           .from("provider_services")
@@ -87,7 +147,7 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
         if (error) throw error;
         toast.success("Service updated!");
       } else {
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from("provider_services")
           .insert({
             provider_id: userId,
@@ -95,21 +155,40 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
             price: parseFloat(form.price),
             duration_minutes: parseInt(form.duration_minutes),
             description: form.description.trim() || null,
-          });
+          })
+          .select("id")
+          .single();
         if (error) throw error;
+        serviceId = data.id;
         toast.success("Service added!");
       }
+
+      // Upload pending photos
+      if (pendingPhotos.length > 0 && serviceId) {
+        setUploadingPhotos(true);
+        await uploadPhotosForService(serviceId, pendingPhotos);
+        setUploadingPhotos(false);
+      }
+
       cancel();
       fetchServices();
     } catch (err: any) {
       toast.error(err.message || "Failed to save service");
     } finally {
       setSaving(false);
+      setUploadingPhotos(false);
     }
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this service? It will be removed from your profile.")) return;
+    // Delete photos from storage first
+    const servicePhotos = photos[id] || [];
+    for (const photo of servicePhotos) {
+      const path = photo.photo_url.split("/service-photos/")[1];
+      if (path) await supabase.storage.from("service-photos").remove([path]);
+      await supabase.from("service_photos").delete().eq("id", photo.id);
+    }
     const { error } = await supabase.from("provider_services").delete().eq("id", id);
     if (error) toast.error("Failed to delete service");
     else { toast.success("Service deleted"); fetchServices(); }
@@ -122,6 +201,43 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
       .eq("id", svc.id);
     if (error) toast.error("Failed to update service");
     else fetchServices();
+  };
+
+  const handleDeletePhoto = async (photo: ServicePhoto) => {
+    const path = photo.photo_url.split("/service-photos/")[1];
+    if (path) await supabase.storage.from("service-photos").remove([path]);
+    const { error } = await supabase.from("service_photos").delete().eq("id", photo.id);
+    if (error) toast.error("Failed to delete photo");
+    else { toast.success("Photo removed"); fetchServices(); }
+  };
+
+  const handleAddPhotosToExisting = async (serviceId: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    const existing = (photos[serviceId] || []).length;
+    if (existing >= MAX_PHOTOS_PER_SERVICE) {
+      toast.error(`Maximum ${MAX_PHOTOS_PER_SERVICE} photos per service`);
+      return;
+    }
+    setUploadingPhotos(true);
+    await uploadPhotosForService(serviceId, files);
+    setUploadingPhotos(false);
+    toast.success("Photos uploaded!");
+    fetchServices();
+  };
+
+  const handlePendingFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const existingCount = editingId ? (photos[editingId] || []).length : 0;
+    const allowed = MAX_PHOTOS_PER_SERVICE - existingCount - pendingPhotos.length;
+    if (files.length > allowed) {
+      toast.error(`You can add ${allowed} more photo(s)`);
+    }
+    setPendingPhotos((prev) => [...prev, ...files.slice(0, Math.max(0, allowed))]);
+  };
+
+  const removePending = (idx: number) => {
+    setPendingPhotos((prev) => prev.filter((_, i) => i !== idx));
   };
 
   const isEditing = editingId !== null || showAdd;
@@ -184,9 +300,64 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
               className="resize-none"
             />
           </div>
+
+          {/* Photo section */}
+          <div>
+            <Label className="flex items-center gap-1.5 mb-2">
+              <ImageIcon className="w-4 h-4" /> Service Photos (up to {MAX_PHOTOS_PER_SERVICE})
+            </Label>
+
+            {/* Existing photos when editing */}
+            {editingId && (photos[editingId] || []).length > 0 && (
+              <div className="flex gap-2 flex-wrap mb-3">
+                {(photos[editingId] || []).map((photo) => (
+                  <div key={photo.id} className="relative group w-20 h-20 rounded-lg overflow-hidden border border-border">
+                    <img src={photo.photo_url} alt="" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => handleDeletePhoto(photo)}
+                      className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                    >
+                      <Trash2 className="w-4 h-4 text-white" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Pending photos preview */}
+            {pendingPhotos.length > 0 && (
+              <div className="flex gap-2 flex-wrap mb-3">
+                {pendingPhotos.map((file, idx) => (
+                  <div key={idx} className="relative group w-20 h-20 rounded-lg overflow-hidden border border-dashed border-primary/40">
+                    <img src={URL.createObjectURL(file)} alt="" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => removePending(idx)}
+                      className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                    >
+                      <X className="w-4 h-4 text-white" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <label className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-dashed border-muted-foreground/30 text-sm text-muted-foreground hover:border-primary hover:text-primary cursor-pointer transition-colors">
+              <Upload className="w-4 h-4" /> Add Photos
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={handlePendingFiles}
+              />
+            </label>
+          </div>
+
           <div className="flex gap-2">
-            <Button variant="hero" onClick={handleSave} disabled={saving}>
-              <Save className="w-4 h-4 mr-1" /> {saving ? "Saving..." : "Save"}
+            <Button variant="hero" onClick={handleSave} disabled={saving || uploadingPhotos}>
+              <Save className="w-4 h-4 mr-1" /> {saving || uploadingPhotos ? "Saving..." : "Save"}
             </Button>
             <Button variant="outline" onClick={cancel}>
               <X className="w-4 h-4 mr-1" /> Cancel
@@ -203,40 +374,70 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
           <p className="text-sm">Add your first service to start getting bookings</p>
         </div>
       ) : (
-        services.map((svc) => (
-          <div
-            key={svc.id}
-            className={`p-4 rounded-xl border bg-card flex items-center justify-between ${
-              svc.is_active ? "border-border" : "border-border opacity-50"
-            }`}
-          >
-            <div>
-              <div className="flex items-center gap-2">
-                <p className="font-medium">{svc.service_name}</p>
-                {!svc.is_active && (
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">Hidden</span>
-                )}
+        services.map((svc) => {
+          const svcPhotos = photos[svc.id] || [];
+          return (
+            <div
+              key={svc.id}
+              className={`p-4 rounded-xl border bg-card ${
+                svc.is_active ? "border-border" : "border-border opacity-50"
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium">{svc.service_name}</p>
+                    {!svc.is_active && (
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">Hidden</span>
+                    )}
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    ${Number(svc.price).toFixed(0)} · {svc.duration_minutes} min
+                  </p>
+                  {svc.description && (
+                    <p className="text-sm text-muted-foreground mt-1 line-clamp-1">{svc.description}</p>
+                  )}
+                </div>
+                <div className="flex items-center gap-1 shrink-0">
+                  <Button variant="ghost" size="icon" onClick={() => handleToggleActive(svc)} title={svc.is_active ? "Hide" : "Show"}>
+                    <span className="text-xs">{svc.is_active ? "🟢" : "⚪"}</span>
+                  </Button>
+                  <Button variant="ghost" size="icon" onClick={() => startEdit(svc)}>
+                    <Pencil className="w-4 h-4" />
+                  </Button>
+                  <Button variant="ghost" size="icon" onClick={() => handleDelete(svc.id)} className="text-destructive hover:text-destructive">
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
-              <p className="text-sm text-muted-foreground">
-                ${Number(svc.price).toFixed(0)} · {svc.duration_minutes} min
-              </p>
-              {svc.description && (
-                <p className="text-sm text-muted-foreground mt-1 line-clamp-1">{svc.description}</p>
+
+              {/* Photo thumbnails */}
+              {svcPhotos.length > 0 && (
+                <div className="flex gap-2 mt-3 flex-wrap">
+                  {svcPhotos.map((photo) => (
+                    <div key={photo.id} className="w-16 h-16 rounded-lg overflow-hidden border border-border">
+                      <img src={photo.photo_url} alt="" className="w-full h-full object-cover" />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Quick add photo button */}
+              {svcPhotos.length < MAX_PHOTOS_PER_SERVICE && !isEditing && (
+                <label className="inline-flex items-center gap-1 mt-2 text-xs text-muted-foreground hover:text-primary cursor-pointer transition-colors">
+                  <Upload className="w-3 h-3" /> Add photo
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => handleAddPhotosToExisting(svc.id, e)}
+                  />
+                </label>
               )}
             </div>
-            <div className="flex items-center gap-1 shrink-0">
-              <Button variant="ghost" size="icon" onClick={() => handleToggleActive(svc)} title={svc.is_active ? "Hide" : "Show"}>
-                <span className="text-xs">{svc.is_active ? "🟢" : "⚪"}</span>
-              </Button>
-              <Button variant="ghost" size="icon" onClick={() => startEdit(svc)}>
-                <Pencil className="w-4 h-4" />
-              </Button>
-              <Button variant="ghost" size="icon" onClick={() => handleDelete(svc.id)} className="text-destructive hover:text-destructive">
-                <Trash2 className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-        ))
+          );
+        })
       )}
     </div>
   );
