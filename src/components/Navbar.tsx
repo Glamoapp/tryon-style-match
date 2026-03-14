@@ -52,6 +52,7 @@ const Navbar = () => {
         </div>
 
         <div className="flex md:hidden items-center gap-2">
+          <MessageNotification />
           <CartDrawer />
           <button className="text-foreground" onClick={() => setIsOpen(!isOpen)}>
             {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
