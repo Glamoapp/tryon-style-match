@@ -18,6 +18,7 @@ import ProviderLogin from "./pages/ProviderLogin.tsx";
 import ProviderOnboarding from "./pages/ProviderOnboarding.tsx";
 import ProviderDashboard from "./pages/ProviderDashboard.tsx";
 import CustomerAuth from "./pages/CustomerAuth.tsx";
+import MessagesPage from "./pages/MessagesPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
