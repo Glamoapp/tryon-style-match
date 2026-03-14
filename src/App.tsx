@@ -19,6 +19,7 @@ import ProviderOnboarding from "./pages/ProviderOnboarding.tsx";
 import ProviderDashboard from "./pages/ProviderDashboard.tsx";
 import CustomerAuth from "./pages/CustomerAuth.tsx";
 import MessagesPage from "./pages/MessagesPage.tsx";
+import AdminDashboard from "./pages/AdminDashboard.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -42,6 +43,7 @@ const AppContent = () => {
         <Route path="/provider/dashboard" element={<PageTransition><ProviderDashboard /></PageTransition>} />
         <Route path="/auth" element={<PageTransition><CustomerAuth /></PageTransition>} />
         <Route path="/messages" element={<PageTransition><MessagesPage /></PageTransition>} />
+        <Route path="/admin" element={<PageTransition><AdminDashboard /></PageTransition>} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>

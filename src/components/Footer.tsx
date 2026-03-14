@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import logoImg from "@/assets/logo.png";
 
 const Footer = () => {
@@ -44,8 +45,14 @@ const Footer = () => {
           ))}
         </div>
 
-        <div className="border-t border-cream/10 mt-12 pt-8 text-center">
+        <div className="border-t border-cream/10 mt-12 pt-8 flex items-center justify-between">
           <p className="text-cream/30 text-sm font-body">© 2026 NEXTLOOK. All rights reserved.</p>
+          <Link
+            to="/admin"
+            className="text-cream/20 hover:text-cream/40 text-xs font-body transition-colors"
+          >
+            Admin
+          </Link>
         </div>
       </div>
     </footer>
