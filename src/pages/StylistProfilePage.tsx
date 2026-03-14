@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import BookingDialog from "@/components/BookingDialog";
 import MessageDialog from "@/components/MessageDialog";
+import LeaveReview from "@/components/LeaveReview";
 import ProfileChatSection from "@/components/ProfileChatSection";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -243,6 +244,15 @@ const StylistProfilePage = () => {
               recipientId={provider.id}
               recipientName={provider.full_name}
               recipientAvatar={provider.avatar_url}
+            />
+          </motion.div>
+
+          {/* Leave a Review */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.28 }} className="mt-8">
+            <LeaveReview
+              providerId={provider.id}
+              providerName={provider.full_name}
+              onReviewSubmitted={() => { fetchReviews(); fetchProvider(); }}
             />
           </motion.div>
 
