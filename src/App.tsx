@@ -1,9 +1,11 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useCartSync } from "@/hooks/useCartSync";
+import { AnimatePresence } from "framer-motion";
+import PageTransition from "@/components/PageTransition";
 import Index from "./pages/Index.tsx";
 import StylistsPage from "./pages/StylistsPage.tsx";
 import StylistProfilePage from "./pages/StylistProfilePage.tsx";
@@ -22,23 +24,26 @@ const queryClient = new QueryClient();
 
 const AppContent = () => {
   useCartSync();
+  const location = useLocation();
   return (
-    <Routes>
-      <Route path="/" element={<Index />} />
-      <Route path="/stylists" element={<StylistsPage />} />
-      <Route path="/stylist/:id" element={<StylistProfilePage />} />
-      <Route path="/tryon" element={<TryOnPage />} />
-      <Route path="/extensions" element={<ExtensionsPage />} />
-      <Route path="/product/:handle" element={<ProductPage />} />
-      <Route path="/booking-tracker" element={<BookingTrackerPage />} />
-      <Route path="/provider/signup" element={<ProviderSignup />} />
-      <Route path="/provider/login" element={<ProviderLogin />} />
-      <Route path="/provider/onboarding" element={<ProviderOnboarding />} />
-      <Route path="/provider/dashboard" element={<ProviderDashboard />} />
-      <Route path="/auth" element={<CustomerAuth />} />
-      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<PageTransition><Index /></PageTransition>} />
+        <Route path="/stylists" element={<PageTransition><StylistsPage /></PageTransition>} />
+        <Route path="/stylist/:id" element={<PageTransition><StylistProfilePage /></PageTransition>} />
+        <Route path="/tryon" element={<PageTransition><TryOnPage /></PageTransition>} />
+        <Route path="/extensions" element={<PageTransition><ExtensionsPage /></PageTransition>} />
+        <Route path="/product/:handle" element={<PageTransition><ProductPage /></PageTransition>} />
+        <Route path="/booking-tracker" element={<PageTransition><BookingTrackerPage /></PageTransition>} />
+        <Route path="/provider/signup" element={<PageTransition><ProviderSignup /></PageTransition>} />
+        <Route path="/provider/login" element={<PageTransition><ProviderLogin /></PageTransition>} />
+        <Route path="/provider/onboarding" element={<PageTransition><ProviderOnboarding /></PageTransition>} />
+        <Route path="/provider/dashboard" element={<PageTransition><ProviderDashboard /></PageTransition>} />
+        <Route path="/auth" element={<PageTransition><CustomerAuth /></PageTransition>} />
+        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+        <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
+      </Routes>
+    </AnimatePresence>
   );
 };
 
