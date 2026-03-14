@@ -38,11 +38,13 @@ type Notification = {
   created_at: string;
 };
 
-type Tab = "bookings" | "calendar" | "messages" | "ratings" | "cashout" | "profile" | "notifications";
+type Tab = "bookings" | "calendar" | "services" | "portfolio" | "messages" | "ratings" | "cashout" | "profile" | "notifications";
 
 const NAV_ITEMS: { key: Tab; label: string; icon: any }[] = [
   { key: "bookings", label: "Bookings", icon: Calendar },
   { key: "calendar", label: "Calendar", icon: Clock },
+  { key: "services", label: "Services", icon: Scissors },
+  { key: "portfolio", label: "Portfolio", icon: Users },
   { key: "messages", label: "Messages", icon: MessageCircle },
   { key: "ratings", label: "Ratings", icon: Star },
   { key: "cashout", label: "Cash Out", icon: CreditCard },
