@@ -24,6 +24,7 @@ interface ProfileChatSectionProps {
 }
 
 const ProfileChatSection = ({ recipientId, recipientName, recipientAvatar }: ProfileChatSectionProps) => {
+  const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
