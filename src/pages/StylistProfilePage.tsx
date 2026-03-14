@@ -247,6 +247,15 @@ const StylistProfilePage = () => {
             />
           </motion.div>
 
+          {/* Leave a Review */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.28 }} className="mt-8">
+            <LeaveReview
+              providerId={provider.id}
+              providerName={provider.full_name}
+              onReviewSubmitted={() => { fetchReviews(); fetchProvider(); }}
+            />
+          </motion.div>
+
           {/* Reviews */}
           {reviews.length > 0 && (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mt-8">
