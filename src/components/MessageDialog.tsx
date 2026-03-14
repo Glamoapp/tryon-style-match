@@ -143,11 +143,10 @@ const MessageDialog = ({ recipientId, recipientName, recipientAvatar, trigger }:
           </div>
         </DialogHeader>
 
-        {/* Safety notice */}
         <div className="mx-4 mt-3 px-3 py-2 bg-secondary/50 rounded-lg flex items-start gap-2">
           <ShieldAlert className="w-4 h-4 text-primary shrink-0 mt-0.5" />
           <p className="text-xs text-muted-foreground font-body">
-            Sharing phone numbers, emails, or social media is not permitted.
+            Messaging is restricted to this platform only.
           </p>
         </div>
 
