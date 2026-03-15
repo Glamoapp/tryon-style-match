@@ -15,7 +15,7 @@ const Navbar = () => {
     { label: "Virtual Try-On", href: "/tryon" },
     { label: "Find Stylists", href: "/stylists" },
     { label: "Shop Extensions", href: "/extensions" },
-    { label: "How It Works", href: "/#how-it-works" },
+    { label: "My Bookings", href: "/dashboard" },
   ];
 
   return (
