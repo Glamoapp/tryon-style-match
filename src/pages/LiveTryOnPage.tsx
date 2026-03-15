@@ -48,8 +48,8 @@ const LiveTryOnPage = () => {
   const filteredStyles = styles.filter((s) => s.category === activeCategory);
   const currentStyle = filteredStyles[selectedStyleIdx] || filteredStyles[0];
 
-  // Real-time AR hair overlay
-  useFaceOverlay({
+  // Real-time AR hair overlay with 5s scan phase
+  const { scanProgress, scanComplete, faceDetected } = useFaceOverlay({
     videoRef,
     overlayCanvasRef,
     active: cameraActive && !selfie,
