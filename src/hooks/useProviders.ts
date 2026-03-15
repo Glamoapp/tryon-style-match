@@ -7,6 +7,7 @@ export interface ProviderListing {
   avatar_url: string | null;
   bio: string | null;
   city: string | null;
+  phone: string | null;
   rating: number;
   reviewCount: number;
   services: {
