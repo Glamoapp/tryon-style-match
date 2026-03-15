@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
-import { CalendarIcon, Clock, ChevronRight, User, Mail, Phone, MapPin, CreditCard, Smartphone, Banknote, Loader2 } from "lucide-react";
+import { CalendarIcon, Clock, ChevronRight, User, Mail, Phone, MapPin, Loader2, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useCartStore, type ServiceCartItem } from "@/stores/cartStore";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import {
@@ -19,12 +20,6 @@ import { supabase } from "@/integrations/supabase/client";
 const timeSlots = [
   "9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM",
   "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM", "5:00 PM",
-];
-
-const paymentMethods = [
-  { id: "cashapp", label: "Cash App", icon: Banknote },
-  { id: "applepay", label: "Apple Pay", icon: Smartphone },
-  { id: "card", label: "Debit / Credit Card", icon: CreditCard },
 ];
 
 interface BookingDialogProps {
@@ -52,7 +47,8 @@ const generateCompletionCode = () => `${Math.floor(100000 + Math.random() * 9000
 
 const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistPhone, providerId, serviceId }: BookingDialogProps) => {
   const navigate = useNavigate();
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const addServiceItem = useCartStore((s) => s.addServiceItem);
+  const [step, setStep] = useState<1 | 2>(1);
   const [date, setDate] = useState<Date>();
   const [time, setTime] = useState<string>();
   const [open, setOpen] = useState(false);
@@ -64,9 +60,6 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
 
-  // Payment
-  const [paymentMethod, setPaymentMethod] = useState<string>();
-
   const resetForm = () => {
     setStep(1);
     setDate(undefined);
@@ -75,12 +68,11 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
     setEmail("");
     setPhone("");
     setAddress("");
-    setPaymentMethod(undefined);
     setLoading(false);
   };
 
-  const handleConfirm = async () => {
-    if (!date || !time || !name || !email || !phone || !address || !paymentMethod) return;
+  const handleAddToCart = async () => {
+    if (!date || !time || !name || !email || !phone || !address) return;
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
@@ -89,13 +81,15 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
       return;
     }
 
+    setLoading(true);
+
     let bookingId = `BK-${Date.now().toString(36).toUpperCase()}`;
 
     if (providerId && serviceId) {
       const bookingDate = format(date, "yyyy-MM-dd");
       const bookingTime = toDbTime(time);
 
-      // Check for existing booking in this time slot (prevent overbooking)
+      // Check for existing booking in this time slot
       const { data: existing } = await supabase
         .from("bookings")
         .select("id")
@@ -108,6 +102,7 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
       if (existing && existing.length > 0) {
         toast.error("This time slot is already booked. Please choose a different time.");
         setStep(1);
+        setLoading(false);
         return;
       }
 
@@ -129,13 +124,34 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
 
       if (bookingError || !createdBooking) {
         toast.error("Couldn't create your booking. Please try again.");
+        setLoading(false);
         return;
       }
 
       bookingId = createdBooking.id;
     }
 
-    const bookingData = {
+    // Add to unified cart
+    const serviceItem: ServiceCartItem = {
+      id: bookingId,
+      type: 'service',
+      serviceName: styleName || "Hair Service",
+      serviceId: serviceId || "",
+      providerId: providerId || "",
+      providerName: stylistName || "Assigned Stylist",
+      price: servicePrice ?? 0,
+      date: format(date, "PPP"),
+      time,
+      customerName: name,
+      email,
+      phone,
+      address,
+    };
+
+    addServiceItem(serviceItem);
+
+    // Save booking data for tracker page
+    localStorage.setItem("currentBooking", JSON.stringify({
       id: bookingId,
       date: format(date, "PPP"),
       time,
@@ -146,59 +162,15 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
       email,
       phone,
       address,
-      paymentMethod,
-    };
+    }));
 
-    // Save booking data for tracker page
-    localStorage.setItem("currentBooking", JSON.stringify(bookingData));
-
-    if (paymentMethod === "card" || paymentMethod === "cashapp") {
-      setLoading(true);
-      try {
-        const { data, error } = await supabase.functions.invoke("create-booking-payment", {
-          body: {
-            bookingId,
-            customerName: name,
-            email,
-            phone,
-            address,
-            styleName: styleName || "Hair Service",
-            stylistName: stylistName || "Assigned Stylist",
-            date: format(date, "PPP"),
-            time,
-            price: servicePrice ? Math.round(servicePrice * 100) : 5000,
-          },
-        });
-
-        if (error) throw error;
-        if (data?.url) {
-          window.location.href = data.url;
-          return;
-        }
-        throw new Error("No checkout URL returned");
-      } catch (err) {
-        console.error("Payment error:", err);
-        toast.error("Payment failed. Please try again.");
-
-        if (providerId && serviceId && bookingId && !bookingId.startsWith("BK-")) {
-          await supabase.from("bookings").delete().eq("id", bookingId).eq("customer_id", user.id);
-        }
-
-        setLoading(false);
-        return;
-      }
-    }
-
-    // For Apple Pay (or other non-Stripe methods), go directly to tracker
     setOpen(false);
     resetForm();
-    toast.success("Booking confirmed! Redirecting to tracker...");
-    navigate("/booking-tracker");
+    toast.success("Service added to cart! Open your cart to checkout.", { position: "top-center" });
   };
 
   const canProceedStep1 = date && time;
-  const canProceedStep2 = name.trim() && email.trim() && phone.trim() && address.trim();
-  const canConfirm = canProceedStep1 && canProceedStep2 && paymentMethod;
+  const canConfirm = canProceedStep1 && name.trim() && email.trim() && phone.trim() && address.trim();
 
   return (
     <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) resetForm(); }}>
@@ -208,17 +180,17 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
           <DialogTitle className="font-display text-2xl text-foreground">
             {step === 1 && "Select Date & Time"}
             {step === 2 && "Your Information"}
-            {step === 3 && "Payment Method"}
           </DialogTitle>
           {(stylistName || styleName) && (
             <p className="text-sm text-muted-foreground font-body">
               {styleName && <span className="text-primary font-semibold">{styleName}</span>}
               {styleName && stylistName && " with "}
               {stylistName && <span className="font-semibold">{stylistName}</span>}
+              {servicePrice != null && <span className="ml-2 font-bold">${servicePrice.toFixed(2)}</span>}
             </p>
           )}
           <div className="flex items-center gap-2 pt-2">
-            {[1, 2, 3].map((s) => (
+            {[1, 2].map((s) => (
               <div key={s} className="flex items-center gap-2">
                 <div className={cn(
                   "w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold font-body transition-colors",
@@ -226,7 +198,7 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
                 )}>
                   {s}
                 </div>
-                {s < 3 && <div className={cn("w-8 h-0.5", step > s ? "bg-primary" : "bg-border")} />}
+                {s < 2 && <div className={cn("w-8 h-0.5", step > s ? "bg-primary" : "bg-border")} />}
               </div>
             ))}
           </div>
@@ -302,60 +274,21 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
                   <Input placeholder="123 Main St, City, State ZIP" value={address} onChange={(e) => setAddress(e.target.value)} className="bg-secondary border-border" />
                 </div>
               </div>
-              <div className="flex gap-3">
-                <Button variant="outline" className="flex-1" onClick={() => setStep(1)}>Back</Button>
-                <Button variant="hero" className="flex-1" disabled={!canProceedStep2} onClick={() => setStep(3)}>
-                  Continue <ChevronRight className="w-4 h-4" />
-                </Button>
-              </div>
-            </>
-          )}
-
-          {step === 3 && (
-            <>
-              <div className="space-y-3">
-                <label className="text-sm font-semibold text-foreground font-body mb-2 block">Choose Payment Method</label>
-                {paymentMethods.map((pm) => {
-                  const Icon = pm.icon;
-                  return (
-                    <button
-                      key={pm.id}
-                      onClick={() => setPaymentMethod(pm.id)}
-                      className={cn(
-                        "w-full flex items-center gap-3 p-4 rounded-xl border transition-all text-left font-body",
-                        paymentMethod === pm.id
-                          ? "border-primary bg-primary/5 shadow-soft"
-                          : "border-border bg-secondary hover:bg-primary/5"
-                      )}
-                    >
-                      <Icon className={cn("w-5 h-5", paymentMethod === pm.id ? "text-primary" : "text-muted-foreground")} />
-                      <span className={cn("font-semibold text-sm", paymentMethod === pm.id ? "text-foreground" : "text-muted-foreground")}>
-                        {pm.label}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
 
               {date && time && (
                 <div className="bg-secondary/50 rounded-xl p-4 text-sm font-body text-foreground space-y-1">
                   <p><span className="font-semibold">Date:</span> {format(date, "EEEE, MMMM d, yyyy")}</p>
                   <p><span className="font-semibold">Time:</span> {time}</p>
-                  <p><span className="font-semibold">Name:</span> {name}</p>
-                  <p><span className="font-semibold">Address:</span> {address}</p>
-                  {paymentMethod && (
-                    <p><span className="font-semibold">Payment:</span> {paymentMethods.find(p => p.id === paymentMethod)?.label}</p>
-                  )}
                 </div>
               )}
 
               <div className="flex gap-3">
-                <Button variant="outline" className="flex-1" onClick={() => setStep(2)}>Back</Button>
-                <Button variant="hero" className="flex-1" disabled={!canConfirm || loading} onClick={handleConfirm}>
+                <Button variant="outline" className="flex-1" onClick={() => setStep(1)}>Back</Button>
+                <Button variant="hero" className="flex-1" disabled={!canConfirm || loading} onClick={handleAddToCart}>
                   {loading ? (
-                    <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</>
+                    <><Loader2 className="w-4 h-4 animate-spin" /> Adding...</>
                   ) : (
-                    <>Confirm & Pay <ChevronRight className="w-4 h-4" /></>
+                    <><ShoppingCart className="w-4 h-4 mr-1" /> Add to Cart</>
                   )}
                 </Button>
               </div>
