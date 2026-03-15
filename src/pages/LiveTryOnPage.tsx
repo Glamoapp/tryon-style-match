@@ -10,6 +10,7 @@ import BookingDialog from "@/components/BookingDialog";
 import { styles, categories, type StyleCategory } from "@/data/tryOnStyles";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useFaceOverlay } from "@/hooks/useFaceOverlay";
 
 const COLORS = [
   { name: "Natural Black", value: "natural black", hex: "#1a1a1a" },
@@ -28,6 +29,7 @@ const TEXTURES = ["Straight", "Wavy", "Curly", "Coily"];
 const LiveTryOnPage = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const overlayCanvasRef = useRef<HTMLCanvasElement>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [cameraActive, setCameraActive] = useState(false);
   const [selfie, setSelfie] = useState<string | null>(null);
@@ -45,6 +47,14 @@ const LiveTryOnPage = () => {
 
   const filteredStyles = styles.filter((s) => s.category === activeCategory);
   const currentStyle = filteredStyles[selectedStyleIdx] || filteredStyles[0];
+
+  // Real-time AR hair overlay
+  useFaceOverlay({
+    videoRef,
+    overlayCanvasRef,
+    active: cameraActive && !selfie,
+    hairImageSrc: currentStyle?.image || "",
+  });
 
   const startCamera = useCallback(async () => {
     try {
@@ -186,19 +196,20 @@ const LiveTryOnPage = () => {
               className="absolute inset-0 w-full h-full object-cover"
               style={facingMode === "user" ? { transform: "scaleX(-1)" } : undefined}
             />
-            {/* Face guide overlay */}
-            <div className="absolute inset-0 pointer-events-none">
-              <div className="absolute top-[15%] left-1/2 -translate-x-1/2 w-[60%] max-w-[280px] aspect-[3/4] border-2 border-primary/40 rounded-[2.5rem]" />
-              <motion.div
-                className="absolute left-[20%] right-[20%] h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent"
-                animate={{ top: ["20%", "70%", "20%"] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              />
+            {/* AR hair overlay canvas — positioned exactly over the video */}
+            <canvas
+              ref={overlayCanvasRef}
+              className="absolute inset-0 w-full h-full object-cover pointer-events-none z-10"
+              style={facingMode === "user" ? { transform: "scaleX(-1)" } : undefined}
+            />
+            {/* Face guide overlay (subtle, behind AR) */}
+            <div className="absolute inset-0 pointer-events-none z-[5]">
+              <div className="absolute top-[15%] left-1/2 -translate-x-1/2 w-[60%] max-w-[280px] aspect-[3/4] border-2 border-primary/20 rounded-[2.5rem]" />
             </div>
-            {/* Scanning badge */}
-            <div className="absolute top-16 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-              <span className="text-xs text-white font-body">Scanning face…</span>
+            {/* Style name badge */}
+            <div className="absolute top-16 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-2 z-20">
+              <Sparkles className="w-3 h-3 text-primary" />
+              <span className="text-xs text-white font-body font-semibold">{currentStyle?.name}</span>
             </div>
           </>
         )}
