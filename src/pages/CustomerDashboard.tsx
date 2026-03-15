@@ -113,7 +113,7 @@ const CustomerDashboard = () => {
     fetchBookings();
   }, [userId]);
 
-  // Realtime subscription for booking updates
+  // Realtime subscription for booking updates + notifications
   useEffect(() => {
     if (!userId) return;
     const channel = supabase
@@ -124,6 +124,18 @@ const CustomerDashboard = () => {
         table: "bookings",
         filter: `customer_id=eq.${userId}`,
       }, () => {
+        fetchBookings();
+      })
+      .on("postgres_changes" as any, {
+        event: "INSERT",
+        schema: "public",
+        table: "notifications",
+        filter: `user_id=eq.${userId}`,
+      }, (payload: any) => {
+        const notif = payload.new;
+        if (notif?.title) {
+          toast.success(notif.title, { description: notif.message });
+        }
         fetchBookings();
       })
       .subscribe();
