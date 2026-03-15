@@ -31,9 +31,10 @@ interface BookingDialogProps {
   trigger: React.ReactNode;
   stylistName?: string;
   styleName?: string;
+  servicePrice?: number;
 }
 
-const BookingDialog = ({ trigger, stylistName, styleName }: BookingDialogProps) => {
+const BookingDialog = ({ trigger, stylistName, styleName, servicePrice }: BookingDialogProps) => {
   const navigate = useNavigate();
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [date, setDate] = useState<Date>();
