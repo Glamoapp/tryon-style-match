@@ -206,10 +206,24 @@ const LiveTryOnPage = () => {
             <div className="absolute inset-0 pointer-events-none z-[5]">
               <div className="absolute top-[15%] left-1/2 -translate-x-1/2 w-[60%] max-w-[280px] aspect-[3/4] border-2 border-primary/20 rounded-[2.5rem]" />
             </div>
-            {/* Style name badge */}
+            {/* Scan status badge */}
             <div className="absolute top-16 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-2 z-20">
-              <Sparkles className="w-3 h-3 text-primary" />
-              <span className="text-xs text-white font-body font-semibold">{currentStyle?.name}</span>
+              {!faceDetected ? (
+                <>
+                  <Camera className="w-3 h-3 text-white/60" />
+                  <span className="text-xs text-white/60 font-body">Position your face in frame</span>
+                </>
+              ) : !scanComplete ? (
+                <>
+                  <div className="w-3 h-3 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+                  <span className="text-xs text-white font-body">Scanning face… {Math.round(scanProgress)}%</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-3 h-3 text-primary" />
+                  <span className="text-xs text-white font-body font-semibold">{currentStyle?.name}</span>
+                </>
+              )}
             </div>
           </>
         )}
