@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { MapPin, Clock, Phone, MessageCircle, CheckCircle2, Circle, ArrowLeft, User, Mail, CreditCard, Calendar, Navigation } from "lucide-react";
+import { MapPin, Clock, Phone, MessageCircle, CheckCircle2, Circle, ArrowLeft, User, Mail, CreditCard, Calendar, Navigation, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
