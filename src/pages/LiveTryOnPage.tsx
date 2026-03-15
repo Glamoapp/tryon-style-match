@@ -29,6 +29,7 @@ const TEXTURES = ["Straight", "Wavy", "Curly", "Coily"];
 const LiveTryOnPage = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const overlayCanvasRef = useRef<HTMLCanvasElement>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [cameraActive, setCameraActive] = useState(false);
   const [selfie, setSelfie] = useState<string | null>(null);
