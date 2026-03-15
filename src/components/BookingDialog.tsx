@@ -95,6 +95,7 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice }: Bookin
             stylistName: stylistName || "Assigned Stylist",
             date: format(date, "PPP"),
             time,
+            price: servicePrice ? Math.round(servicePrice * 100) : 5000,
           },
         });
 

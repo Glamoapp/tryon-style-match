@@ -224,6 +224,7 @@ const StylistProfilePage = () => {
                         <BookingDialog
                           stylistName={provider.full_name}
                           styleName={service.service_name}
+                          servicePrice={service.price}
                           trigger={
                             <Button variant="hero" size="sm">
                               Book <ChevronRight className="w-4 h-4" />

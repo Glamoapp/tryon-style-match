@@ -17,9 +17,12 @@ serve(async (req) => {
       apiVersion: "2025-08-27.basil",
     });
 
-    const { customerName, email, phone, address, styleName, stylistName, date, time } = await req.json();
+    const { customerName, email, phone, address, styleName, stylistName, date, time, price } = await req.json();
 
     if (!email) throw new Error("Email is required");
+
+    // price is in cents, default to 5000 ($50) if not provided
+    const amountInCents = price || 5000;
 
     // Check if customer exists
     const customers = await stripe.customers.list({ email, limit: 1 });
@@ -42,7 +45,14 @@ serve(async (req) => {
       customer: customerId,
       line_items: [
         {
-          price: "price_1TB6GBQlVcGfb7QcfnGcMO9u",
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: styleName || "Hair Service",
+              description: `${stylistName || "Stylist"} — ${date} at ${time}`,
+            },
+            unit_amount: amountInCents,
+          },
           quantity: 1,
         },
       ],
