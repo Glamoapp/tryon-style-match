@@ -32,9 +32,10 @@ interface BookingDialogProps {
   stylistName?: string;
   styleName?: string;
   servicePrice?: number;
+  stylistPhone?: string | null;
 }
 
-const BookingDialog = ({ trigger, stylistName, styleName, servicePrice }: BookingDialogProps) => {
+const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistPhone }: BookingDialogProps) => {
   const navigate = useNavigate();
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [date, setDate] = useState<Date>();
@@ -72,6 +73,7 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice }: Bookin
       time,
       stylistName: stylistName || "Assigned Stylist",
       styleName: styleName || "Hair Service",
+      stylistPhone: stylistPhone || null,
       customerName: name,
       email,
       phone,

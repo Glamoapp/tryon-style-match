@@ -30,7 +30,7 @@ const StylistProfilePage = () => {
     try {
       const { data: profile } = await supabase
         .from("profiles")
-        .select("id, full_name, avatar_url, bio, city")
+        .select("id, full_name, avatar_url, bio, city, phone")
         .eq("id", id!)
         .single();
 
@@ -58,6 +58,7 @@ const StylistProfilePage = () => {
         avatar_url: profile.avatar_url,
         bio: profile.bio,
         city: profile.city,
+        phone: profile.phone,
         rating: avgRating,
         reviewCount: rvws.length,
         services: servicesWithPhotos,
@@ -225,6 +226,7 @@ const StylistProfilePage = () => {
                           stylistName={provider.full_name}
                           styleName={service.service_name}
                           servicePrice={service.price}
+                          stylistPhone={provider.phone}
                           trigger={
                             <Button variant="hero" size="sm">
                               Book <ChevronRight className="w-4 h-4" />

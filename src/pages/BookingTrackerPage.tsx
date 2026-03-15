@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { MapPin, Clock, Phone, MessageCircle, CheckCircle2, Circle, ArrowLeft, User, Mail, CreditCard, Calendar, Navigation } from "lucide-react";
+import { MapPin, Clock, Phone, MessageCircle, CheckCircle2, Circle, ArrowLeft, User, Mail, CreditCard, Calendar, Navigation, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -14,12 +14,42 @@ interface BookingData {
   time: string;
   stylistName: string;
   styleName: string;
+  stylistPhone: string | null;
   customerName: string;
   email: string;
   phone: string;
   address: string;
   paymentMethod: string;
 }
+
+// Service-based educational videos (static placeholders)
+const serviceVideos: Record<string, { url: string; title: string; description: string }> = {
+  braids: {
+    url: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    title: "All About Braids",
+    description: "Learn what to expect during your braiding appointment and how to maintain your braids for weeks.",
+  },
+  weave: {
+    url: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    title: "Weave Installation Guide",
+    description: "Discover the weave installation process and tips for keeping your weave looking fresh.",
+  },
+  locs: {
+    url: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    title: "Loc Care 101",
+    description: "Everything you need to know about loc maintenance and what your stylist will do.",
+  },
+  wigs: {
+    url: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    title: "Wig Installation Tips",
+    description: "See how a professional wig installation works and learn aftercare essentials.",
+  },
+  default: {
+    url: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    title: "Your Appointment Guide",
+    description: "Learn what to expect during your styling appointment and how to maintain your new look.",
+  },
+};
 
 interface StylistLocation {
   latitude: number;
@@ -400,9 +430,15 @@ const BookingTrackerPage = () => {
                   <p className="text-cream/60 text-sm font-body">{booking.styleName}</p>
                 </div>
                 <div className="ml-auto flex gap-2">
-                  <button className="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center">
-                    <Phone className="w-4 h-4 text-cream" />
-                  </button>
+                  {booking.stylistPhone && (
+                    <a
+                      href={`tel:${booking.stylistPhone}`}
+                      className="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center hover:bg-cream/20 transition-colors"
+                      title="Call Stylist"
+                    >
+                      <Phone className="w-4 h-4 text-cream" />
+                    </a>
+                  )}
                   <button className="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center">
                     <MessageCircle className="w-4 h-4 text-cream" />
                   </button>
@@ -474,6 +510,60 @@ const BookingTrackerPage = () => {
               </div>
             </div>
           </motion.div>
+
+          {/* Call Stylist Button */}
+          {booking.stylistPhone && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className="mb-6"
+            >
+              <a
+                href={`tel:${booking.stylistPhone}`}
+                className="flex items-center justify-center gap-3 w-full py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-lg hover:opacity-90 transition-opacity"
+              >
+                <Phone className="w-5 h-5" />
+                Call {booking.stylistName.split(" ")[0]}
+              </a>
+            </motion.div>
+          )}
+
+          {/* Waiting Video - shown while stylist is en route */}
+          {stylistLocation && stylistLocation.status !== "arrived" && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.18 }}
+              className="bg-card rounded-2xl border border-border/50 overflow-hidden mb-6"
+            >
+              <div className="p-5">
+                <h4 className="font-display font-semibold text-foreground flex items-center gap-2 mb-1">
+                  <Video className="w-5 h-5 text-primary" />
+                  While You Wait
+                </h4>
+                <p className="text-sm text-muted-foreground font-body mb-4">
+                  {(() => {
+                    const key = booking.styleName.toLowerCase();
+                    const video = Object.entries(serviceVideos).find(([k]) => key.includes(k))?.[1] || serviceVideos.default;
+                    return video.description;
+                  })()}
+                </p>
+              </div>
+              <div className="aspect-video">
+                <iframe
+                  src={(() => {
+                    const key = booking.styleName.toLowerCase();
+                    return (Object.entries(serviceVideos).find(([k]) => key.includes(k))?.[1] || serviceVideos.default).url;
+                  })()}
+                  className="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  title="Service information video"
+                />
+              </div>
+            </motion.div>
+          )}
 
           {/* Booking Details */}
           <motion.div
