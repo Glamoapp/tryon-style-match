@@ -44,6 +44,23 @@ const ExtensionsPage = () => {
     toast.success(`${product.node.title} added to cart`, { position: "top-center" });
   };
 
+  const handleBuyNow = (product: ShopifyProduct) => {
+    const variant = product.node.variants.edges[0]?.node;
+    if (!variant) return;
+    navigate("/checkout", {
+      state: {
+        item: {
+          product,
+          variantId: variant.id,
+          variantTitle: variant.title,
+          price: variant.price,
+          quantity: 1,
+          selectedOptions: variant.selectedOptions || [],
+        },
+      },
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
