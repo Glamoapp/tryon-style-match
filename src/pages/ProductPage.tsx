@@ -24,6 +24,7 @@ const PRODUCT_BY_HANDLE_QUERY = `
 `;
 
 const ProductPage = () => {
+  const navigate = useNavigate();
   const { handle } = useParams();
   const [product, setProduct] = useState<ShopifyProduct | null>(null);
   const [loading, setLoading] = useState(true);

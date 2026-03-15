@@ -40,6 +40,7 @@ const AppContent = () => {
         <Route path="/tryon/live" element={<PageTransition><LiveTryOnPage /></PageTransition>} />
         <Route path="/extensions" element={<PageTransition><ExtensionsPage /></PageTransition>} />
         <Route path="/product/:handle" element={<PageTransition><ProductPage /></PageTransition>} />
+        <Route path="/checkout" element={<PageTransition><CheckoutPage /></PageTransition>} />
         <Route path="/booking-tracker" element={<PageTransition><BookingTrackerPage /></PageTransition>} />
         <Route path="/provider/signup" element={<PageTransition><ProviderSignup /></PageTransition>} />
         <Route path="/provider/login" element={<PageTransition><ProviderLogin /></PageTransition>} />
