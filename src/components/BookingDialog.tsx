@@ -73,6 +73,7 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
       time,
       stylistName: stylistName || "Assigned Stylist",
       styleName: styleName || "Hair Service",
+      stylistPhone: stylistPhone || null,
       customerName: name,
       email,
       phone,
