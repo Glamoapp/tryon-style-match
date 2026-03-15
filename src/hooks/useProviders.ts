@@ -93,6 +93,7 @@ export function useProviders() {
           avatar_url: profile.avatar_url,
           bio: profile.bio,
           city: profile.city,
+          phone: null,
           rating: avgRating,
           reviewCount: providerReviews.length,
           services: servicesWithPhotos,
