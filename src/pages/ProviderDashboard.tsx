@@ -25,8 +25,9 @@ type Booking = {
   completion_code: string | null;
   customer_address: string | null;
   notes: string | null;
+  customer_id: string;
   customer: { full_name: string } | null;
-  service: { service_name: string } | null;
+  service: { service_name: string; duration_minutes: number } | null;
 };
 
 type Notification = {
