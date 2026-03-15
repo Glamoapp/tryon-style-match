@@ -258,4 +258,10 @@ export function useFaceOverlay({
       if (frameRef.current) cancelAnimationFrame(frameRef.current);
     };
   }, [active, videoRef, overlayCanvasRef, onScanUpdate]);
+
+  return {
+    scanProgress: scanProgressRef.current,
+    scanComplete: scanCompleteRef.current,
+    faceDetected: faceDetectedRef.current,
+  };
 }
