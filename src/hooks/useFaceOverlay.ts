@@ -237,6 +237,10 @@ export function useFaceOverlay({
         } else {
           // No face — reset scan
           scanStartRef.current = null;
+          scanProgressRef.current = 0;
+          scanCompleteRef.current = false;
+          faceDetectedRef.current = false;
+
           if (onScanUpdate && now - lastCallbackRef.current > 100) {
             lastCallbackRef.current = now;
             onScanUpdate({ progress: 0, complete: false, faceDetected: false });
