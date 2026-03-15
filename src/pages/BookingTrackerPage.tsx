@@ -430,9 +430,15 @@ const BookingTrackerPage = () => {
                   <p className="text-cream/60 text-sm font-body">{booking.styleName}</p>
                 </div>
                 <div className="ml-auto flex gap-2">
-                  <button className="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center">
-                    <Phone className="w-4 h-4 text-cream" />
-                  </button>
+                  {booking.stylistPhone && (
+                    <a
+                      href={`tel:${booking.stylistPhone}`}
+                      className="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center hover:bg-cream/20 transition-colors"
+                      title="Call Stylist"
+                    >
+                      <Phone className="w-4 h-4 text-cream" />
+                    </a>
+                  )}
                   <button className="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center">
                     <MessageCircle className="w-4 h-4 text-cream" />
                   </button>
