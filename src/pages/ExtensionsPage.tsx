@@ -136,14 +136,23 @@ const ExtensionsPage = () => {
                         <span className="text-lg font-bold text-foreground font-body">
                           ${parseFloat(price.amount).toFixed(2)}
                         </span>
-                        <Button
-                          variant="hero"
-                          size="sm"
-                          onClick={() => handleAddToCart(product)}
-                          disabled={isCartLoading}
-                        >
-                          {isCartLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><ShoppingCart className="w-4 h-4" /> Add</>}
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleAddToCart(product)}
+                            disabled={isCartLoading}
+                          >
+                            {isCartLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><ShoppingCart className="w-4 h-4" /> Add</>}
+                          </Button>
+                          <Button
+                            variant="hero"
+                            size="sm"
+                            onClick={() => handleBuyNow(product)}
+                          >
+                            <Zap className="w-4 h-4" /> Buy Now
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </motion.div>
