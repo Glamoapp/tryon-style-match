@@ -22,12 +22,6 @@ const timeSlots = [
   "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM", "5:00 PM",
 ];
 
-const paymentMethods = [
-  { id: "cashapp", label: "Cash App", icon: Banknote },
-  { id: "applepay", label: "Apple Pay", icon: Smartphone },
-  { id: "card", label: "Debit / Credit Card", icon: CreditCard },
-];
-
 interface BookingDialogProps {
   trigger: React.ReactNode;
   stylistName?: string;
