@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, ChevronRight, ArrowLeft, ShoppingBag, Calendar } from "lucide-react";
+import { Sparkles, ChevronRight, ArrowLeft, ShoppingBag, Calendar, Camera } from "lucide-react";
 import BookingDialog from "@/components/BookingDialog";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";

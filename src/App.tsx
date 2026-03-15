@@ -36,6 +36,7 @@ const AppContent = () => {
         <Route path="/stylists" element={<PageTransition><StylistsPage /></PageTransition>} />
         <Route path="/stylist/:id" element={<PageTransition><StylistProfilePage /></PageTransition>} />
         <Route path="/tryon" element={<PageTransition><TryOnPage /></PageTransition>} />
+        <Route path="/tryon/live" element={<PageTransition><LiveTryOnPage /></PageTransition>} />
         <Route path="/extensions" element={<PageTransition><ExtensionsPage /></PageTransition>} />
         <Route path="/product/:handle" element={<PageTransition><ProductPage /></PageTransition>} />
         <Route path="/booking-tracker" element={<PageTransition><BookingTrackerPage /></PageTransition>} />
