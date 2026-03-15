@@ -141,9 +141,28 @@ const ProductPage = () => {
                 </div>
               )}
 
-              <Button variant="hero" size="lg" className="mt-8 w-full" onClick={handleAddToCart} disabled={isCartLoading || !selectedVariant?.availableForSale}>
-                {isCartLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><ShoppingCart className="w-5 h-5" /> Add to Cart</>}
-              </Button>
+              <div className="flex gap-3 mt-8">
+                <Button variant="outline" size="lg" className="flex-1" onClick={handleAddToCart} disabled={isCartLoading || !selectedVariant?.availableForSale}>
+                  {isCartLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><ShoppingCart className="w-5 h-5" /> Add to Cart</>}
+                </Button>
+                <Button variant="hero" size="lg" className="flex-1" onClick={() => {
+                  if (!selectedVariant) return;
+                  navigate("/checkout", {
+                    state: {
+                      item: {
+                        product,
+                        variantId: selectedVariant.id,
+                        variantTitle: selectedVariant.title,
+                        price: selectedVariant.price,
+                        quantity: 1,
+                        selectedOptions: selectedVariant.selectedOptions || [],
+                      },
+                    },
+                  });
+                }} disabled={!selectedVariant?.availableForSale}>
+                  <Zap className="w-5 h-5" /> Buy Now
+                </Button>
+              </div>
             </div>
           </motion.div>
         </div>
