@@ -146,6 +146,10 @@ export function useFaceOverlay({
           const complete = elapsed >= SCAN_DURATION;
 
           // Throttle callback to ~10fps to avoid React churn
+          scanProgressRef.current = progress;
+          scanCompleteRef.current = complete;
+          faceDetectedRef.current = true;
+
           if (onScanUpdate && now - lastCallbackRef.current > 100) {
             lastCallbackRef.current = now;
             onScanUpdate({ progress, complete, faceDetected: true });
