@@ -10,6 +10,7 @@ import BookingDialog from "@/components/BookingDialog";
 import { styles, categories, type StyleCategory } from "@/data/tryOnStyles";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useFaceOverlay } from "@/hooks/useFaceOverlay";
 
 const COLORS = [
   { name: "Natural Black", value: "natural black", hex: "#1a1a1a" },
