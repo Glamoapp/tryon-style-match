@@ -98,12 +98,19 @@ const FaceScanPromo = () => {
 
                 {/* Screen content */}
                 <div className="relative aspect-[9/19] overflow-hidden bg-charcoal">
-                  {/* Woman with hair extensions */}
-                  <img
-                    src={tryOnFace}
-                    alt="Woman with hair extensions"
-                    className="absolute inset-0 w-full h-full object-cover object-top"
-                  />
+                  {/* Woman with cycling hair styles */}
+                  <AnimatePresence mode="wait">
+                    <motion.img
+                      key={currentStyle.name}
+                      src={currentStyle.image}
+                      alt={currentStyle.name}
+                      className="absolute inset-0 w-full h-full object-cover object-top"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.6, ease: "easeInOut" }}
+                    />
+                  </AnimatePresence>
 
                   {/* Top: Current style name badge */}
                   <motion.div
