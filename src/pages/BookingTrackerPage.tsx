@@ -14,12 +14,42 @@ interface BookingData {
   time: string;
   stylistName: string;
   styleName: string;
+  stylistPhone: string | null;
   customerName: string;
   email: string;
   phone: string;
   address: string;
   paymentMethod: string;
 }
+
+// Service-based educational videos (static placeholders)
+const serviceVideos: Record<string, { url: string; title: string; description: string }> = {
+  braids: {
+    url: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    title: "All About Braids",
+    description: "Learn what to expect during your braiding appointment and how to maintain your braids for weeks.",
+  },
+  weave: {
+    url: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    title: "Weave Installation Guide",
+    description: "Discover the weave installation process and tips for keeping your weave looking fresh.",
+  },
+  locs: {
+    url: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    title: "Loc Care 101",
+    description: "Everything you need to know about loc maintenance and what your stylist will do.",
+  },
+  wigs: {
+    url: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    title: "Wig Installation Tips",
+    description: "See how a professional wig installation works and learn aftercare essentials.",
+  },
+  default: {
+    url: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    title: "Your Appointment Guide",
+    description: "Learn what to expect during your styling appointment and how to maintain your new look.",
+  },
+};
 
 interface StylistLocation {
   latitude: number;
