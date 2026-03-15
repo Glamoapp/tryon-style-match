@@ -25,8 +25,9 @@ type Booking = {
   completion_code: string | null;
   customer_address: string | null;
   notes: string | null;
+  customer_id: string;
   customer: { full_name: string } | null;
-  service: { service_name: string } | null;
+  service: { service_name: string; duration_minutes: number } | null;
 };
 
 type Notification = {
@@ -99,7 +100,7 @@ const ProviderDashboard = () => {
   const fetchBookings = async (uid: string) => {
     const { data } = await supabase
       .from("bookings")
-      .select("*, customer:profiles!bookings_customer_id_fkey(full_name), service:provider_services!bookings_service_id_fkey(service_name)")
+      .select("*, customer:profiles!bookings_customer_id_fkey(full_name), service:provider_services!bookings_service_id_fkey(service_name, duration_minutes)")
       .eq("provider_id", uid)
       .order("booking_date", { ascending: false });
     setBookings((data as any) || []);
