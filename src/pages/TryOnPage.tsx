@@ -2,8 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, ChevronRight, ArrowLeft, ShoppingBag, Calendar, Camera } from "lucide-react";
-import BookingDialog from "@/components/BookingDialog";
+import { Sparkles, ChevronRight, ArrowLeft, ShoppingBag, Users, Camera } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { styles, categories, type StyleCategory } from "@/data/tryOnStyles";
@@ -116,16 +115,13 @@ const TryOnPage = () => {
 
                   {/* Action buttons */}
                   <div className="flex gap-2">
-                    <BookingDialog
-                      styleName={currentStyle.name}
-                      trigger={
-                        <Button variant="hero" className="flex-1">
-                          <Calendar className="w-4 h-4 mr-1" />
-                          Book This Style
-                          <ChevronRight className="w-4 h-4" />
-                        </Button>
-                      }
-                    />
+                    <Link to={`/stylists?specialty=${encodeURIComponent(currentStyle.category)}`} className="flex-1">
+                      <Button variant="hero" className="w-full">
+                        <Users className="w-4 h-4 mr-1" />
+                        Find a Stylist
+                        <ChevronRight className="w-4 h-4" />
+                      </Button>
+                    </Link>
                     <Link to="/extensions" className="flex-1">
                       <Button variant="gold" className="w-full">
                         <ShoppingBag className="w-4 h-4 mr-1" />

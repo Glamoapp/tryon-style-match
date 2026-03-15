@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Star, MapPin, Clock, Heart, ChevronRight, Search, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -26,9 +26,11 @@ function mapProviderToCard(p: ProviderListing) {
 }
 
 const StylistsPage = () => {
+  const [searchParams] = useSearchParams();
+  const initialSpecialty = searchParams.get("specialty") || "All";
   const { providers, loading } = useProviders();
   const [search, setSearch] = useState("");
-  const [activeFilter, setActiveFilter] = useState("All");
+  const [activeFilter, setActiveFilter] = useState(initialSpecialty);
   const [sortBy, setSortBy] = useState<"rating" | "price">("rating");
 
   const allCards = useMemo(() => providers.map(mapProviderToCard), [providers]);
