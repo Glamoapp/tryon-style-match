@@ -33,9 +33,24 @@ interface BookingDialogProps {
   styleName?: string;
   servicePrice?: number;
   stylistPhone?: string | null;
+  providerId?: string;
+  serviceId?: string;
 }
 
-const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistPhone }: BookingDialogProps) => {
+const toDbTime = (slot: string) => {
+  const [time, period] = slot.split(" ");
+  const [rawHour, minute] = time.split(":").map(Number);
+  let hour = rawHour;
+
+  if (period === "PM" && hour !== 12) hour += 12;
+  if (period === "AM" && hour === 12) hour = 0;
+
+  return `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}:00`;
+};
+
+const generateCompletionCode = () => `${Math.floor(100000 + Math.random() * 900000)}`;
+
+const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistPhone, providerId, serviceId }: BookingDialogProps) => {
   const navigate = useNavigate();
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [date, setDate] = useState<Date>();
@@ -67,8 +82,42 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
   const handleConfirm = async () => {
     if (!date || !time || !name || !email || !phone || !address || !paymentMethod) return;
 
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast.error("Please sign in to complete your booking");
+      navigate(`/auth?redirect=${encodeURIComponent(window.location.pathname)}`);
+      return;
+    }
+
+    let bookingId = `BK-${Date.now().toString(36).toUpperCase()}`;
+
+    if (providerId && serviceId) {
+      const { data: createdBooking, error: bookingError } = await supabase
+        .from("bookings")
+        .insert({
+          customer_id: user.id,
+          provider_id: providerId,
+          service_id: serviceId,
+          booking_date: format(date, "yyyy-MM-dd"),
+          booking_time: toDbTime(time),
+          total_price: servicePrice ?? 0,
+          customer_address: address,
+          completion_code: generateCompletionCode(),
+          status: "pending",
+        })
+        .select("id")
+        .single();
+
+      if (bookingError || !createdBooking) {
+        toast.error("Couldn't create your booking. Please try again.");
+        return;
+      }
+
+      bookingId = createdBooking.id;
+    }
+
     const bookingData = {
-      id: `BK-${Date.now().toString(36).toUpperCase()}`,
+      id: bookingId,
       date: format(date, "PPP"),
       time,
       stylistName: stylistName || "Assigned Stylist",
@@ -89,6 +138,7 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
       try {
         const { data, error } = await supabase.functions.invoke("create-booking-payment", {
           body: {
+            bookingId,
             customerName: name,
             email,
             phone,
@@ -110,6 +160,11 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
       } catch (err) {
         console.error("Payment error:", err);
         toast.error("Payment failed. Please try again.");
+
+        if (providerId && serviceId && bookingId && !bookingId.startsWith("BK-")) {
+          await supabase.from("bookings").delete().eq("id", bookingId).eq("customer_id", user.id);
+        }
+
         setLoading(false);
         return;
       }
