@@ -180,17 +180,17 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
           <DialogTitle className="font-display text-2xl text-foreground">
             {step === 1 && "Select Date & Time"}
             {step === 2 && "Your Information"}
-            {step === 3 && "Payment Method"}
           </DialogTitle>
           {(stylistName || styleName) && (
             <p className="text-sm text-muted-foreground font-body">
               {styleName && <span className="text-primary font-semibold">{styleName}</span>}
               {styleName && stylistName && " with "}
               {stylistName && <span className="font-semibold">{stylistName}</span>}
+              {servicePrice != null && <span className="ml-2 font-bold">${servicePrice.toFixed(2)}</span>}
             </p>
           )}
           <div className="flex items-center gap-2 pt-2">
-            {[1, 2, 3].map((s) => (
+            {[1, 2].map((s) => (
               <div key={s} className="flex items-center gap-2">
                 <div className={cn(
                   "w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold font-body transition-colors",
@@ -198,7 +198,7 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
                 )}>
                   {s}
                 </div>
-                {s < 3 && <div className={cn("w-8 h-0.5", step > s ? "bg-primary" : "bg-border")} />}
+                {s < 2 && <div className={cn("w-8 h-0.5", step > s ? "bg-primary" : "bg-border")} />}
               </div>
             ))}
           </div>
@@ -274,60 +274,21 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
                   <Input placeholder="123 Main St, City, State ZIP" value={address} onChange={(e) => setAddress(e.target.value)} className="bg-secondary border-border" />
                 </div>
               </div>
-              <div className="flex gap-3">
-                <Button variant="outline" className="flex-1" onClick={() => setStep(1)}>Back</Button>
-                <Button variant="hero" className="flex-1" disabled={!canProceedStep2} onClick={() => setStep(3)}>
-                  Continue <ChevronRight className="w-4 h-4" />
-                </Button>
-              </div>
-            </>
-          )}
-
-          {step === 3 && (
-            <>
-              <div className="space-y-3">
-                <label className="text-sm font-semibold text-foreground font-body mb-2 block">Choose Payment Method</label>
-                {paymentMethods.map((pm) => {
-                  const Icon = pm.icon;
-                  return (
-                    <button
-                      key={pm.id}
-                      onClick={() => setPaymentMethod(pm.id)}
-                      className={cn(
-                        "w-full flex items-center gap-3 p-4 rounded-xl border transition-all text-left font-body",
-                        paymentMethod === pm.id
-                          ? "border-primary bg-primary/5 shadow-soft"
-                          : "border-border bg-secondary hover:bg-primary/5"
-                      )}
-                    >
-                      <Icon className={cn("w-5 h-5", paymentMethod === pm.id ? "text-primary" : "text-muted-foreground")} />
-                      <span className={cn("font-semibold text-sm", paymentMethod === pm.id ? "text-foreground" : "text-muted-foreground")}>
-                        {pm.label}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
 
               {date && time && (
                 <div className="bg-secondary/50 rounded-xl p-4 text-sm font-body text-foreground space-y-1">
                   <p><span className="font-semibold">Date:</span> {format(date, "EEEE, MMMM d, yyyy")}</p>
                   <p><span className="font-semibold">Time:</span> {time}</p>
-                  <p><span className="font-semibold">Name:</span> {name}</p>
-                  <p><span className="font-semibold">Address:</span> {address}</p>
-                  {paymentMethod && (
-                    <p><span className="font-semibold">Payment:</span> {paymentMethods.find(p => p.id === paymentMethod)?.label}</p>
-                  )}
                 </div>
               )}
 
               <div className="flex gap-3">
-                <Button variant="outline" className="flex-1" onClick={() => setStep(2)}>Back</Button>
-                <Button variant="hero" className="flex-1" disabled={!canConfirm || loading} onClick={handleConfirm}>
+                <Button variant="outline" className="flex-1" onClick={() => setStep(1)}>Back</Button>
+                <Button variant="hero" className="flex-1" disabled={!canConfirm || loading} onClick={handleAddToCart}>
                   {loading ? (
-                    <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</>
+                    <><Loader2 className="w-4 h-4 animate-spin" /> Adding...</>
                   ) : (
-                    <>Confirm & Pay <ChevronRight className="w-4 h-4" /></>
+                    <><ShoppingCart className="w-4 h-4 mr-1" /> Add to Cart</>
                   )}
                 </Button>
               </div>
