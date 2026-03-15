@@ -48,12 +48,19 @@ const LiveTryOnPage = () => {
   const filteredStyles = styles.filter((s) => s.category === activeCategory);
   const currentStyle = filteredStyles[selectedStyleIdx] || filteredStyles[0];
 
+  // Scan status — updated via throttled callback from the hook (not useState in rAF)
+  const [scanInfo, setScanInfo] = useState({ progress: 0, complete: false, faceDetected: false });
+  const handleScanUpdate = useCallback((info: { progress: number; complete: boolean; faceDetected: boolean }) => {
+    setScanInfo(info);
+  }, []);
+
   // Real-time AR hair overlay with 5s scan phase
-  const { scanProgress, scanComplete, faceDetected } = useFaceOverlay({
+  useFaceOverlay({
     videoRef,
     overlayCanvasRef,
     active: cameraActive && !selfie,
     hairImageSrc: currentStyle?.image || "",
+    onScanUpdate: handleScanUpdate,
   });
 
   const startCamera = useCallback(async () => {
