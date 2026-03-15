@@ -58,6 +58,7 @@ const StylistProfilePage = () => {
         avatar_url: profile.avatar_url,
         bio: profile.bio,
         city: profile.city,
+        phone: profile.phone,
         rating: avgRating,
         reviewCount: rvws.length,
         services: servicesWithPhotos,
