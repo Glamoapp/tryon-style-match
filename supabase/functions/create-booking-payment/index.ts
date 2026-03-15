@@ -17,7 +17,7 @@ serve(async (req) => {
       apiVersion: "2025-08-27.basil",
     });
 
-    const { customerName, email, phone, address, styleName, stylistName, date, time, price } = await req.json();
+    const { bookingId, customerName, email, phone, address, styleName, stylistName, date, time, price } = await req.json();
 
     if (!email) throw new Error("Email is required");
 
