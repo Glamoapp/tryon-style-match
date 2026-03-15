@@ -131,9 +131,17 @@ export const CartDrawer = () => {
           <div className="flex flex-col flex-1 pt-6 min-h-0">
             {totalItems === 0 ? (
               <div className="flex-1 flex items-center justify-center">
-                <div className="text-center">
-                  <ShoppingCart className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <div className="text-center space-y-4">
+                  <ShoppingCart className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
                   <p className="text-muted-foreground font-body">Your cart is empty</p>
+                  <div className="flex flex-col gap-2">
+                    <Button variant="hero" onClick={() => { setIsOpen(false); navigate("/extensions"); }}>
+                      <Package className="w-4 h-4 mr-2" /> Shop Hair Extensions
+                    </Button>
+                    <Button variant="outline" onClick={() => { setIsOpen(false); navigate("/stylists"); }}>
+                      <Scissors className="w-4 h-4 mr-2" /> Book a Stylist
+                    </Button>
+                  </div>
                 </div>
               </div>
             ) : (
