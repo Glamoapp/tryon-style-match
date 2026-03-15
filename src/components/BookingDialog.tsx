@@ -47,7 +47,8 @@ const generateCompletionCode = () => `${Math.floor(100000 + Math.random() * 9000
 
 const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistPhone, providerId, serviceId }: BookingDialogProps) => {
   const navigate = useNavigate();
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const addServiceItem = useCartStore((s) => s.addServiceItem);
+  const [step, setStep] = useState<1 | 2>(1);
   const [date, setDate] = useState<Date>();
   const [time, setTime] = useState<string>();
   const [open, setOpen] = useState(false);
@@ -59,9 +60,6 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
 
-  // Payment
-  const [paymentMethod, setPaymentMethod] = useState<string>();
-
   const resetForm = () => {
     setStep(1);
     setDate(undefined);
@@ -70,12 +68,11 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
     setEmail("");
     setPhone("");
     setAddress("");
-    setPaymentMethod(undefined);
     setLoading(false);
   };
 
-  const handleConfirm = async () => {
-    if (!date || !time || !name || !email || !phone || !address || !paymentMethod) return;
+  const handleAddToCart = async () => {
+    if (!date || !time || !name || !email || !phone || !address) return;
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
@@ -84,13 +81,15 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
       return;
     }
 
+    setLoading(true);
+
     let bookingId = `BK-${Date.now().toString(36).toUpperCase()}`;
 
     if (providerId && serviceId) {
       const bookingDate = format(date, "yyyy-MM-dd");
       const bookingTime = toDbTime(time);
 
-      // Check for existing booking in this time slot (prevent overbooking)
+      // Check for existing booking in this time slot
       const { data: existing } = await supabase
         .from("bookings")
         .select("id")
@@ -103,6 +102,7 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
       if (existing && existing.length > 0) {
         toast.error("This time slot is already booked. Please choose a different time.");
         setStep(1);
+        setLoading(false);
         return;
       }
 
@@ -124,13 +124,34 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
 
       if (bookingError || !createdBooking) {
         toast.error("Couldn't create your booking. Please try again.");
+        setLoading(false);
         return;
       }
 
       bookingId = createdBooking.id;
     }
 
-    const bookingData = {
+    // Add to unified cart
+    const serviceItem: ServiceCartItem = {
+      id: bookingId,
+      type: 'service',
+      serviceName: styleName || "Hair Service",
+      serviceId: serviceId || "",
+      providerId: providerId || "",
+      providerName: stylistName || "Assigned Stylist",
+      price: servicePrice ?? 0,
+      date: format(date, "PPP"),
+      time,
+      customerName: name,
+      email,
+      phone,
+      address,
+    };
+
+    addServiceItem(serviceItem);
+
+    // Save booking data for tracker page
+    localStorage.setItem("currentBooking", JSON.stringify({
       id: bookingId,
       date: format(date, "PPP"),
       time,
@@ -141,59 +162,15 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
       email,
       phone,
       address,
-      paymentMethod,
-    };
+    }));
 
-    // Save booking data for tracker page
-    localStorage.setItem("currentBooking", JSON.stringify(bookingData));
-
-    if (paymentMethod === "card" || paymentMethod === "cashapp") {
-      setLoading(true);
-      try {
-        const { data, error } = await supabase.functions.invoke("create-booking-payment", {
-          body: {
-            bookingId,
-            customerName: name,
-            email,
-            phone,
-            address,
-            styleName: styleName || "Hair Service",
-            stylistName: stylistName || "Assigned Stylist",
-            date: format(date, "PPP"),
-            time,
-            price: servicePrice ? Math.round(servicePrice * 100) : 5000,
-          },
-        });
-
-        if (error) throw error;
-        if (data?.url) {
-          window.location.href = data.url;
-          return;
-        }
-        throw new Error("No checkout URL returned");
-      } catch (err) {
-        console.error("Payment error:", err);
-        toast.error("Payment failed. Please try again.");
-
-        if (providerId && serviceId && bookingId && !bookingId.startsWith("BK-")) {
-          await supabase.from("bookings").delete().eq("id", bookingId).eq("customer_id", user.id);
-        }
-
-        setLoading(false);
-        return;
-      }
-    }
-
-    // For Apple Pay (or other non-Stripe methods), go directly to tracker
     setOpen(false);
     resetForm();
-    toast.success("Booking confirmed! Redirecting to tracker...");
-    navigate("/booking-tracker");
+    toast.success("Service added to cart! Open your cart to checkout.", { position: "top-center" });
   };
 
   const canProceedStep1 = date && time;
-  const canProceedStep2 = name.trim() && email.trim() && phone.trim() && address.trim();
-  const canConfirm = canProceedStep1 && canProceedStep2 && paymentMethod;
+  const canConfirm = canProceedStep1 && name.trim() && email.trim() && phone.trim() && address.trim();
 
   return (
     <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) resetForm(); }}>
