@@ -29,8 +29,13 @@ const TryOnPage = () => {
               Try On <span className="text-gradient-rose">Hair Styles</span>
             </h1>
             <p className="text-muted-foreground mt-3 max-w-lg font-body">
-              Browse different hair styles on our model. The face stays the same — only the hair changes. Find your perfect look, then book a stylist or shop the hair.
+              Browse different hair styles on our model, or use AI to try them on your own face.
             </p>
+            <Link to="/tryon/live">
+              <Button variant="hero" className="mt-4">
+                <Camera className="w-4 h-4 mr-2" /> Try On Your Face with AI
+              </Button>
+            </Link>
           </div>
 
           {/* Category Tabs */}
