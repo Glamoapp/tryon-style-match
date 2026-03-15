@@ -10,6 +10,7 @@ import Index from "./pages/Index.tsx";
 import StylistsPage from "./pages/StylistsPage.tsx";
 import StylistProfilePage from "./pages/StylistProfilePage.tsx";
 import TryOnPage from "./pages/TryOnPage.tsx";
+import LiveTryOnPage from "./pages/LiveTryOnPage.tsx";
 import ExtensionsPage from "./pages/ExtensionsPage.tsx";
 import ProductPage from "./pages/ProductPage.tsx";
 import BookingTrackerPage from "./pages/BookingTrackerPage.tsx";
@@ -35,6 +36,7 @@ const AppContent = () => {
         <Route path="/stylists" element={<PageTransition><StylistsPage /></PageTransition>} />
         <Route path="/stylist/:id" element={<PageTransition><StylistProfilePage /></PageTransition>} />
         <Route path="/tryon" element={<PageTransition><TryOnPage /></PageTransition>} />
+        <Route path="/tryon/live" element={<PageTransition><LiveTryOnPage /></PageTransition>} />
         <Route path="/extensions" element={<PageTransition><ExtensionsPage /></PageTransition>} />
         <Route path="/product/:handle" element={<PageTransition><ProductPage /></PageTransition>} />
         <Route path="/booking-tracker" element={<PageTransition><BookingTrackerPage /></PageTransition>} />
