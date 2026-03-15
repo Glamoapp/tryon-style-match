@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, ShoppingCart, Loader2, Package } from "lucide-react";
+import { ArrowLeft, ShoppingCart, Loader2, Package, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
@@ -24,6 +24,7 @@ const PRODUCT_BY_HANDLE_QUERY = `
 `;
 
 const ProductPage = () => {
+  const navigate = useNavigate();
   const { handle } = useParams();
   const [product, setProduct] = useState<ShopifyProduct | null>(null);
   const [loading, setLoading] = useState(true);
@@ -141,9 +142,28 @@ const ProductPage = () => {
                 </div>
               )}
 
-              <Button variant="hero" size="lg" className="mt-8 w-full" onClick={handleAddToCart} disabled={isCartLoading || !selectedVariant?.availableForSale}>
-                {isCartLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><ShoppingCart className="w-5 h-5" /> Add to Cart</>}
-              </Button>
+              <div className="flex gap-3 mt-8">
+                <Button variant="outline" size="lg" className="flex-1" onClick={handleAddToCart} disabled={isCartLoading || !selectedVariant?.availableForSale}>
+                  {isCartLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><ShoppingCart className="w-5 h-5" /> Add to Cart</>}
+                </Button>
+                <Button variant="hero" size="lg" className="flex-1" onClick={() => {
+                  if (!selectedVariant) return;
+                  navigate("/checkout", {
+                    state: {
+                      item: {
+                        product,
+                        variantId: selectedVariant.id,
+                        variantTitle: selectedVariant.title,
+                        price: selectedVariant.price,
+                        quantity: 1,
+                        selectedOptions: selectedVariant.selectedOptions || [],
+                      },
+                    },
+                  });
+                }} disabled={!selectedVariant?.availableForSale}>
+                  <Zap className="w-5 h-5" /> Buy Now
+                </Button>
+              </div>
             </div>
           </motion.div>
         </div>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ShoppingCart, Loader2, ArrowLeft, Package } from "lucide-react";
+import { ShoppingCart, Loader2, ArrowLeft, Package, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
@@ -10,6 +10,7 @@ import { storefrontApiRequest, STOREFRONT_PRODUCTS_QUERY, type ShopifyProduct } 
 import { useCartStore } from "@/stores/cartStore";
 
 const ExtensionsPage = () => {
+  const navigate = useNavigate();
   const [products, setProducts] = useState<ShopifyProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const addItem = useCartStore((s) => s.addItem);
@@ -41,6 +42,23 @@ const ExtensionsPage = () => {
       selectedOptions: variant.selectedOptions || [],
     });
     toast.success(`${product.node.title} added to cart`, { position: "top-center" });
+  };
+
+  const handleBuyNow = (product: ShopifyProduct) => {
+    const variant = product.node.variants.edges[0]?.node;
+    if (!variant) return;
+    navigate("/checkout", {
+      state: {
+        item: {
+          product,
+          variantId: variant.id,
+          variantTitle: variant.title,
+          price: variant.price,
+          quantity: 1,
+          selectedOptions: variant.selectedOptions || [],
+        },
+      },
+    });
   };
 
   return (
@@ -118,14 +136,23 @@ const ExtensionsPage = () => {
                         <span className="text-lg font-bold text-foreground font-body">
                           ${parseFloat(price.amount).toFixed(2)}
                         </span>
-                        <Button
-                          variant="hero"
-                          size="sm"
-                          onClick={() => handleAddToCart(product)}
-                          disabled={isCartLoading}
-                        >
-                          {isCartLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><ShoppingCart className="w-4 h-4" /> Add</>}
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleAddToCart(product)}
+                            disabled={isCartLoading}
+                          >
+                            {isCartLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><ShoppingCart className="w-4 h-4" /> Add</>}
+                          </Button>
+                          <Button
+                            variant="hero"
+                            size="sm"
+                            onClick={() => handleBuyNow(product)}
+                          >
+                            <Zap className="w-4 h-4" /> Buy Now
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </motion.div>
