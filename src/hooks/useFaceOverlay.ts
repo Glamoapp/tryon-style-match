@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef } from "react";
 
 /**
  * Real-time face detection + hair overlay drawing.
@@ -28,6 +28,11 @@ export function useFaceOverlay({
   const readyRef = useRef(false);
   const scanStartRef = useRef<number | null>(null);
   const lastCallbackRef = useRef(0);
+
+  // Backward-compatible scan values (for any callers destructuring hook return)
+  const scanProgressRef = useRef(0);
+  const scanCompleteRef = useRef(false);
+  const faceDetectedRef = useRef(false);
 
   const SCAN_DURATION = 5000;
 
@@ -141,6 +146,10 @@ export function useFaceOverlay({
           const complete = elapsed >= SCAN_DURATION;
 
           // Throttle callback to ~10fps to avoid React churn
+          scanProgressRef.current = progress;
+          scanCompleteRef.current = complete;
+          faceDetectedRef.current = true;
+
           if (onScanUpdate && now - lastCallbackRef.current > 100) {
             lastCallbackRef.current = now;
             onScanUpdate({ progress, complete, faceDetected: true });
@@ -228,6 +237,10 @@ export function useFaceOverlay({
         } else {
           // No face — reset scan
           scanStartRef.current = null;
+          scanProgressRef.current = 0;
+          scanCompleteRef.current = false;
+          faceDetectedRef.current = false;
+
           if (onScanUpdate && now - lastCallbackRef.current > 100) {
             lastCallbackRef.current = now;
             onScanUpdate({ progress: 0, complete: false, faceDetected: false });
@@ -245,4 +258,10 @@ export function useFaceOverlay({
       if (frameRef.current) cancelAnimationFrame(frameRef.current);
     };
   }, [active, videoRef, overlayCanvasRef, onScanUpdate]);
+
+  return {
+    scanProgress: scanProgressRef.current,
+    scanComplete: scanCompleteRef.current,
+    faceDetected: faceDetectedRef.current,
+  };
 }
