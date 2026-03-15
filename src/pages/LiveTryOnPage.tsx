@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
@@ -52,9 +52,6 @@ const LiveTryOnPage = () => {
         video: { facingMode, width: { ideal: 1280 }, height: { ideal: 1720 } },
         audio: false,
       });
-      if (videoRef.current) {
-        videoRef.current.srcObject = mediaStream;
-      }
       setStream(mediaStream);
       setCameraActive(true);
       setSelfie(null);
@@ -73,21 +70,35 @@ const LiveTryOnPage = () => {
   const flipCamera = useCallback(async () => {
     stream?.getTracks().forEach((t) => t.stop());
     setStream(null);
+
     const newMode = facingMode === "user" ? "environment" : "user";
     setFacingMode(newMode);
+
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: newMode, width: { ideal: 1280 }, height: { ideal: 1720 } },
         audio: false,
       });
-      if (videoRef.current) {
-        videoRef.current.srcObject = mediaStream;
-      }
       setStream(mediaStream);
+      setCameraActive(true);
     } catch {
       toast.error("Could not flip camera.");
     }
   }, [stream, facingMode]);
+
+  useEffect(() => {
+    if (!videoRef.current || !stream || !cameraActive) return;
+    videoRef.current.srcObject = stream;
+    videoRef.current.play().catch(() => {
+      // autoplay may be blocked on some browsers until user interaction
+    });
+  }, [stream, cameraActive]);
+
+  useEffect(() => {
+    return () => {
+      stream?.getTracks().forEach((t) => t.stop());
+    };
+  }, [stream]);
 
   const takeSelfie = useCallback(() => {
     if (!videoRef.current || !canvasRef.current) return;
