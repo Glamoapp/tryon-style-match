@@ -10,6 +10,7 @@ import Index from "./pages/Index.tsx";
 import StylistsPage from "./pages/StylistsPage.tsx";
 import StylistProfilePage from "./pages/StylistProfilePage.tsx";
 import TryOnPage from "./pages/TryOnPage.tsx";
+import LiveTryOnPage from "./pages/LiveTryOnPage.tsx";
 import ExtensionsPage from "./pages/ExtensionsPage.tsx";
 import ProductPage from "./pages/ProductPage.tsx";
 import BookingTrackerPage from "./pages/BookingTrackerPage.tsx";
