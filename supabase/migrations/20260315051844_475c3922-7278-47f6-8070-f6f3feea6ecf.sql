@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX IF NOT EXISTS unique_provider_booking_slot ON public.bookings (provider_id, booking_date, booking_time) WHERE status NOT IN ('rejected', 'cancelled');

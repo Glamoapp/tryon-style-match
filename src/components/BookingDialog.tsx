@@ -92,14 +92,33 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
     let bookingId = `BK-${Date.now().toString(36).toUpperCase()}`;
 
     if (providerId && serviceId) {
+      const bookingDate = format(date, "yyyy-MM-dd");
+      const bookingTime = toDbTime(time);
+
+      // Check for existing booking in this time slot (prevent overbooking)
+      const { data: existing } = await supabase
+        .from("bookings")
+        .select("id")
+        .eq("provider_id", providerId)
+        .eq("booking_date", bookingDate)
+        .eq("booking_time", bookingTime)
+        .not("status", "in", '("rejected","cancelled")')
+        .limit(1);
+
+      if (existing && existing.length > 0) {
+        toast.error("This time slot is already booked. Please choose a different time.");
+        setStep(1);
+        return;
+      }
+
       const { data: createdBooking, error: bookingError } = await supabase
         .from("bookings")
         .insert({
           customer_id: user.id,
           provider_id: providerId,
           service_id: serviceId,
-          booking_date: format(date, "yyyy-MM-dd"),
-          booking_time: toDbTime(time),
+          booking_date: bookingDate,
+          booking_time: bookingTime,
           total_price: servicePrice ?? 0,
           customer_address: address,
           completion_code: generateCompletionCode(),
