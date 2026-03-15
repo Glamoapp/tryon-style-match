@@ -227,6 +227,8 @@ const StylistProfilePage = () => {
                           styleName={service.service_name}
                           servicePrice={service.price}
                           stylistPhone={provider.phone}
+                          providerId={provider.id}
+                          serviceId={service.id}
                           trigger={
                             <Button variant="hero" size="sm">
                               Book <ChevronRight className="w-4 h-4" />

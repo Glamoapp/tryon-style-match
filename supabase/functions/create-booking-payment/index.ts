@@ -17,7 +17,7 @@ serve(async (req) => {
       apiVersion: "2025-08-27.basil",
     });
 
-    const { customerName, email, phone, address, styleName, stylistName, date, time, price } = await req.json();
+    const { bookingId, customerName, email, phone, address, styleName, stylistName, date, time, price } = await req.json();
 
     if (!email) throw new Error("Email is required");
 
@@ -61,6 +61,7 @@ serve(async (req) => {
       success_url: `${origin}/booking-tracker?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/#stylists`,
       metadata: {
+        bookingId,
         styleName,
         stylistName,
         date,
