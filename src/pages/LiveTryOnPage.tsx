@@ -48,12 +48,19 @@ const LiveTryOnPage = () => {
   const filteredStyles = styles.filter((s) => s.category === activeCategory);
   const currentStyle = filteredStyles[selectedStyleIdx] || filteredStyles[0];
 
+  // Scan status — updated via throttled callback from the hook (not useState in rAF)
+  const [scanInfo, setScanInfo] = useState({ progress: 0, complete: false, faceDetected: false });
+  const handleScanUpdate = useCallback((info: { progress: number; complete: boolean; faceDetected: boolean }) => {
+    setScanInfo(info);
+  }, []);
+
   // Real-time AR hair overlay with 5s scan phase
-  const { scanProgress, scanComplete, faceDetected } = useFaceOverlay({
+  useFaceOverlay({
     videoRef,
     overlayCanvasRef,
     active: cameraActive && !selfie,
     hairImageSrc: currentStyle?.image || "",
+    onScanUpdate: handleScanUpdate,
   });
 
   const startCamera = useCallback(async () => {
@@ -208,15 +215,15 @@ const LiveTryOnPage = () => {
             </div>
             {/* Scan status badge */}
             <div className="absolute top-16 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-2 z-20">
-              {!faceDetected ? (
+              {!scanInfo.faceDetected ? (
                 <>
                   <Camera className="w-3 h-3 text-white/60" />
                   <span className="text-xs text-white/60 font-body">Position your face in frame</span>
                 </>
-              ) : !scanComplete ? (
+              ) : !scanInfo.complete ? (
                 <>
                   <div className="w-3 h-3 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-                  <span className="text-xs text-white font-body">Scanning face… {Math.round(scanProgress)}%</span>
+                  <span className="text-xs text-white font-body">Scanning face… {Math.round(scanInfo.progress)}%</span>
                 </>
               ) : (
                 <>
