@@ -29,6 +29,11 @@ export function useFaceOverlay({
   const scanStartRef = useRef<number | null>(null);
   const lastCallbackRef = useRef(0);
 
+  // Backward-compatible scan values (for any callers destructuring hook return)
+  const scanProgressRef = useRef(0);
+  const scanCompleteRef = useRef(false);
+  const faceDetectedRef = useRef(false);
+
   const SCAN_DURATION = 5000;
 
   // Reset scan on deactivation
