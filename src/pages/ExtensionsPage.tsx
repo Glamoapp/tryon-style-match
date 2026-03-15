@@ -10,6 +10,7 @@ import { storefrontApiRequest, STOREFRONT_PRODUCTS_QUERY, type ShopifyProduct } 
 import { useCartStore } from "@/stores/cartStore";
 
 const ExtensionsPage = () => {
+  const navigate = useNavigate();
   const [products, setProducts] = useState<ShopifyProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const addItem = useCartStore((s) => s.addItem);
