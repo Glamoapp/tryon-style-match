@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, ArrowRight, ShoppingBag } from "lucide-react";
 import { styles } from "@/data/tryOnStyles";
+import tryOnFace from "@/assets/tryon-phone-face.jpg";
 
 const FaceScanPromo = () => {
   const demoStyles = styles.slice(0, 8);
