@@ -1,9 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * Real-time face detection + hair overlay drawing.
  * Uses MediaPipe FaceLandmarker to track the user's head position
  * and draws the selected hair image on an overlay canvas.
+ * 
+ * Includes a 5-second scanning phase before showing the overlay.
  */
 export function useFaceOverlay({
   videoRef,
@@ -21,6 +23,24 @@ export function useFaceOverlay({
   const hairImgRef = useRef<HTMLImageElement | null>(null);
   const initStartedRef = useRef(false);
   const readyRef = useRef(false);
+
+  // Scanning state: 5 seconds before showing overlay
+  const [scanProgress, setScanProgress] = useState(0); // 0-100
+  const [scanComplete, setScanComplete] = useState(false);
+  const [faceDetected, setFaceDetected] = useState(false);
+  const scanStartRef = useRef<number | null>(null);
+
+  const SCAN_DURATION = 5000; // 5 seconds
+
+  // Reset scanning when active changes
+  useEffect(() => {
+    if (!active) {
+      setScanProgress(0);
+      setScanComplete(false);
+      setFaceDetected(false);
+      scanStartRef.current = null;
+    }
+  }, [active]);
 
   // Load the selected hair image
   useEffect(() => {
@@ -69,15 +89,9 @@ export function useFaceOverlay({
   useEffect(() => {
     if (!active) {
       if (frameRef.current) cancelAnimationFrame(frameRef.current);
-      // Clear overlay
       const ctx = overlayCanvasRef.current?.getContext("2d");
       if (ctx && overlayCanvasRef.current) {
-        ctx.clearRect(
-          0,
-          0,
-          overlayCanvasRef.current.width,
-          overlayCanvasRef.current.height
-        );
+        ctx.clearRect(0, 0, overlayCanvasRef.current.width, overlayCanvasRef.current.height);
       }
       return;
     }
@@ -95,11 +109,7 @@ export function useFaceOverlay({
         return;
       }
 
-      // Match canvas size to video
-      if (
-        canvas.width !== video.videoWidth ||
-        canvas.height !== video.videoHeight
-      ) {
+      if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
       }
@@ -112,7 +122,6 @@ export function useFaceOverlay({
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // If MediaPipe isn't ready yet, just continue looping
       if (!landmarker || !readyRef.current) {
         frameRef.current = requestAnimationFrame(loop);
         return;
@@ -127,56 +136,116 @@ export function useFaceOverlay({
 
       try {
         const results = landmarker.detectForVideo(video, now);
+        const hasFace = results.faceLandmarks?.length > 0;
+        setFaceDetected(hasFace);
 
-        if (results.faceLandmarks?.length > 0 && hairImg) {
+        if (hasFace) {
+          // Start or continue scan timer
+          if (scanStartRef.current === null) {
+            scanStartRef.current = now;
+          }
+
+          const elapsed = now - scanStartRef.current;
+          const progress = Math.min((elapsed / SCAN_DURATION) * 100, 100);
+          setScanProgress(progress);
+
+          if (elapsed >= SCAN_DURATION) {
+            setScanComplete(true);
+          }
+
           const lm = results.faceLandmarks[0];
           const w = canvas.width;
           const h = canvas.height;
 
-          // Key face landmarks (normalised 0-1)
-          const foreheadTop = lm[10]; // very top of forehead
-          const leftTemple = lm[234]; // left side of face
-          const rightTemple = lm[454]; // right side of face
-          const chin = lm[152]; // bottom of chin
-          const leftCheek = lm[234];
-          const rightCheek = lm[454];
-          const noseTip = lm[1];
+          // Draw scanning visualization during scan phase
+          if (elapsed < SCAN_DURATION) {
+            // Draw face mesh dots during scanning
+            const dotLandmarks = [10, 234, 454, 152, 1, 33, 263, 61, 291, 199, 
+                                  67, 297, 70, 300, 107, 336, 69, 299, 104, 333,
+                                  103, 332, 54, 284, 21, 251, 162, 389, 127, 356];
+            
+            const scanAlpha = 0.3 + (progress / 100) * 0.7;
+            
+            for (const idx of dotLandmarks) {
+              if (lm[idx]) {
+                const x = lm[idx].x * w;
+                const y = lm[idx].y * h;
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(200, 100, 255, ${scanAlpha})`;
+                ctx.fill();
+              }
+            }
 
-          // Calculate face measurements in pixels
-          const faceWidth = Math.abs(rightTemple.x - leftTemple.x) * w;
-          const faceHeight = Math.abs(chin.y - foreheadTop.y) * h;
-          const faceCenterX = ((leftTemple.x + rightTemple.x) / 2) * w;
-          const foreheadY = foreheadTop.y * h;
+            // Draw connecting lines for face mesh effect
+            const connections = [
+              [10, 67], [67, 69], [69, 104], [104, 54], [54, 21], [21, 162], [162, 127],
+              [10, 297], [297, 299], [299, 333], [333, 284], [284, 251], [251, 389], [389, 356],
+              [33, 133], [263, 362], [61, 291],
+            ];
+            ctx.strokeStyle = `rgba(200, 100, 255, ${scanAlpha * 0.5})`;
+            ctx.lineWidth = 1;
+            for (const [a, b] of connections) {
+              if (lm[a] && lm[b]) {
+                ctx.beginPath();
+                ctx.moveTo(lm[a].x * w, lm[a].y * h);
+                ctx.lineTo(lm[b].x * w, lm[b].y * h);
+                ctx.stroke();
+              }
+            }
 
-          // Calculate face angle for rotation
-          const leftEar = lm[234];
-          const rightEar = lm[454];
-          const angle = Math.atan2(
-            (rightEar.y - leftEar.y) * h,
-            (rightEar.x - leftEar.x) * w
-          );
+            // Draw scanning progress ring around face
+            const faceCX = ((lm[234].x + lm[454].x) / 2) * w;
+            const faceCY = ((lm[10].y + lm[152].y) / 2) * h;
+            const faceRadius = Math.abs(lm[454].x - lm[234].x) * w * 0.9;
 
-          // Hair overlay sizing — wider and taller than the face
-          // so it looks like it naturally covers/surrounds the head
-          const hairWidth = faceWidth * 2.8;
-          const hairHeight = faceHeight * 2.5;
+            ctx.beginPath();
+            ctx.arc(faceCX, faceCY, faceRadius, -Math.PI / 2, -Math.PI / 2 + (Math.PI * 2 * progress / 100));
+            ctx.strokeStyle = `rgba(200, 100, 255, 0.8)`;
+            ctx.lineWidth = 3;
+            ctx.stroke();
+          }
 
-          // Position: centered on face, extending above forehead
-          const hairX = faceCenterX - hairWidth / 2;
-          const hairY = foreheadY - hairHeight * 0.55;
+          // Only draw hair overlay AFTER scan is complete
+          if (elapsed >= SCAN_DURATION && hairImg) {
+            const foreheadTop = lm[10];
+            const leftTemple = lm[234];
+            const rightTemple = lm[454];
+            const chin = lm[152];
 
-          ctx.save();
-          // Rotate around face center for natural head tilt tracking
-          ctx.translate(faceCenterX, foreheadY);
-          ctx.rotate(angle);
-          ctx.translate(-faceCenterX, -foreheadY);
+            const faceWidth = Math.abs(rightTemple.x - leftTemple.x) * w;
+            const faceHeight = Math.abs(chin.y - foreheadTop.y) * h;
+            const faceCenterX = ((leftTemple.x + rightTemple.x) / 2) * w;
+            const foreheadY = foreheadTop.y * h;
 
-          ctx.globalAlpha = 0.88;
-          ctx.drawImage(hairImg, hairX, hairY, hairWidth, hairHeight);
-          ctx.restore();
+            const leftEar = lm[234];
+            const rightEar = lm[454];
+            const angle = Math.atan2(
+              (rightEar.y - leftEar.y) * h,
+              (rightEar.x - leftEar.x) * w
+            );
+
+            const hairWidth = faceWidth * 2.8;
+            const hairHeight = faceHeight * 2.5;
+            const hairX = faceCenterX - hairWidth / 2;
+            const hairY = foreheadY - hairHeight * 0.55;
+
+            ctx.save();
+            ctx.translate(faceCenterX, foreheadY);
+            ctx.rotate(angle);
+            ctx.translate(-faceCenterX, -foreheadY);
+            ctx.globalAlpha = 0.88;
+            ctx.drawImage(hairImg, hairX, hairY, hairWidth, hairHeight);
+            ctx.restore();
+          }
+        } else {
+          // No face detected — reset scan timer
+          scanStartRef.current = null;
+          setScanProgress(0);
+          setScanComplete(false);
         }
       } catch {
-        // Ignore detection errors, keep looping
+        // Ignore detection errors
       }
 
       frameRef.current = requestAnimationFrame(loop);
@@ -187,4 +256,6 @@ export function useFaceOverlay({
       if (frameRef.current) cancelAnimationFrame(frameRef.current);
     };
   }, [active, videoRef, overlayCanvasRef]);
+
+  return { scanProgress, scanComplete, faceDetected };
 }
