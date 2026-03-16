@@ -11,6 +11,7 @@ import AdminPayments from "@/components/admin/AdminPayments";
 import AdminNotifications from "@/components/admin/AdminNotifications";
 import AdminProviders from "@/components/admin/AdminProviders";
 import AdminDeals from "@/components/admin/AdminDeals";
+import AdminRewards from "@/components/admin/AdminRewards";
 import AdminAlerts from "@/components/admin/AdminAlerts";
 
 const ADMIN_EMAIL = "nextlookbeauty@gmail.com";
