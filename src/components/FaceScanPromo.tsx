@@ -1,3 +1,4 @@
+// FaceScanPromo - static image version
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
