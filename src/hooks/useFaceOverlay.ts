@@ -222,9 +222,9 @@ export function useFaceOverlay({
             );
 
             const hairWidth = faceWidth * 2.8;
-            const hairHeight = faceHeight * 2.5;
+            const hairHeight = faceHeight * 2.8;
             const hairX = faceCenterX - hairWidth / 2;
-            const hairY = foreheadY - hairHeight * 0.55;
+            const hairY = foreheadY - hairHeight * 0.75;
 
             ctx.save();
             ctx.translate(faceCenterX, foreheadY);
