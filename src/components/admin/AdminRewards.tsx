@@ -219,8 +219,9 @@ const AdminRewards = () => {
           </div>
 
           <div className="flex gap-2">
-            <Button variant="hero" onClick={handleSave}>
-              <Gift className="w-4 h-4 mr-1" /> {editingId ? "Update Reward" : "Create Reward"}
+            <Button variant="hero" onClick={handleSave} disabled={uploading}>
+              {uploading ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Gift className="w-4 h-4 mr-1" />}
+              {editingId ? "Update Reward" : "Create Reward"}
             </Button>
             {editingId && (
               <Button variant="outline" onClick={resetForm}>Cancel</Button>
