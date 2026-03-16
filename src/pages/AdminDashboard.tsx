@@ -11,6 +11,7 @@ import AdminPayments from "@/components/admin/AdminPayments";
 import AdminNotifications from "@/components/admin/AdminNotifications";
 import AdminProviders from "@/components/admin/AdminProviders";
 import AdminDeals from "@/components/admin/AdminDeals";
+import AdminRewards from "@/components/admin/AdminRewards";
 import AdminAlerts from "@/components/admin/AdminAlerts";
 
 const ADMIN_EMAIL = "nextlookbeauty@gmail.com";
@@ -103,6 +104,7 @@ const AdminDashboard = () => {
               <TabsTrigger value="notifications" className="font-body text-sm">Notifications</TabsTrigger>
               <TabsTrigger value="providers" className="font-body text-sm">Providers</TabsTrigger>
               <TabsTrigger value="deals" className="font-body text-sm">Deals & Promos</TabsTrigger>
+              <TabsTrigger value="rewards" className="font-body text-sm">GlowUp Monday</TabsTrigger>
               <TabsTrigger value="alerts" className="font-body text-sm">Admin Alerts</TabsTrigger>
             </TabsList>
 
@@ -112,6 +114,7 @@ const AdminDashboard = () => {
             <TabsContent value="notifications"><AdminNotifications /></TabsContent>
             <TabsContent value="providers"><AdminProviders /></TabsContent>
             <TabsContent value="deals"><AdminDeals /></TabsContent>
+            <TabsContent value="rewards"><AdminRewards /></TabsContent>
             <TabsContent value="alerts"><AdminAlerts /></TabsContent>
           </Tabs>
         </div>

@@ -23,6 +23,7 @@ import CustomerAuth from "./pages/CustomerAuth.tsx";
 import MessagesPage from "./pages/MessagesPage.tsx";
 import AdminDashboard from "./pages/AdminDashboard.tsx";
 import CustomerDashboard from "./pages/CustomerDashboard.tsx";
+import GlowUpMondayPage from "./pages/GlowUpMondayPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -50,6 +51,7 @@ const AppContent = () => {
         <Route path="/messages" element={<PageTransition><MessagesPage /></PageTransition>} />
         <Route path="/admin" element={<PageTransition><AdminDashboard /></PageTransition>} />
         <Route path="/dashboard" element={<PageTransition><CustomerDashboard /></PageTransition>} />
+        <Route path="/glowup-monday" element={<PageTransition><GlowUpMondayPage /></PageTransition>} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
