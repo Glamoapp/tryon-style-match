@@ -1,97 +1,101 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Menu, X, Scissors, Sparkles, Search, ShoppingBag, Star, CalendarDays, UserCog } from "lucide-react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { CartDrawer } from "@/components/CartDrawer";
 import MessageNotification from "@/components/MessageNotification";
 import logoImg from "@/assets/logo.png";
 
+const navLinks = [
+  { label: "Services", href: "/#services", icon: Scissors },
+  { label: "Virtual Try-On", href: "/tryon", icon: Sparkles },
+  { label: "Find Stylists", href: "/stylists", icon: Search },
+  { label: "Shop Extensions", href: "/extensions", icon: ShoppingBag },
+  { label: "GlowUp Monday", href: "/glowup-monday", icon: Star },
+  { label: "My Bookings", href: "/dashboard", icon: CalendarDays },
+  { label: "For Providers", href: "/provider/login", icon: UserCog },
+];
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const links = [
-    { label: "Services", href: "/#services" },
-    { label: "Virtual Try-On", href: "/tryon" },
-    { label: "Find Stylists", href: "/stylists" },
-    { label: "Shop Extensions", href: "/extensions" },
-    { label: "GlowUp Monday", href: "/glowup-monday" },
-    { label: "My Bookings", href: "/dashboard" },
-  ];
+  const renderLink = (link: typeof navLinks[0], onClick?: () => void) => {
+    const isRoute = link.href.startsWith("/") && !link.href.startsWith("/#");
+    const className = "flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium font-body text-foreground hover:bg-primary/5 hover:text-primary transition-colors";
+
+    const content = (
+      <>
+        <link.icon className="w-5 h-5 text-primary/70" />
+        <span>{link.label}</span>
+      </>
+    );
+
+    return isRoute ? (
+      <Link key={link.label} to={link.href} className={className} onClick={onClick}>
+        {content}
+      </Link>
+    ) : (
+      <a key={link.label} href={link.href} className={className} onClick={onClick}>
+        {content}
+      </a>
+    );
+  };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border/50">
-      <div className="container mx-auto px-6 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
-          <img src={logoImg} alt="NEXTLOOK" className="w-8 h-8 rounded-md object-cover" />
-          <span className="font-display text-xl font-bold text-foreground">NEXTLOOK</span>
-        </Link>
+    <>
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border/50">
+        <div className="container mx-auto px-6 h-16 flex items-center justify-between">
+          {/* Left: hamburger + logo */}
+          <div className="flex items-center gap-3">
+            <button
+              className="text-foreground hover:text-primary transition-colors p-1"
+              onClick={() => setIsOpen(true)}
+              aria-label="Open menu"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+            <Link to="/" className="flex items-center gap-2">
+              <img src={logoImg} alt="NEXTLOOK" className="w-8 h-8 rounded-md object-cover" />
+              <span className="font-display text-xl font-bold text-foreground">NEXTLOOK</span>
+            </Link>
+          </div>
 
-        <div className="hidden md:flex items-center gap-8">
-          {links.map((link) =>
-            link.href.startsWith("/") && !link.href.startsWith("/#") ? (
-              <Link key={link.label} to={link.href} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                {link.label}
-              </Link>
-            ) : (
-              <a key={link.label} href={link.href} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                {link.label}
-              </a>
-            )
-          )}
+          {/* Right: actions */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <MessageNotification />
+            <CartDrawer />
+            <Link to="/stylists" className="hidden sm:block">
+              <Button variant="hero" size="sm">Book Now</Button>
+            </Link>
+          </div>
         </div>
+      </nav>
 
-        <div className="hidden md:flex items-center gap-3">
-          <MessageNotification />
-          <CartDrawer />
-          <Link to="/provider/login">
-            <Button variant="ghost" size="sm">For Providers</Button>
-          </Link>
-          <Link to="/stylists">
-            <Button variant="hero" size="sm">Book Now</Button>
-          </Link>
-        </div>
+      {/* Side drawer menu */}
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetContent side="left" className="w-72 sm:w-80 p-0 bg-background border-r border-border">
+          <SheetHeader className="p-6 pb-4 border-b border-border">
+            <SheetTitle className="flex items-center gap-2">
+              <img src={logoImg} alt="NEXTLOOK" className="w-8 h-8 rounded-md object-cover" />
+              <span className="font-display text-xl font-bold text-foreground">NEXTLOOK</span>
+            </SheetTitle>
+          </SheetHeader>
 
-        <div className="flex md:hidden items-center gap-2">
-          <MessageNotification />
-          <CartDrawer />
-          <button className="text-foreground" onClick={() => setIsOpen(!isOpen)}>
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
-      </div>
+          <div className="flex flex-col p-4 gap-1">
+            {navLinks.map((link) => renderLink(link, () => setIsOpen(false)))}
+          </div>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="md:hidden bg-background border-b border-border overflow-hidden"
-          >
-            <div className="px-6 py-4 flex flex-col gap-3">
-              {links.map((link) =>
-                link.href.startsWith("/") && !link.href.startsWith("/#") ? (
-                  <Link key={link.label} to={link.href} className="text-sm font-medium text-muted-foreground hover:text-foreground py-2" onClick={() => setIsOpen(false)}>
-                    {link.label}
-                  </Link>
-                ) : (
-                  <a key={link.label} href={link.href} className="text-sm font-medium text-muted-foreground hover:text-foreground py-2" onClick={() => setIsOpen(false)}>
-                    {link.label}
-                  </a>
-                )
-              )}
-              <Link to="/provider/login" className="text-sm font-medium text-muted-foreground hover:text-foreground py-2" onClick={() => setIsOpen(false)}>
-                For Providers
-              </Link>
-              <Link to="/stylists" onClick={() => setIsOpen(false)}>
-                <Button variant="hero" size="sm" className="mt-2 w-full">Book Now</Button>
-              </Link>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </nav>
+          <div className="mt-auto p-4 border-t border-border">
+            <Link to="/stylists" onClick={() => setIsOpen(false)}>
+              <Button variant="hero" className="w-full" size="lg">
+                <Scissors className="w-4 h-4 mr-2" /> Book Now
+              </Button>
+            </Link>
+          </div>
+        </SheetContent>
+      </Sheet>
+    </>
   );
 };
 
