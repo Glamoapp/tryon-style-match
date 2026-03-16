@@ -61,6 +61,7 @@ const ProviderDashboard = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadMessages, setUnreadMessages] = useState(0);
+  const [isApproved, setIsApproved] = useState<boolean | null>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -70,10 +71,11 @@ const ProviderDashboard = () => {
 
       const { data: profileData } = await supabase
         .from("profiles")
-        .select("full_name")
+        .select("full_name, is_approved")
         .eq("id", user.id)
         .single();
       setProfileName(profileData?.full_name || "");
+      setIsApproved((profileData as any)?.is_approved ?? false);
 
       fetchBookings(user.id);
       fetchNotifications(user.id);
@@ -89,6 +91,9 @@ const ProviderDashboard = () => {
         })
         .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `receiver_id=eq.${user.id}` }, () => {
           setUnreadMessages((prev) => prev + 1);
+        })
+        .on("postgres_changes", { event: "UPDATE", schema: "public", table: "profiles", filter: `id=eq.${user.id}` }, (payload) => {
+          setIsApproved((payload.new as any)?.is_approved ?? false);
         })
         .subscribe();
 
