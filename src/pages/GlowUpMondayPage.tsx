@@ -96,10 +96,10 @@ const GlowUpMondayPage = () => {
               <Sparkles className="w-4 h-4 text-primary" />
               <span className="text-sm font-body font-semibold text-primary">Every Monday</span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-display font-bold text-cream mb-4">
+            <h1 className="text-4xl md:text-5xl font-display font-bold text-muted-foreground mb-4">
               GlowUp Monday
             </h1>
-            <p className="text-cream/70 font-body text-lg mb-6">
+            <p className="text-muted-foreground/70 font-body text-lg mb-6">
               Exclusive rewards & promotions for loyal NEXTLOOK customers. Book a service this month to unlock all deals!
             </p>
             {!isLoggedIn && (
