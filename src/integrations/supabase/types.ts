@@ -84,6 +84,33 @@ export type Database = {
           },
         ]
       }
+      customer_points: {
+        Row: {
+          created_at: string
+          id: string
+          lifetime_points: number
+          total_points: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lifetime_points?: number
+          total_points?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lifetime_points?: number
+          total_points?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           content: string
@@ -173,6 +200,44 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      point_transactions: {
+        Row: {
+          booking_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          points: number
+          transaction_type: string
+          user_id: string
+        }
+        Insert: {
+          booking_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          points: number
+          transaction_type?: string
+          user_id: string
+        }
+        Update: {
+          booking_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          points?: number
+          transaction_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "point_transactions_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
             referencedColumns: ["id"]
           },
         ]
@@ -355,6 +420,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      rewards: {
+        Row: {
+          created_at: string
+          description: string | null
+          discount_amount: number | null
+          discount_percent: number | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          points_cost: number | null
+          reward_type: string
+          title: string
+          updated_at: string
+          valid_from: string | null
+          valid_until: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          discount_amount?: number | null
+          discount_percent?: number | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          points_cost?: number | null
+          reward_type?: string
+          title: string
+          updated_at?: string
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          discount_amount?: number | null
+          discount_percent?: number | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          points_cost?: number | null
+          reward_type?: string
+          title?: string
+          updated_at?: string
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Relationships: []
       }
       service_photos: {
         Row: {
