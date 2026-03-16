@@ -38,7 +38,8 @@ export function useProviders() {
         .from("profiles")
         .select("id, full_name, avatar_url, bio, city")
         .eq("role", "provider")
-        .eq("is_onboarded", true);
+        .eq("is_onboarded", true)
+        .eq("is_approved", true);
 
       if (profilesError || !profiles?.length) {
         setProviders([]);
