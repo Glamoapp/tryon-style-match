@@ -256,7 +256,7 @@ const GlowUpMondayPage = () => {
                   {transactions.map((tx) => (
                     <div key={tx.id} className="flex items-center justify-between p-4">
                       <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${tx.points > 0 ? "bg-green-500/10" : "bg-destructive/10"}`}>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${tx.points > 0 ? "bg-primary/10" : "bg-destructive/10"}`}>
                           {tx.points > 0 ? (
                             <TrendingUp className="w-4 h-4 text-green-600" />
                           ) : (
