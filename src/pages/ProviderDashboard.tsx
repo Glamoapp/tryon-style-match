@@ -61,6 +61,7 @@ const ProviderDashboard = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadMessages, setUnreadMessages] = useState(0);
+  const [isApproved, setIsApproved] = useState<boolean | null>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -70,10 +71,11 @@ const ProviderDashboard = () => {
 
       const { data: profileData } = await supabase
         .from("profiles")
-        .select("full_name")
+        .select("full_name, is_approved")
         .eq("id", user.id)
         .single();
       setProfileName(profileData?.full_name || "");
+      setIsApproved((profileData as any)?.is_approved ?? false);
 
       fetchBookings(user.id);
       fetchNotifications(user.id);
@@ -89,6 +91,9 @@ const ProviderDashboard = () => {
         })
         .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `receiver_id=eq.${user.id}` }, () => {
           setUnreadMessages((prev) => prev + 1);
+        })
+        .on("postgres_changes", { event: "UPDATE", schema: "public", table: "profiles", filter: `id=eq.${user.id}` }, (payload) => {
+          setIsApproved((payload.new as any)?.is_approved ?? false);
         })
         .subscribe();
 
@@ -161,6 +166,25 @@ const ProviderDashboard = () => {
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 py-6 max-w-5xl">
+        {/* Pending Approval Banner */}
+        {isApproved === false && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 rounded-xl border border-primary/30 bg-primary/5 flex items-center gap-3"
+          >
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <Clock className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <p className="font-body font-semibold text-foreground text-sm">Account Pending Approval</p>
+              <p className="text-xs text-muted-foreground font-body">
+                Your profile is under review. You'll be able to receive bookings once the NEXTLOOK team approves your account.
+              </p>
+            </div>
+          </motion.div>
+        )}
+
         {/* Stats row */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           {[

@@ -251,6 +251,7 @@ export type Database = {
           email: string | null
           full_name: string
           id: string
+          is_approved: boolean
           is_onboarded: boolean
           phone: string | null
           role: string
@@ -265,6 +266,7 @@ export type Database = {
           email?: string | null
           full_name: string
           id: string
+          is_approved?: boolean
           is_onboarded?: boolean
           phone?: string | null
           role?: string
@@ -279,6 +281,7 @@ export type Database = {
           email?: string | null
           full_name?: string
           id?: string
+          is_approved?: boolean
           is_onboarded?: boolean
           phone?: string | null
           role?: string
