@@ -36,12 +36,10 @@ async function callImageModel(apiKey: string, prompt: string, imageUrl: string, 
   const data = await response.json();
   const resultImage = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
   const resultText = data.choices?.[0]?.message?.content || "";
+  const refusal = data.choices?.[0]?.message?.refusal;
 
   if (!resultImage) {
-    console.error(`No image in response from ${model}. Full response keys:`, JSON.stringify(Object.keys(data)));
-    if (data.choices?.[0]?.message) {
-      console.error("Message keys:", JSON.stringify(Object.keys(data.choices[0].message)));
-    }
+    console.error(`No image from ${model}. Refusal: ${refusal || "none"}. Content: ${resultText?.substring(0, 500)}`);
   }
 
   return { status: 200, image: resultImage, text: resultText, error: null };
