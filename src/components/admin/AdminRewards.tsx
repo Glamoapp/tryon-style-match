@@ -63,6 +63,27 @@ const AdminRewards = () => {
       return;
     }
 
+    setUploading(true);
+    let finalImageUrl = imageUrl || null;
+
+    // Upload image file if selected
+    if (imageFile) {
+      const fileExt = imageFile.name.split(".").pop();
+      const filePath = `${crypto.randomUUID()}.${fileExt}`;
+      const { error: uploadError } = await supabase.storage
+        .from("reward-images")
+        .upload(filePath, imageFile);
+
+      if (uploadError) {
+        toast({ title: "Image upload failed", variant: "destructive" });
+        setUploading(false);
+        return;
+      }
+
+      const { data: urlData } = supabase.storage.from("reward-images").getPublicUrl(filePath);
+      finalImageUrl = urlData.publicUrl;
+    }
+
     const payload = {
       title,
       description: description || null,
@@ -70,7 +91,7 @@ const AdminRewards = () => {
       discount_percent: discountPercent ? Number(discountPercent) : null,
       discount_amount: discountAmount ? Number(discountAmount) : null,
       points_cost: pointsCost ? Number(pointsCost) : 0,
-      image_url: imageUrl || null,
+      image_url: finalImageUrl,
       valid_from: validFrom || null,
       valid_until: validUntil || null,
       updated_at: new Date().toISOString(),
@@ -84,6 +105,7 @@ const AdminRewards = () => {
       toast({ title: "Reward created" });
     }
 
+    setUploading(false);
     resetForm();
     fetchRewards();
   };
