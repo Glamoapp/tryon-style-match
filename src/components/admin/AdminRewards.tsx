@@ -31,6 +31,10 @@ const AdminRewards = () => {
   const [discountAmount, setDiscountAmount] = useState("");
   const [pointsCost, setPointsCost] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [rewardType, setRewardType] = useState("promotion");
   const [validFrom, setValidFrom] = useState("");
   const [validUntil, setValidUntil] = useState("");
