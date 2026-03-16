@@ -53,7 +53,7 @@ const AdminRewards = () => {
 
   const resetForm = () => {
     setTitle(""); setDescription(""); setDiscountPercent(""); setDiscountAmount("");
-    setPointsCost(""); setImageUrl(""); setRewardType("promotion");
+    setPointsCost(""); setImageUrl(""); setImageFile(null); setImagePreview(null); setRewardType("promotion");
     setValidFrom(""); setValidUntil(""); setEditingId(null);
   };
 
