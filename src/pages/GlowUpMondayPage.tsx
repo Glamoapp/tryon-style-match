@@ -258,7 +258,7 @@ const GlowUpMondayPage = () => {
                       <div className="flex items-center gap-3">
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center ${tx.points > 0 ? "bg-primary/10" : "bg-destructive/10"}`}>
                           {tx.points > 0 ? (
-                            <TrendingUp className="w-4 h-4 text-green-600" />
+                            <TrendingUp className="w-4 h-4 text-primary" />
                           ) : (
                             <Gift className="w-4 h-4 text-destructive" />
                           )}
