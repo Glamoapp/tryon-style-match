@@ -105,7 +105,20 @@ const Navbar = () => {
             {navLinks.map((link) => renderLink(link, () => setIsOpen(false)))}
           </div>
 
-          <div className="mt-auto p-4 border-t border-border">
+          <div className="mt-auto p-4 border-t border-border space-y-2">
+            {user ? (
+              <Button variant="outline" className="w-full justify-start gap-3" onClick={handleLogout}>
+                <LogOut className="w-5 h-5 text-destructive" />
+                <span className="font-body text-sm">Sign Out</span>
+              </Button>
+            ) : (
+              <Link to="/auth" onClick={() => setIsOpen(false)}>
+                <Button variant="outline" className="w-full justify-start gap-3">
+                  <LogIn className="w-5 h-5 text-primary" />
+                  <span className="font-body text-sm">Sign In</span>
+                </Button>
+              </Link>
+            )}
             <Link to="/stylists" onClick={() => setIsOpen(false)}>
               <Button variant="hero" className="w-full" size="lg">
                 <Scissors className="w-4 h-4 mr-2" /> Book Now
