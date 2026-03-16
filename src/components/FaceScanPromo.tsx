@@ -75,13 +75,10 @@ const FaceScanPromo = () => {
 
                 {/* Screen content */}
                 <div className="relative aspect-[9/19] overflow-hidden bg-charcoal">
-                  {/* Demo video */}
-                  <video
-                    src={demoVideo}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
+                  {/* Demo image */}
+                  <img
+                    src={tryOnImage}
+                    alt="Hair try-on preview"
                     className="absolute inset-0 w-full h-full object-cover object-center"
                   />
 
