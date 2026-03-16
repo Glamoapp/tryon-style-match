@@ -268,7 +268,7 @@ const GlowUpMondayPage = () => {
                           <p className="text-xs text-muted-foreground font-body">{format(new Date(tx.created_at), "MMM d, yyyy")}</p>
                         </div>
                       </div>
-                      <span className={`font-body font-bold ${tx.points > 0 ? "text-green-600" : "text-destructive"}`}>
+                      <span className={`font-body font-bold ${tx.points > 0 ? "text-primary" : "text-destructive"}`}>
                         {tx.points > 0 ? "+" : ""}{tx.points} pts
                       </span>
                     </div>
