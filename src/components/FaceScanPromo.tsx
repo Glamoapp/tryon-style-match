@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Sparkles, ArrowRight, ShoppingBag } from "lucide-react";
 import { styles } from "@/data/tryOnStyles";
-import demoVideo from "@/assets/tryon-demo-video.mp4";
+import tryOnImage from "@/assets/tryon-phone-face.jpg";
 
 const FaceScanPromo = () => {
   return (
@@ -75,13 +75,10 @@ const FaceScanPromo = () => {
 
                 {/* Screen content */}
                 <div className="relative aspect-[9/19] overflow-hidden bg-charcoal">
-                  {/* Demo video */}
-                  <video
-                    src={demoVideo}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
+                  {/* Demo image */}
+                  <img
+                    src={tryOnImage}
+                    alt="Hair try-on preview"
                     className="absolute inset-0 w-full h-full object-cover object-center"
                   />
 
