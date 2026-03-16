@@ -116,21 +116,21 @@ const GlowUpMondayPage = () => {
         {isLoggedIn && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
             <Card className="bg-card border-border overflow-hidden">
-              <div className="bg-[var(--gradient-rose)] p-6 text-cream">
+              <div className="bg-[var(--gradient-rose)] p-6">
                 <div className="flex items-center justify-between flex-wrap gap-4">
                   <div>
-                    <p className="text-cream/70 text-sm font-body mb-1">Your Reward Points</p>
-                    <h2 className="text-4xl font-display font-bold">
+                    <p className="text-muted-foreground text-sm font-body mb-1">Your Reward Points</p>
+                    <h2 className="text-4xl font-display font-bold text-muted-foreground">
                       {pointsLoading ? "..." : (balance?.total_points || 0).toLocaleString()}
                     </h2>
-                    <p className="text-cream/60 text-sm font-body mt-1">
+                    <p className="text-muted-foreground/60 text-sm font-body mt-1">
                       Lifetime earned: {balance?.lifetime_points || 0} pts
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
                     <Crown className="w-8 h-8 text-gold" />
                     <div>
-                      <p className="text-sm font-body font-semibold text-cream">
+                      <p className="text-sm font-body font-semibold text-muted-foreground">
                         {(balance?.total_points || 0) >= 200 ? "Gold" : (balance?.total_points || 0) >= 100 ? "Silver" : "Bronze"} Member
                       </p>
                     </div>
