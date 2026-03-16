@@ -118,6 +118,8 @@ const AdminRewards = () => {
     setDiscountAmount(r.discount_amount?.toString() || "");
     setPointsCost(r.points_cost?.toString() || "");
     setImageUrl(r.image_url || "");
+    setImagePreview(r.image_url || null);
+    setImageFile(null);
     setRewardType(r.reward_type);
     setValidFrom(r.valid_from || "");
     setValidUntil(r.valid_until || "");
