@@ -104,6 +104,7 @@ const AdminDashboard = () => {
               <TabsTrigger value="notifications" className="font-body text-sm">Notifications</TabsTrigger>
               <TabsTrigger value="providers" className="font-body text-sm">Providers</TabsTrigger>
               <TabsTrigger value="deals" className="font-body text-sm">Deals & Promos</TabsTrigger>
+              <TabsTrigger value="rewards" className="font-body text-sm">GlowUp Monday</TabsTrigger>
               <TabsTrigger value="alerts" className="font-body text-sm">Admin Alerts</TabsTrigger>
             </TabsList>
 
