@@ -166,6 +166,25 @@ const ProviderDashboard = () => {
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 py-6 max-w-5xl">
+        {/* Pending Approval Banner */}
+        {isApproved === false && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 rounded-xl border border-primary/30 bg-primary/5 flex items-center gap-3"
+          >
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <Clock className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <p className="font-body font-semibold text-foreground text-sm">Account Pending Approval</p>
+              <p className="text-xs text-muted-foreground font-body">
+                Your profile is under review. You'll be able to receive bookings once the NEXTLOOK team approves your account.
+              </p>
+            </div>
+          </motion.div>
+        )}
+
         {/* Stats row */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           {[
