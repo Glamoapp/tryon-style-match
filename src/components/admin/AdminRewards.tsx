@@ -170,7 +170,42 @@ const AdminRewards = () => {
           </div>
 
           <Input placeholder="Points cost to redeem (0 = free)" type="number" value={pointsCost} onChange={(e) => setPointsCost(e.target.value)} className="font-body" />
-          <Input placeholder="Image URL (optional)" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="font-body" />
+          {/* Image Upload */}
+          <div>
+            <label className="text-xs font-body text-muted-foreground mb-1 block">Promotion Image (optional)</label>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  setImageFile(file);
+                  setImagePreview(URL.createObjectURL(file));
+                }
+              }}
+            />
+            {imagePreview ? (
+              <div className="relative w-full h-40 rounded-xl overflow-hidden border border-border bg-secondary">
+                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                <button
+                  onClick={() => { setImageFile(null); setImagePreview(null); setImageUrl(""); }}
+                  className="absolute top-2 right-2 w-7 h-7 rounded-full bg-background/80 flex items-center justify-center hover:bg-background transition-colors"
+                >
+                  <X className="w-4 h-4 text-foreground" />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full h-32 rounded-xl border-2 border-dashed border-border bg-secondary/30 flex flex-col items-center justify-center gap-2 hover:border-primary/40 hover:bg-primary/5 transition-all"
+              >
+                <Upload className="w-6 h-6 text-muted-foreground" />
+                <span className="text-sm font-body text-muted-foreground">Click to upload an image</span>
+              </button>
+            )}
+          </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
