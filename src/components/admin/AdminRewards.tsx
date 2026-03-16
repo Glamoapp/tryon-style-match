@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
-import { Plus, Trash2, Gift, Pencil, Sparkles } from "lucide-react";
+import { Plus, Trash2, Gift, Pencil, Sparkles, Upload, X, Loader2, ImageIcon } from "lucide-react";
 
 interface Reward {
   id: string;
@@ -31,6 +31,10 @@ const AdminRewards = () => {
   const [discountAmount, setDiscountAmount] = useState("");
   const [pointsCost, setPointsCost] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [rewardType, setRewardType] = useState("promotion");
   const [validFrom, setValidFrom] = useState("");
   const [validUntil, setValidUntil] = useState("");
@@ -49,7 +53,7 @@ const AdminRewards = () => {
 
   const resetForm = () => {
     setTitle(""); setDescription(""); setDiscountPercent(""); setDiscountAmount("");
-    setPointsCost(""); setImageUrl(""); setRewardType("promotion");
+    setPointsCost(""); setImageUrl(""); setImageFile(null); setImagePreview(null); setRewardType("promotion");
     setValidFrom(""); setValidUntil(""); setEditingId(null);
   };
 
@@ -59,6 +63,27 @@ const AdminRewards = () => {
       return;
     }
 
+    setUploading(true);
+    let finalImageUrl = imageUrl || null;
+
+    // Upload image file if selected
+    if (imageFile) {
+      const fileExt = imageFile.name.split(".").pop();
+      const filePath = `${crypto.randomUUID()}.${fileExt}`;
+      const { error: uploadError } = await supabase.storage
+        .from("reward-images")
+        .upload(filePath, imageFile);
+
+      if (uploadError) {
+        toast({ title: "Image upload failed", variant: "destructive" });
+        setUploading(false);
+        return;
+      }
+
+      const { data: urlData } = supabase.storage.from("reward-images").getPublicUrl(filePath);
+      finalImageUrl = urlData.publicUrl;
+    }
+
     const payload = {
       title,
       description: description || null,
@@ -66,7 +91,7 @@ const AdminRewards = () => {
       discount_percent: discountPercent ? Number(discountPercent) : null,
       discount_amount: discountAmount ? Number(discountAmount) : null,
       points_cost: pointsCost ? Number(pointsCost) : 0,
-      image_url: imageUrl || null,
+      image_url: finalImageUrl,
       valid_from: validFrom || null,
       valid_until: validUntil || null,
       updated_at: new Date().toISOString(),
@@ -80,6 +105,7 @@ const AdminRewards = () => {
       toast({ title: "Reward created" });
     }
 
+    setUploading(false);
     resetForm();
     fetchRewards();
   };
@@ -92,6 +118,8 @@ const AdminRewards = () => {
     setDiscountAmount(r.discount_amount?.toString() || "");
     setPointsCost(r.points_cost?.toString() || "");
     setImageUrl(r.image_url || "");
+    setImagePreview(r.image_url || null);
+    setImageFile(null);
     setRewardType(r.reward_type);
     setValidFrom(r.valid_from || "");
     setValidUntil(r.valid_until || "");
@@ -142,7 +170,42 @@ const AdminRewards = () => {
           </div>
 
           <Input placeholder="Points cost to redeem (0 = free)" type="number" value={pointsCost} onChange={(e) => setPointsCost(e.target.value)} className="font-body" />
-          <Input placeholder="Image URL (optional)" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="font-body" />
+          {/* Image Upload */}
+          <div>
+            <label className="text-xs font-body text-muted-foreground mb-1 block">Promotion Image (optional)</label>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  setImageFile(file);
+                  setImagePreview(URL.createObjectURL(file));
+                }
+              }}
+            />
+            {imagePreview ? (
+              <div className="relative w-full h-40 rounded-xl overflow-hidden border border-border bg-secondary">
+                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                <button
+                  onClick={() => { setImageFile(null); setImagePreview(null); setImageUrl(""); }}
+                  className="absolute top-2 right-2 w-7 h-7 rounded-full bg-background/80 flex items-center justify-center hover:bg-background transition-colors"
+                >
+                  <X className="w-4 h-4 text-foreground" />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full h-32 rounded-xl border-2 border-dashed border-border bg-secondary/30 flex flex-col items-center justify-center gap-2 hover:border-primary/40 hover:bg-primary/5 transition-all"
+              >
+                <Upload className="w-6 h-6 text-muted-foreground" />
+                <span className="text-sm font-body text-muted-foreground">Click to upload an image</span>
+              </button>
+            )}
+          </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -156,8 +219,9 @@ const AdminRewards = () => {
           </div>
 
           <div className="flex gap-2">
-            <Button variant="hero" onClick={handleSave}>
-              <Gift className="w-4 h-4 mr-1" /> {editingId ? "Update Reward" : "Create Reward"}
+            <Button variant="hero" onClick={handleSave} disabled={uploading}>
+              {uploading ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Gift className="w-4 h-4 mr-1" />}
+              {editingId ? "Update Reward" : "Create Reward"}
             </Button>
             {editingId && (
               <Button variant="outline" onClick={resetForm}>Cancel</Button>
