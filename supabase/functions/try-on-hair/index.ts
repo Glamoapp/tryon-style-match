@@ -36,12 +36,10 @@ async function callImageModel(apiKey: string, prompt: string, imageUrl: string, 
   const data = await response.json();
   const resultImage = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
   const resultText = data.choices?.[0]?.message?.content || "";
+  const refusal = data.choices?.[0]?.message?.refusal;
 
   if (!resultImage) {
-    console.error(`No image in response from ${model}. Full response keys:`, JSON.stringify(Object.keys(data)));
-    if (data.choices?.[0]?.message) {
-      console.error("Message keys:", JSON.stringify(Object.keys(data.choices[0].message)));
-    }
+    console.error(`No image from ${model}. Refusal: ${refusal || "none"}. Content: ${resultText?.substring(0, 500)}`);
   }
 
   return { status: 200, image: resultImage, text: resultText, error: null };
@@ -56,16 +54,9 @@ serve(async (req) => {
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
     if (!selfieBase64) throw new Error("No selfie image provided");
 
-    const stylePrompt = `Edit this photo to change ONLY the person's hairstyle to a "${styleName || "natural"}" look.
-Hair color: ${color || "natural black"}.
-Hair length: ${length || "medium"}.
-Hair texture: ${texture || "straight"}.
-Rules:
-- Keep the person's face, skin tone, facial features, and clothing EXACTLY the same.
-- Only modify the hair on their head.
-- Make the new hairstyle look photorealistic and natural.
-- Keep the same background.
-- Output a single photo.`;
+    const stylePrompt = `Transform this person's hairstyle into a beautiful "${styleName || "natural"}" hairstyle.
+Hair details: ${color || "natural black"} color, ${length || "medium"} length, ${texture || "straight"} texture.
+Keep the person's face, skin, features, clothing, and background identical. Only change the hair on top of their head to the new style. Make it look realistic and natural like a professional salon photo.`;
 
     // Try primary model, fall back to flash model on failure
     const models = [
