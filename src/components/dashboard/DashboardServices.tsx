@@ -28,9 +28,11 @@ type ServiceForm = {
   price: string;
   duration_minutes: string;
   description: string;
+  discount_price: string;
+  discount_badge: string;
 };
 
-const emptyForm: ServiceForm = { service_name: "", price: "", duration_minutes: "", description: "" };
+const emptyForm: ServiceForm = { service_name: "", price: "", duration_minutes: "", description: "", discount_price: "", discount_badge: "" };
 const MAX_PHOTOS_PER_SERVICE = 5;
 
 export const DashboardServices = ({ userId }: { userId: string }) => {
