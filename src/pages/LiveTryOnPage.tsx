@@ -292,17 +292,36 @@ const LiveTryOnPage = () => {
           </AnimatePresence>
         )}
 
-        {/* Initial state */}
+        {/* Initial state with logo */}
         {!cameraActive && !selfie && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black">
-            <Camera className="w-16 h-16 text-primary/60 mb-4" />
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black px-6">
+            <motion.img
+              src={logoImg}
+              alt="NextLook Beauty"
+              className="w-24 h-24 rounded-2xl shadow-elevated mb-6 object-contain"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+            />
             <h3 className="text-white font-display text-xl font-bold mb-2">Ready to Try On?</h3>
-            <p className="text-white/50 font-body text-sm mb-6 text-center px-8">
-              Open your camera and take a selfie to see how styles look on you
+            <p className="text-white/50 font-body text-sm mb-6 text-center">
+              Open your camera and see how styles look on you in real-time
             </p>
-            <Button variant="hero" size="lg" onClick={startCamera}>
-              <Camera className="w-5 h-5 mr-2" /> Open Camera
-            </Button>
+            <div className="flex flex-col gap-3 w-full max-w-xs">
+              <Button variant="hero" size="lg" className="w-full" onClick={startCamera}>
+                <Camera className="w-5 h-5 mr-2" /> Open Camera
+              </Button>
+              <Link to="/stylists" className="w-full">
+                <Button variant="gold" size="lg" className="w-full">
+                  <Users className="w-5 h-5 mr-2" /> Find a Stylist
+                </Button>
+              </Link>
+              <Link to="/extensions" className="w-full">
+                <Button variant="outline" size="lg" className="w-full border-white/20 text-white hover:bg-white/10">
+                  <ShoppingBag className="w-5 h-5 mr-2" /> Shop Extensions
+                </Button>
+              </Link>
+            </div>
           </div>
         )}
       </div>
