@@ -39,7 +39,7 @@ const LiveTryOnPage = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
 
-  const [activeCategory, setActiveCategory] = useState<StyleCategory>("Braids");
+  const [activeCategory, setActiveCategory] = useState<StyleCategory>("Wig Frontal & Closure");
   const [selectedStyleIdx, setSelectedStyleIdx] = useState(0);
   const [selectedColor, setSelectedColor] = useState(COLORS[0]);
   const [selectedLength, setSelectedLength] = useState("Medium");

@@ -10,7 +10,7 @@ import logo from "@/assets/logo.png";
 
 const TryOnPage = () => {
   const [selectedStyle, setSelectedStyle] = useState(0);
-  const [activeCategory, setActiveCategory] = useState<StyleCategory>("Braids");
+  const [activeCategory, setActiveCategory] = useState<StyleCategory>("Wig Frontal & Closure");
 
   const filteredStyles = styles.filter((s) => s.category === activeCategory);
   const currentStyle = filteredStyles[selectedStyle] || filteredStyles[0];
@@ -99,7 +99,7 @@ const TryOnPage = () => {
                 <AnimatePresence mode="wait">
                   <motion.img
                     key={currentStyle.name}
-                    src={currentStyle.image}
+                    src={currentStyle.preview}
                     alt={currentStyle.name}
                     className="w-full h-full object-cover"
                     initial={{ opacity: 0 }}
@@ -134,7 +134,7 @@ const TryOnPage = () => {
                           onClick={() => setSelectedStyle(index)}
                         >
                           <img
-                            src={style.image}
+                            src={style.preview}
                             alt={style.name}
                             className="w-full h-full object-cover"
                           />
@@ -183,7 +183,7 @@ const TryOnPage = () => {
                   >
                     <div className="aspect-[3/4]">
                       <img
-                        src={style.image}
+                        src={style.preview}
                         alt={style.name}
                         className="w-full h-full object-cover"
                       />
