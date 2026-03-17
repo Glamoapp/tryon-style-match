@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Star, MapPin, ChevronRight, Navigation } from "lucide-react";
 import { useProviders } from "@/hooks/useProviders";
+import BookingDialog from "@/components/BookingDialog";
 
 const NearbyStylists = () => {
   const { providers, loading } = useProviders();
@@ -12,11 +13,12 @@ const NearbyStylists = () => {
     return distances[Math.floor(Math.random() * distances.length)];
   };
 
-  // Flatten: one card per service (not per stylist)
+  // Flatten: one card per service
   const serviceCards = providers.flatMap((p) =>
     p.services.map((svc) => ({
       key: `${p.id}-${svc.id}`,
       providerId: p.id,
+      serviceId: svc.id,
       providerName: p.full_name,
       city: p.city,
       rating: p.rating || 0,
@@ -53,9 +55,9 @@ const NearbyStylists = () => {
         </div>
 
         {loading && (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+          <div className="flex gap-4 -mx-6 px-6">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="rounded-2xl bg-muted animate-pulse h-72" />
+              <div key={i} className="rounded-2xl bg-muted animate-pulse h-72 min-w-[170px]" />
             ))}
           </div>
         )}
@@ -74,67 +76,78 @@ const NearbyStylists = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.06 }}
-              className="min-w-[170px] md:min-w-0"
+              className="min-w-[170px] max-w-[200px]"
             >
-              <Link to={`/stylist/${card.providerId}`} className="block group">
-                <div className="rounded-2xl overflow-hidden shadow-card hover:shadow-elevated transition-all duration-300 bg-card border border-border/50">
-                  {/* Service photo */}
-                  <div className="relative aspect-[4/3] overflow-hidden">
-                    {card.photo ? (
-                      <img src={card.photo} alt={card.serviceName} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                    ) : (
-                      <div className="w-full h-full bg-muted flex items-center justify-center">
-                        <span className="text-2xl font-bold text-muted-foreground">{card.serviceName[0]}</span>
-                      </div>
-                    )}
-
-                    {/* Distance badge */}
-                    <div className="absolute top-2 left-2 bg-background/90 backdrop-blur-sm rounded-full px-2 py-0.5 flex items-center gap-1">
-                      <MapPin className="w-3 h-3 text-primary" />
-                      <span className="text-[10px] font-semibold text-foreground font-body">{card.distance}</span>
-                    </div>
-
-                    {/* Discount badge */}
-                    {card.discountBadge && (
-                      <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full px-2 py-0.5">
-                        <span className="text-[10px] font-bold font-body">{card.discountBadge}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Info */}
-                  <div className="p-3 space-y-1">
-                    <h3 className="font-display font-bold text-foreground text-sm truncate">{card.serviceName}</h3>
-
-                    {/* Price */}
-                    <div className="flex items-center gap-1.5">
-                      {card.discountPrice ? (
-                        <>
-                          <span className="text-sm font-bold text-primary font-body">${card.discountPrice}</span>
-                          <span className="text-[10px] text-muted-foreground line-through font-body">${card.price}</span>
-                        </>
+              <div className="rounded-2xl overflow-hidden shadow-card hover:shadow-elevated transition-all duration-300 bg-card border border-border/50">
+                {/* Service photo — clicking opens booking */}
+                <BookingDialog
+                  trigger={
+                    <div className="relative aspect-[4/3] overflow-hidden cursor-pointer">
+                      {card.photo ? (
+                        <img src={card.photo} alt={card.serviceName} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
                       ) : (
-                        <span className="text-sm font-bold text-foreground font-body">${card.price}</span>
+                        <div className="w-full h-full bg-muted flex items-center justify-center">
+                          <span className="text-2xl font-bold text-muted-foreground">{card.serviceName[0]}</span>
+                        </div>
+                      )}
+
+                      {/* Distance badge */}
+                      <div className="absolute top-2 left-2 bg-background/90 backdrop-blur-sm rounded-full px-2 py-0.5 flex items-center gap-1">
+                        <MapPin className="w-3 h-3 text-primary" />
+                        <span className="text-[10px] font-semibold text-foreground font-body">{card.distance}</span>
+                      </div>
+
+                      {/* Discount badge */}
+                      {card.discountBadge && (
+                        <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full px-2 py-0.5">
+                          <span className="text-[10px] font-bold font-body">{card.discountBadge}</span>
+                        </div>
                       )}
                     </div>
+                  }
+                  stylistName={card.providerName}
+                  styleName={card.serviceName}
+                  servicePrice={card.discountPrice || card.price}
+                  providerId={card.providerId}
+                  serviceId={card.serviceId}
+                />
 
-                    {/* Stylist info */}
-                    <div className="flex items-center justify-between pt-1 border-t border-border/50">
-                      <p className="text-[11px] text-muted-foreground font-body truncate mr-1">
-                        {card.providerName}
-                      </p>
-                      <div className="flex items-center gap-0.5 shrink-0">
-                        <Star className="w-3 h-3 fill-gold text-gold" />
-                        <span className="text-[11px] font-semibold text-foreground font-body">{card.rating}</span>
-                      </div>
-                    </div>
+                {/* Info */}
+                <div className="p-3 space-y-1">
+                  <h3 className="font-display font-bold text-foreground text-sm truncate">{card.serviceName}</h3>
 
-                    {card.city && (
-                      <p className="text-[10px] text-muted-foreground font-body">{card.city}</p>
+                  {/* Price */}
+                  <div className="flex items-center gap-1.5">
+                    {card.discountPrice ? (
+                      <>
+                        <span className="text-sm font-bold text-primary font-body">${card.discountPrice}</span>
+                        <span className="text-[10px] text-muted-foreground line-through font-body">${card.price}</span>
+                      </>
+                    ) : (
+                      <span className="text-sm font-bold text-foreground font-body">${card.price}</span>
                     )}
                   </div>
+
+                  {/* Stylist info — name links to profile */}
+                  <div className="flex items-center justify-between pt-1 border-t border-border/50">
+                    <Link
+                      to={`/stylist/${card.providerId}`}
+                      className="text-[11px] text-primary font-body font-semibold truncate mr-1 hover:underline"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {card.providerName}
+                    </Link>
+                    <div className="flex items-center gap-0.5 shrink-0">
+                      <Star className="w-3 h-3 fill-gold text-gold" />
+                      <span className="text-[11px] font-semibold text-foreground font-body">{card.rating}</span>
+                    </div>
+                  </div>
+
+                  {card.city && (
+                    <p className="text-[10px] text-muted-foreground font-body">{card.city}</p>
+                  )}
                 </div>
-              </Link>
+              </div>
             </motion.div>
           ))}
         </div>
