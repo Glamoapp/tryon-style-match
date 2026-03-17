@@ -161,7 +161,9 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
             price: parseFloat(form.price),
             duration_minutes: parseInt(form.duration_minutes),
             description: form.description.trim() || null,
-          })
+            discount_price: form.discount_price ? parseFloat(form.discount_price) : null,
+            discount_badge: form.discount_badge.trim() || null,
+          } as any)
           .select("id")
           .single();
         if (error) throw error;

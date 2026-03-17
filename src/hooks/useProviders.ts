@@ -55,7 +55,7 @@ export function useProviders() {
       const [servicesRes, photosRes, reviewsRes] = await Promise.all([
         supabase
           .from("provider_services")
-          .select("id, provider_id, service_name, price, duration_minutes, description")
+          .select("id, provider_id, service_name, price, duration_minutes, description, discount_price, discount_badge")
           .in("provider_id", providerIds)
           .eq("is_active", true),
         supabase
