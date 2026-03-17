@@ -134,7 +134,7 @@ const TryOnPage = () => {
                           onClick={() => setSelectedStyle(index)}
                         >
                           <img
-                            src={style.image}
+                            src={style.preview}
                             alt={style.name}
                             className="w-full h-full object-cover"
                           />
