@@ -1,11 +1,16 @@
 import { useEffect, useRef } from "react";
 
 /**
- * Real-time face detection + hair overlay drawing.
+ * Real-time face detection + overlay drawing.
  * Uses MediaPipe FaceLandmarker to track the user's head position
- * and draws the selected hair image on an overlay canvas.
+ * and draws the selected overlay image on an overlay canvas.
+ *
+ * Supports two modes:
+ * - "hair": positions overlay above the forehead (wigs, braids, etc.)
+ * - "makeup": positions overlay on the face itself (glam, bridal, etc.)
  *
  * Includes a 5-second scanning phase before showing the overlay.
+ * Applies a subtle skin-smoothing effect instead of color alteration.
  * All state is ref-based to avoid React re-render storms from rAF.
  */
 export function useFaceOverlay({
@@ -14,12 +19,14 @@ export function useFaceOverlay({
   active,
   hairImageSrc,
   onScanUpdate,
+  mode = "hair",
 }: {
   videoRef: React.RefObject<HTMLVideoElement>;
   overlayCanvasRef: React.RefObject<HTMLCanvasElement>;
   active: boolean;
   hairImageSrc: string;
   onScanUpdate?: (info: { progress: number; complete: boolean; faceDetected: boolean }) => void;
+  mode?: "hair" | "makeup";
 }) {
   const landmarkerRef = useRef<any>(null);
   const frameRef = useRef<number>(0);
@@ -29,7 +36,6 @@ export function useFaceOverlay({
   const scanStartRef = useRef<number | null>(null);
   const lastCallbackRef = useRef(0);
 
-  // Backward-compatible scan values (for any callers destructuring hook return)
   const scanProgressRef = useRef(0);
   const scanCompleteRef = useRef(false);
   const faceDetectedRef = useRef(false);
@@ -43,7 +49,7 @@ export function useFaceOverlay({
     }
   }, [active]);
 
-  // Load the selected hair image
+  // Load the selected overlay image
   useEffect(() => {
     const img = new Image();
     img.crossOrigin = "anonymous";
@@ -85,7 +91,7 @@ export function useFaceOverlay({
     })();
   }, []);
 
-  // Detection + drawing loop — NO useState, all refs
+  // Detection + drawing loop
   useEffect(() => {
     if (!active) {
       if (frameRef.current) cancelAnimationFrame(frameRef.current);
@@ -145,7 +151,6 @@ export function useFaceOverlay({
           const progress = Math.min((elapsed / SCAN_DURATION) * 100, 100);
           const complete = elapsed >= SCAN_DURATION;
 
-          // Throttle callback to ~10fps to avoid React churn
           scanProgressRef.current = progress;
           scanCompleteRef.current = complete;
           faceDetectedRef.current = true;
@@ -161,50 +166,10 @@ export function useFaceOverlay({
 
           // During scanning phase: draw face mesh dots + progress ring
           if (!complete) {
-            const dotLandmarks = [
-              10, 234, 454, 152, 1, 33, 263, 61, 291, 199,
-              67, 297, 70, 300, 107, 336, 69, 299, 104, 333,
-              103, 332, 54, 284, 21, 251, 162, 389, 127, 356,
-            ];
-            const scanAlpha = 0.3 + (progress / 100) * 0.7;
-
-            for (const idx of dotLandmarks) {
-              if (lm[idx]) {
-                ctx.beginPath();
-                ctx.arc(lm[idx].x * w, lm[idx].y * h, 3, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(200, 100, 255, ${scanAlpha})`;
-                ctx.fill();
-              }
-            }
-
-            const connections = [
-              [10, 67], [67, 69], [69, 104], [104, 54], [54, 21], [21, 162], [162, 127],
-              [10, 297], [297, 299], [299, 333], [333, 284], [284, 251], [251, 389], [389, 356],
-              [33, 133], [263, 362], [61, 291],
-            ];
-            ctx.strokeStyle = `rgba(200, 100, 255, ${scanAlpha * 0.5})`;
-            ctx.lineWidth = 1;
-            for (const [a, b] of connections) {
-              if (lm[a] && lm[b]) {
-                ctx.beginPath();
-                ctx.moveTo(lm[a].x * w, lm[a].y * h);
-                ctx.lineTo(lm[b].x * w, lm[b].y * h);
-                ctx.stroke();
-              }
-            }
-
-            // Progress ring around face
-            const faceCX = ((lm[234].x + lm[454].x) / 2) * w;
-            const faceCY = ((lm[10].y + lm[152].y) / 2) * h;
-            const faceRadius = Math.abs(lm[454].x - lm[234].x) * w * 0.9;
-            ctx.beginPath();
-            ctx.arc(faceCX, faceCY, faceRadius, -Math.PI / 2, -Math.PI / 2 + (Math.PI * 2 * progress / 100));
-            ctx.strokeStyle = "rgba(200, 100, 255, 0.8)";
-            ctx.lineWidth = 3;
-            ctx.stroke();
+            drawScanningPhase(ctx, lm, w, h, progress);
           }
 
-          // After scan: draw light filter + hair overlay
+          // After scan: draw smooth skin + overlay
           if (complete) {
             const foreheadTop = lm[10];
             const leftTemple = lm[234];
@@ -217,41 +182,24 @@ export function useFaceOverlay({
             const faceCenterY = ((foreheadTop.y + chin.y) / 2) * h;
             const foreheadY = foreheadTop.y * h;
 
-            // Snapchat-style light filter: soft warm glow on face
-            const glowRadius = Math.max(faceWidth, faceHeight) * 1.2;
-            const glow = ctx.createRadialGradient(
-              faceCenterX, faceCenterY, glowRadius * 0.1,
-              faceCenterX, faceCenterY, glowRadius
-            );
-            glow.addColorStop(0, "rgba(255, 235, 210, 0.15)");
-            glow.addColorStop(0.4, "rgba(255, 220, 200, 0.08)");
-            glow.addColorStop(1, "rgba(255, 255, 255, 0)");
-            ctx.fillStyle = glow;
-            ctx.fillRect(0, 0, w, h);
+            // Subtle skin smoothing — soft transparent overlay on face region only
+            drawSkinSmoothing(ctx, faceCenterX, faceCenterY, faceWidth, faceHeight);
 
-            // Hair overlay
+            // Draw the overlay image
             if (hairImgRef.current) {
               const angle = Math.atan2(
                 (lm[454].y - lm[234].y) * h,
                 (lm[454].x - lm[234].x) * w
               );
 
-              const hairWidth = faceWidth * 2.8;
-              const hairHeight = faceHeight * 2.8;
-              const hairX = faceCenterX - hairWidth / 2;
-              const hairY = foreheadY - hairHeight * 0.88;
-
-              ctx.save();
-              ctx.translate(faceCenterX, foreheadY);
-              ctx.rotate(angle);
-              ctx.translate(-faceCenterX, -foreheadY);
-              ctx.globalAlpha = 0.88;
-              ctx.drawImage(hairImgRef.current, hairX, hairY, hairWidth, hairHeight);
-              ctx.restore();
+              if (mode === "makeup") {
+                drawMakeupOverlay(ctx, hairImgRef.current, faceCenterX, faceCenterY, faceWidth, faceHeight, angle);
+              } else {
+                drawHairOverlay(ctx, hairImgRef.current, faceCenterX, foreheadY, faceWidth, faceHeight, angle);
+              }
             }
           }
         } else {
-          // No face — reset scan
           scanStartRef.current = null;
           scanProgressRef.current = 0;
           scanCompleteRef.current = false;
@@ -273,11 +221,130 @@ export function useFaceOverlay({
     return () => {
       if (frameRef.current) cancelAnimationFrame(frameRef.current);
     };
-  }, [active, videoRef, overlayCanvasRef, onScanUpdate]);
+  }, [active, videoRef, overlayCanvasRef, onScanUpdate, mode]);
 
   return {
     scanProgress: scanProgressRef.current,
     scanComplete: scanCompleteRef.current,
     faceDetected: faceDetectedRef.current,
   };
+}
+
+/** Draw scanning dots and progress ring */
+function drawScanningPhase(
+  ctx: CanvasRenderingContext2D,
+  lm: any[],
+  w: number,
+  h: number,
+  progress: number
+) {
+  const dotLandmarks = [
+    10, 234, 454, 152, 1, 33, 263, 61, 291, 199,
+    67, 297, 70, 300, 107, 336, 69, 299, 104, 333,
+    103, 332, 54, 284, 21, 251, 162, 389, 127, 356,
+  ];
+  const scanAlpha = 0.3 + (progress / 100) * 0.7;
+
+  for (const idx of dotLandmarks) {
+    if (lm[idx]) {
+      ctx.beginPath();
+      ctx.arc(lm[idx].x * w, lm[idx].y * h, 3, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(200, 100, 255, ${scanAlpha})`;
+      ctx.fill();
+    }
+  }
+
+  const connections = [
+    [10, 67], [67, 69], [69, 104], [104, 54], [54, 21], [21, 162], [162, 127],
+    [10, 297], [297, 299], [299, 333], [333, 284], [284, 251], [251, 389], [389, 356],
+    [33, 133], [263, 362], [61, 291],
+  ];
+  ctx.strokeStyle = `rgba(200, 100, 255, ${scanAlpha * 0.5})`;
+  ctx.lineWidth = 1;
+  for (const [a, b] of connections) {
+    if (lm[a] && lm[b]) {
+      ctx.beginPath();
+      ctx.moveTo(lm[a].x * w, lm[a].y * h);
+      ctx.lineTo(lm[b].x * w, lm[b].y * h);
+      ctx.stroke();
+    }
+  }
+
+  // Progress ring around face
+  const faceCX = ((lm[234].x + lm[454].x) / 2) * w;
+  const faceCY = ((lm[10].y + lm[152].y) / 2) * h;
+  const faceRadius = Math.abs(lm[454].x - lm[234].x) * w * 0.9;
+  ctx.beginPath();
+  ctx.arc(faceCX, faceCY, faceRadius, -Math.PI / 2, -Math.PI / 2 + (Math.PI * 2 * progress / 100));
+  ctx.strokeStyle = "rgba(200, 100, 255, 0.8)";
+  ctx.lineWidth = 3;
+  ctx.stroke();
+}
+
+/** Subtle skin smoothing — soft, semi-transparent radial glow (no color shift) */
+function drawSkinSmoothing(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  faceW: number,
+  faceH: number
+) {
+  const radius = Math.max(faceW, faceH) * 0.8;
+  const glow = ctx.createRadialGradient(cx, cy, radius * 0.05, cx, cy, radius);
+  glow.addColorStop(0, "rgba(255, 255, 255, 0.06)");
+  glow.addColorStop(0.5, "rgba(255, 255, 255, 0.03)");
+  glow.addColorStop(1, "rgba(255, 255, 255, 0)");
+  ctx.fillStyle = glow;
+  ctx.fillRect(cx - radius, cy - radius, radius * 2, radius * 2);
+}
+
+/** Draw hair overlay above the forehead */
+function drawHairOverlay(
+  ctx: CanvasRenderingContext2D,
+  img: HTMLImageElement,
+  faceCenterX: number,
+  foreheadY: number,
+  faceWidth: number,
+  faceHeight: number,
+  angle: number
+) {
+  const hairWidth = faceWidth * 2.8;
+  const hairHeight = faceHeight * 2.8;
+  const hairX = faceCenterX - hairWidth / 2;
+  const hairY = foreheadY - hairHeight * 0.88;
+
+  ctx.save();
+  ctx.translate(faceCenterX, foreheadY);
+  ctx.rotate(angle);
+  ctx.translate(-faceCenterX, -foreheadY);
+  ctx.globalAlpha = 0.88;
+  ctx.drawImage(img, hairX, hairY, hairWidth, hairHeight);
+  ctx.restore();
+}
+
+/** Draw makeup overlay centered on the face */
+function drawMakeupOverlay(
+  ctx: CanvasRenderingContext2D,
+  img: HTMLImageElement,
+  faceCenterX: number,
+  faceCenterY: number,
+  faceWidth: number,
+  faceHeight: number,
+  angle: number
+) {
+  // Scale the makeup overlay to cover the full face
+  const overlayWidth = faceWidth * 2.2;
+  const overlayHeight = faceHeight * 1.8;
+  const overlayX = faceCenterX - overlayWidth / 2;
+  const overlayY = faceCenterY - overlayHeight / 2;
+
+  ctx.save();
+  ctx.translate(faceCenterX, faceCenterY);
+  ctx.rotate(angle);
+  ctx.translate(-faceCenterX, -faceCenterY);
+  ctx.globalAlpha = 0.7;
+  ctx.globalCompositeOperation = "multiply";
+  ctx.drawImage(img, overlayX, overlayY, overlayWidth, overlayHeight);
+  ctx.globalCompositeOperation = "source-over";
+  ctx.restore();
 }
