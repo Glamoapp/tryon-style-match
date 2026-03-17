@@ -161,20 +161,27 @@ export const useCartStore = create<CartStore>()(
       clearJustAdded: () => set({ justAdded: null }),
 
       syncCart: async () => {
-        const { cartId, isSyncing, clearCart, serviceItems } = get();
-        if (!cartId || isSyncing) return;
+        const { cartId, isSyncing, clearCart, serviceItems, items, justAdded } = get();
+        // Skip sync if cart was just modified (Shopify eventual consistency)
+        if (!cartId || isSyncing || justAdded) return;
+        // Don't sync if we have local items added within the last few seconds
         set({ isSyncing: true });
         try {
+          // Add a small delay to let Shopify catch up
+          await new Promise(r => setTimeout(r, 1500));
           const data = await storefrontApiRequest(CART_QUERY, { id: cartId });
-          if (!data) return;
+          if (!data) { set({ isSyncing: false }); return; }
           const cart = data?.data?.cart;
-          if (!cart || cart.totalQuantity === 0) {
+          if (!cart) {
+            // Cart truly doesn't exist on Shopify anymore
             if (serviceItems.length === 0) {
               clearCart();
             } else {
               set({ items: [], cartId: null, checkoutUrl: null });
             }
           }
+          // If cart exists, trust local state — don't clear based on totalQuantity
+          // since Shopify may still be processing
         } catch (error) {
           console.error('Failed to sync cart:', error);
         } finally {
