@@ -81,41 +81,57 @@ const NearbyStylists = () => {
               className="min-w-[160px] md:min-w-0"
             >
               <Link to={`/stylist/${card.id}`} className="block group">
-                <div className="relative rounded-2xl overflow-hidden aspect-[3/4] shadow-card hover:shadow-elevated transition-all duration-300">
-                  {card.coverPhoto ? (
-                    <img src={card.coverPhoto} alt={card.name} className="w-full h-full object-cover" />
-                  ) : card.avatar ? (
-                    <img src={card.avatar} alt={card.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full bg-muted flex items-center justify-center">
-                      <span className="text-3xl font-bold text-muted-foreground">{card.name[0]}</span>
+                <div className="rounded-2xl overflow-hidden shadow-card hover:shadow-elevated transition-all duration-300 bg-card border border-border/50">
+                  {/* Image */}
+                  <div className="relative aspect-[4/3] overflow-hidden">
+                    {card.coverPhoto ? (
+                      <img src={card.coverPhoto} alt={card.name} className="w-full h-full object-cover" />
+                    ) : card.avatar ? (
+                      <img src={card.avatar} alt={card.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-muted flex items-center justify-center">
+                        <span className="text-3xl font-bold text-muted-foreground">{card.name[0]}</span>
+                      </div>
+                    )}
+                    {/* Distance badge */}
+                    <div className="absolute top-2 left-2 bg-background/90 backdrop-blur-sm rounded-full px-2 py-0.5 flex items-center gap-1">
+                      <MapPin className="w-3 h-3 text-primary" />
+                      <span className="text-[10px] font-semibold text-foreground font-body">{card.distance}</span>
                     </div>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-transparent to-transparent" />
-                  
-                  {/* Distance badge */}
-                  <div className="absolute top-2 left-2 bg-background/90 backdrop-blur-sm rounded-full px-2 py-0.5 flex items-center gap-1">
-                    <MapPin className="w-3 h-3 text-primary" />
-                    <span className="text-[10px] font-semibold text-foreground font-body">{card.distance}</span>
                   </div>
 
-                  {/* Bottom info */}
-                  <div className="absolute bottom-0 left-0 right-0 p-3">
-                    <h3 className="font-display font-bold text-cream text-sm truncate">{card.name}</h3>
-                    <div className="flex items-center gap-1 mt-0.5">
-                      <Star className="w-3 h-3 fill-gold text-gold" />
-                      <span className="text-xs font-semibold text-cream font-body">{card.rating}</span>
-                      <span className="text-[10px] text-cream/60 font-body">({card.reviews})</span>
+                  {/* Info below image */}
+                  <div className="p-3">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-display font-bold text-foreground text-sm truncate">{card.name}</h3>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <Star className="w-3 h-3 fill-gold text-gold" />
+                        <span className="text-xs font-semibold text-foreground font-body">{card.rating}</span>
+                        <span className="text-[10px] text-muted-foreground font-body">({card.reviews})</span>
+                      </div>
                     </div>
+
+                    {card.city && (
+                      <p className="text-[10px] text-muted-foreground font-body mt-0.5">{card.city}</p>
+                    )}
+
+                    {/* All services */}
                     {card.services.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-1.5">
+                      <div className="mt-2 space-y-1">
                         {card.services.map((svc) => (
-                          <span
-                            key={svc.id}
-                            className="text-[9px] bg-cream/20 backdrop-blur-sm text-cream px-1.5 py-0.5 rounded-full font-body"
-                          >
-                            {svc.service_name} · ${svc.discount_price || svc.price}
-                          </span>
+                          <div key={svc.id} className="flex items-center justify-between text-[11px] font-body">
+                            <span className="text-foreground truncate mr-2">{svc.service_name}</span>
+                            <div className="flex items-center gap-1 shrink-0">
+                              {svc.discount_price ? (
+                                <>
+                                  <span className="font-semibold text-primary">${svc.discount_price}</span>
+                                  <span className="text-muted-foreground line-through text-[9px]">${svc.price}</span>
+                                </>
+                              ) : (
+                                <span className="font-semibold text-foreground">${svc.price}</span>
+                              )}
+                            </div>
+                          </div>
                         ))}
                       </div>
                     )}
