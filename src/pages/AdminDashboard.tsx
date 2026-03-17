@@ -13,6 +13,7 @@ import AdminProviders from "@/components/admin/AdminProviders";
 import AdminDeals from "@/components/admin/AdminDeals";
 import AdminRewards from "@/components/admin/AdminRewards";
 import AdminAlerts from "@/components/admin/AdminAlerts";
+import AdminVisitors from "@/components/admin/AdminVisitors";
 
 const ADMIN_EMAIL = "nextlookbeauty@gmail.com";
 
