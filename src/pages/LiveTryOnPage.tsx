@@ -56,13 +56,16 @@ const LiveTryOnPage = () => {
     setScanInfo(info);
   }, []);
 
-  // Real-time AR hair overlay with 5s scan phase
+  const isMakeupCategory = activeCategory === "Makeup";
+
+  // Real-time AR overlay with 5s scan phase
   useFaceOverlay({
     videoRef,
     overlayCanvasRef,
     active: cameraActive && !selfie,
     hairImageSrc: currentStyle?.image || "",
     onScanUpdate: handleScanUpdate,
+    mode: isMakeupCategory ? "makeup" : "hair",
   });
 
   const startCamera = useCallback(async () => {
