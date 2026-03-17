@@ -6,6 +6,7 @@ import BestDeals from "@/components/BestDeals";
 import TopRatedStylists from "@/components/TopRatedStylists";
 import FaceScanPromo from "@/components/FaceScanPromo";
 import Footer from "@/components/Footer";
+import useVisitorTracking from "@/hooks/useVisitorTracking";
 
 const Index = () => {
   return (

@@ -129,6 +129,11 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
       }
 
       bookingId = createdBooking.id;
+
+      // Trigger admin SMS + email notification
+      supabase.functions.invoke("notify-booking", {
+        body: { booking_id: bookingId },
+      }).catch((err) => console.error("Booking notification failed:", err));
     }
 
     // Add to unified cart
