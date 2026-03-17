@@ -145,8 +145,10 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
             price: parseFloat(form.price),
             duration_minutes: parseInt(form.duration_minutes),
             description: form.description.trim() || null,
+            discount_price: form.discount_price ? parseFloat(form.discount_price) : null,
+            discount_badge: form.discount_badge.trim() || null,
             updated_at: new Date().toISOString(),
-          })
+          } as any)
           .eq("id", editingId);
         if (error) throw error;
         toast.success("Service updated!");
