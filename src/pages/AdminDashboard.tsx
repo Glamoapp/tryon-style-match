@@ -107,6 +107,7 @@ const AdminDashboard = () => {
               <TabsTrigger value="deals" className="font-body text-sm">Deals & Promos</TabsTrigger>
               <TabsTrigger value="rewards" className="font-body text-sm">GlowUp Monday</TabsTrigger>
               <TabsTrigger value="alerts" className="font-body text-sm">Admin Alerts</TabsTrigger>
+              <TabsTrigger value="visitors" className="font-body text-sm">Visitors</TabsTrigger>
             </TabsList>
 
             <TabsContent value="commissions"><AdminCommissions /></TabsContent>
@@ -117,6 +118,7 @@ const AdminDashboard = () => {
             <TabsContent value="deals"><AdminDeals /></TabsContent>
             <TabsContent value="rewards"><AdminRewards /></TabsContent>
             <TabsContent value="alerts"><AdminAlerts /></TabsContent>
+            <TabsContent value="visitors"><AdminVisitors /></TabsContent>
           </Tabs>
         </div>
       </div>
