@@ -107,8 +107,17 @@ const NearbyStylists = () => {
                       <span className="text-xs font-semibold text-cream font-body">{card.rating}</span>
                       <span className="text-[10px] text-cream/60 font-body">({card.reviews})</span>
                     </div>
-                    {card.price && (
-                      <p className="text-[10px] text-cream/70 font-body mt-1">{card.price}</p>
+                    {card.services.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-1.5">
+                        {card.services.map((svc) => (
+                          <span
+                            key={svc.id}
+                            className="text-[9px] bg-cream/20 backdrop-blur-sm text-cream px-1.5 py-0.5 rounded-full font-body"
+                          >
+                            {svc.service_name} · ${svc.discount_price || svc.price}
+                          </span>
+                        ))}
+                      </div>
                     )}
                   </div>
                 </div>
