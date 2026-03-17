@@ -10,7 +10,7 @@ const TopRatedStylists = () => {
   // Sort by rating desc, then by review count
   const topRated = [...providers]
     .sort((a, b) => b.rating - a.rating || b.reviewCount - a.reviewCount)
-    .slice(0, 4);
+    .slice(0, 8);
 
   return (
     <section className="py-12 bg-background">
