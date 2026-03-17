@@ -419,6 +419,8 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
+          discount_badge: string | null
+          discount_price: number | null
           duration_minutes: number
           id: string
           is_active: boolean
@@ -430,6 +432,8 @@ export type Database = {
         Insert: {
           created_at?: string
           description?: string | null
+          discount_badge?: string | null
+          discount_price?: number | null
           duration_minutes: number
           id?: string
           is_active?: boolean
@@ -441,6 +445,8 @@ export type Database = {
         Update: {
           created_at?: string
           description?: string | null
+          discount_badge?: string | null
+          discount_price?: number | null
           duration_minutes?: number
           id?: string
           is_active?: boolean

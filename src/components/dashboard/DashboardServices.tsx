@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Pencil, Trash2, X, Save, Scissors, Upload, ImageIcon } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Save, Scissors, Upload, ImageIcon, Tag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -28,9 +28,11 @@ type ServiceForm = {
   price: string;
   duration_minutes: string;
   description: string;
+  discount_price: string;
+  discount_badge: string;
 };
 
-const emptyForm: ServiceForm = { service_name: "", price: "", duration_minutes: "", description: "" };
+const emptyForm: ServiceForm = { service_name: "", price: "", duration_minutes: "", description: "", discount_price: "", discount_badge: "" };
 const MAX_PHOTOS_PER_SERVICE = 5;
 
 export const DashboardServices = ({ userId }: { userId: string }) => {
@@ -77,6 +79,8 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
       price: String(svc.price),
       duration_minutes: String(svc.duration_minutes),
       description: svc.description || "",
+      discount_price: (svc as any).discount_price ? String((svc as any).discount_price) : "",
+      discount_badge: (svc as any).discount_badge || "",
     });
   };
 
@@ -141,8 +145,10 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
             price: parseFloat(form.price),
             duration_minutes: parseInt(form.duration_minutes),
             description: form.description.trim() || null,
+            discount_price: form.discount_price ? parseFloat(form.discount_price) : null,
+            discount_badge: form.discount_badge.trim() || null,
             updated_at: new Date().toISOString(),
-          })
+          } as any)
           .eq("id", editingId);
         if (error) throw error;
         toast.success("Service updated!");
@@ -155,7 +161,9 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
             price: parseFloat(form.price),
             duration_minutes: parseInt(form.duration_minutes),
             description: form.description.trim() || null,
-          })
+            discount_price: form.discount_price ? parseFloat(form.discount_price) : null,
+            discount_badge: form.discount_badge.trim() || null,
+          } as any)
           .select("id")
           .single();
         if (error) throw error;
@@ -290,6 +298,36 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
               />
             </div>
           </div>
+
+          {/* Discount / Deal section */}
+          <div className="p-4 rounded-lg border border-dashed border-primary/30 bg-primary/5 space-y-3">
+            <Label className="flex items-center gap-1.5 text-primary font-semibold">
+              <Tag className="w-4 h-4" /> Set a Deal (optional)
+            </Label>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Discount Price ($)</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  value={form.discount_price}
+                  onChange={(e) => setForm((f) => ({ ...f, discount_price: e.target.value }))}
+                  placeholder="e.g. 85"
+                />
+                <p className="text-[10px] text-muted-foreground mt-1">Leave empty = no deal</p>
+              </div>
+              <div>
+                <Label>Deal Badge</Label>
+                <Input
+                  value={form.discount_badge}
+                  onChange={(e) => setForm((f) => ({ ...f, discount_badge: e.target.value }))}
+                  placeholder="e.g. 30% OFF, HOT DEAL"
+                />
+                <p className="text-[10px] text-muted-foreground mt-1">Auto-calculated if empty</p>
+              </div>
+            </div>
+          </div>
+
           <div>
             <Label>Description (optional)</Label>
             <Textarea
@@ -392,7 +430,18 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
                     )}
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    ${Number(svc.price).toFixed(0)} · {svc.duration_minutes} min
+                    {(svc as any).discount_price ? (
+                      <>
+                        <span className="text-primary font-semibold">${Number((svc as any).discount_price).toFixed(0)}</span>
+                        <span className="line-through ml-1">${Number(svc.price).toFixed(0)}</span>
+                        {(svc as any).discount_badge && (
+                          <span className="ml-1.5 text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-semibold">{(svc as any).discount_badge}</span>
+                        )}
+                      </>
+                    ) : (
+                      <>${Number(svc.price).toFixed(0)}</>
+                    )}
+                    {" · "}{svc.duration_minutes} min
                   </p>
                   {svc.description && (
                     <p className="text-sm text-muted-foreground mt-1 line-clamp-1">{svc.description}</p>

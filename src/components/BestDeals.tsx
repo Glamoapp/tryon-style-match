@@ -1,32 +1,43 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { Tag, ChevronRight, Percent, ShoppingBag, Scissors } from "lucide-react";
+import { Tag, ChevronRight, ShoppingBag, Scissors, Star } from "lucide-react";
+import { useProviders } from "@/hooks/useProviders";
 import weaveImg from "@/assets/service-weave.jpg";
 import braidsImg from "@/assets/service-braids.jpg";
 import ktipsImg from "@/assets/service-ktips.jpg";
 import wigsImg from "@/assets/service-wigs.jpg";
 import makeupImg from "@/assets/service-makeup.jpg";
-import frontalImg from "@/assets/style-frontal.jpg";
 import bodyWaveImg from "@/assets/style-body-wave.jpg";
+import frontalImg from "@/assets/style-frontal.jpg";
 import deepWaveImg from "@/assets/style-deep-wave.jpg";
 
-const serviceDeals = [
-  { id: "sd-1", title: "Full Sew-In Weave", image: weaveImg, originalPrice: 180, discountPrice: 120, badge: "33% OFF" },
-  { id: "sd-2", title: "Knotless Braids", image: braidsImg, originalPrice: 150, discountPrice: 85, badge: "43% OFF" },
-  { id: "sd-3", title: "K-Tip Extensions", image: ktipsImg, originalPrice: 200, discountPrice: 150, badge: "25% OFF" },
-  { id: "sd-4", title: "Wig Install + Style", image: wigsImg, originalPrice: 160, discountPrice: 95, badge: "40% OFF" },
-  { id: "sd-5", title: "Glam Makeup", image: makeupImg, originalPrice: 120, discountPrice: 65, badge: "POPULAR" },
-];
-
+// Fallback static hair deals (products, not provider services)
 const hairDeals = [
   { id: "hd-1", title: "Body Wave Bundle", image: bodyWaveImg, originalPrice: 199, discountPrice: 149, badge: "BEST SELLER" },
   { id: "hd-2", title: "13x4 Frontal Wig", image: frontalImg, originalPrice: 299, discountPrice: 199, badge: "HOT DEAL" },
   { id: "hd-3", title: "Deep Wave Bundle", image: deepWaveImg, originalPrice: 179, discountPrice: 129, badge: "NEW" },
 ];
 
+// Fallback images by keyword
+const fallbackImages: Record<string, string> = {
+  weave: weaveImg, "sew-in": weaveImg, sewin: weaveImg,
+  braid: braidsImg, knotless: braidsImg, cornrow: braidsImg,
+  "k-tip": ktipsImg, ktip: ktipsImg, extension: ktipsImg, "i-tip": ktipsImg,
+  wig: wigsImg, frontal: wigsImg, closure: wigsImg, "lace front": wigsImg,
+  makeup: makeupImg, glam: makeupImg, beat: makeupImg,
+};
+
+const getFallbackImage = (serviceName: string) => {
+  const lower = serviceName.toLowerCase();
+  for (const [key, img] of Object.entries(fallbackImages)) {
+    if (lower.includes(key)) return img;
+  }
+  return weaveImg;
+};
+
 interface DealCardProps {
-  deal: { id: string; title: string; image: string; originalPrice: number; discountPrice: number; badge: string };
+  deal: { id: string; title: string; image: string; originalPrice: number; discountPrice: number; badge: string; providerName?: string; providerId?: string; rating?: number };
   index: number;
   linkTo: string;
   ctaLabel: string;
@@ -55,6 +66,16 @@ const DealCard = ({ deal, index, linkTo, ctaLabel, typeIcon }: DealCardProps) =>
         </div>
         <div className="p-3">
           <h3 className="font-display font-bold text-foreground text-sm truncate">{deal.title}</h3>
+          {deal.providerName && (
+            <p className="text-[10px] text-muted-foreground font-body flex items-center gap-1 mt-0.5">
+              by {deal.providerName}
+              {deal.rating ? (
+                <span className="flex items-center gap-0.5">
+                  <Star className="w-2.5 h-2.5 fill-gold text-gold" /> {deal.rating}
+                </span>
+              ) : null}
+            </p>
+          )}
           <div className="flex items-center gap-2 mt-1.5">
             <span className="text-base font-bold text-primary font-body">${deal.discountPrice}</span>
             <span className="text-xs text-muted-foreground line-through font-body">${deal.originalPrice}</span>
@@ -69,6 +90,32 @@ const DealCard = ({ deal, index, linkTo, ctaLabel, typeIcon }: DealCardProps) =>
 );
 
 const BestDeals = () => {
+  const { providers, loading } = useProviders();
+
+  // Build real service deals from providers who have set discount prices
+  const serviceDeals = providers
+    .flatMap((p) =>
+      p.services
+        .filter((s) => (s as any).discount_price && (s as any).discount_price < s.price)
+        .map((s) => {
+          const discountPrice = (s as any).discount_price as number;
+          const pct = Math.round(((s.price - discountPrice) / s.price) * 100);
+          const photo = s.photos[0];
+          return {
+            id: s.id,
+            title: s.service_name,
+            image: photo || getFallbackImage(s.service_name),
+            originalPrice: s.price,
+            discountPrice,
+            badge: (s as any).discount_badge || `${pct}% OFF`,
+            providerName: p.full_name,
+            providerId: p.id,
+            rating: p.rating,
+          };
+        })
+    )
+    .slice(0, 8);
+
   return (
     <section className="py-12 bg-gradient-warm space-y-14">
       <div className="container mx-auto px-6">
@@ -92,18 +139,24 @@ const BestDeals = () => {
           </Link>
         </div>
 
-        <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0 md:grid md:grid-cols-5 md:overflow-visible">
-          {serviceDeals.map((deal, index) => (
-            <DealCard
-              key={deal.id}
-              deal={deal}
-              index={index}
-              linkTo="/stylists"
-              ctaLabel="Book Now"
-              typeIcon={<Tag className="w-3 h-3 text-primary" />}
-            />
-          ))}
-        </div>
+        {serviceDeals.length > 0 ? (
+          <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0 md:grid md:grid-cols-4 md:overflow-visible">
+            {serviceDeals.map((deal, index) => (
+              <DealCard
+                key={deal.id}
+                deal={deal}
+                index={index}
+                linkTo={`/stylist/${deal.providerId}`}
+                ctaLabel="Book Now"
+                typeIcon={<Tag className="w-3 h-3 text-primary" />}
+              />
+            ))}
+          </div>
+        ) : (
+          <p className="text-center text-muted-foreground font-body py-6 text-sm">
+            {loading ? "Loading deals..." : "No active service deals right now. Check back soon!"}
+          </p>
+        )}
       </div>
 
       <div className="container mx-auto px-6">
