@@ -40,9 +40,12 @@ const AdminStylists = () => {
   const toggleApproval = async (id: string, current: boolean) => {
     const { error } = await supabase
       .from("profiles")
-      .update({ is_approved: !current })
+      .update({ is_approved: !current } as any)
       .eq("id", id);
-    if (!error) {
+    if (error) {
+      console.error("Approval error:", error);
+      toast({ title: "Failed to update approval", description: error.message, variant: "destructive" });
+    } else {
       toast({ title: current ? "Provider approval revoked" : "Provider approved & live!" });
       fetchStylists();
     }
