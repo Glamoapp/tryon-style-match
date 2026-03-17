@@ -298,6 +298,36 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
               />
             </div>
           </div>
+
+          {/* Discount / Deal section */}
+          <div className="p-4 rounded-lg border border-dashed border-primary/30 bg-primary/5 space-y-3">
+            <Label className="flex items-center gap-1.5 text-primary font-semibold">
+              <Tag className="w-4 h-4" /> Set a Deal (optional)
+            </Label>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Discount Price ($)</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  value={form.discount_price}
+                  onChange={(e) => setForm((f) => ({ ...f, discount_price: e.target.value }))}
+                  placeholder="e.g. 85"
+                />
+                <p className="text-[10px] text-muted-foreground mt-1">Leave empty = no deal</p>
+              </div>
+              <div>
+                <Label>Deal Badge</Label>
+                <Input
+                  value={form.discount_badge}
+                  onChange={(e) => setForm((f) => ({ ...f, discount_badge: e.target.value }))}
+                  placeholder="e.g. 30% OFF, HOT DEAL"
+                />
+                <p className="text-[10px] text-muted-foreground mt-1">Auto-calculated if empty</p>
+              </div>
+            </div>
+          </div>
+
           <div>
             <Label>Description (optional)</Label>
             <Textarea
