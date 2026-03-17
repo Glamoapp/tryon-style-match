@@ -99,8 +99,14 @@ const LiveTryOnPage = () => {
     setFacingMode(newMode);
 
     try {
+      const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
       const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: newMode, width: { ideal: 1280 }, height: { ideal: 1720 } },
+        video: {
+          facingMode: newMode,
+          width: { ideal: isMobileDevice ? 1080 : 1280 },
+          height: { ideal: isMobileDevice ? 1440 : 1720 },
+          ...(isMobileDevice && newMode === "user" ? { zoom: 1.0 } as any : {}),
+        },
         audio: false,
       });
       setStream(mediaStream);
