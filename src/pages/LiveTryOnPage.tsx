@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Camera, RotateCcw, ArrowLeft, Sparkles, ShoppingBag, Calendar,
-  ChevronRight, ChevronUp, Palette, Ruler, Waves, X, FlipHorizontal
+  ChevronRight, ChevronUp, Palette, Ruler, Waves, X, FlipHorizontal, Users
 } from "lucide-react";
 import BookingDialog from "@/components/BookingDialog";
 import { styles, categories, type StyleCategory } from "@/data/tryOnStyles";
