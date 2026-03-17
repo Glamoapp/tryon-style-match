@@ -33,18 +33,14 @@ const NearbyStylists = () => {
   );
 
   return (
-    <section className="py-12 bg-background">
+    <section className="py-8 bg-background">
       <div className="container mx-auto px-6">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <Navigation className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold text-primary uppercase tracking-widest font-body">
-                Near You
-              </span>
-            </div>
-            <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground">
-              Nearby Services
+        {/* Header row */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Navigation className="w-4 h-4 text-primary" />
+            <h2 className="text-xl md:text-2xl font-display font-bold text-foreground">
+              In Your Area
             </h2>
           </div>
           <Link to="/stylists">
@@ -55,9 +51,9 @@ const NearbyStylists = () => {
         </div>
 
         {loading && (
-          <div className="flex gap-4 -mx-6 px-6">
+          <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="rounded-2xl bg-muted animate-pulse h-72 min-w-[170px]" />
+              <div key={i} className="rounded-2xl bg-muted animate-pulse h-64 min-w-[160px] flex-shrink-0" />
             ))}
           </div>
         )}
@@ -68,15 +64,16 @@ const NearbyStylists = () => {
           </p>
         )}
 
-        <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide -mx-6 px-6">
+        {/* Horizontal scrollable row */}
+        <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
           {serviceCards.map((card, index) => (
             <motion.div
               key={card.key}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.06 }}
-              className="min-w-[170px] max-w-[200px]"
+              transition={{ delay: index * 0.04 }}
+              className="min-w-[160px] max-w-[180px] flex-shrink-0"
             >
               <div className="rounded-2xl overflow-hidden shadow-card hover:shadow-elevated transition-all duration-300 bg-card border border-border/50">
                 {/* Service photo — clicking opens booking */}
@@ -84,7 +81,7 @@ const NearbyStylists = () => {
                   trigger={
                     <div className="relative aspect-[4/3] overflow-hidden cursor-pointer">
                       {card.photo ? (
-                        <img src={card.photo} alt={card.serviceName} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+                        <img src={card.photo} alt={card.serviceName} className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full bg-muted flex items-center justify-center">
                           <span className="text-2xl font-bold text-muted-foreground">{card.serviceName[0]}</span>
@@ -113,38 +110,38 @@ const NearbyStylists = () => {
                 />
 
                 {/* Info */}
-                <div className="p-3 space-y-1">
-                  <h3 className="font-display font-bold text-foreground text-sm truncate">{card.serviceName}</h3>
+                <div className="p-2.5 space-y-1">
+                  <h3 className="font-display font-bold text-foreground text-xs truncate">{card.serviceName}</h3>
 
                   {/* Price */}
                   <div className="flex items-center gap-1.5">
                     {card.discountPrice ? (
                       <>
-                        <span className="text-sm font-bold text-primary font-body">${card.discountPrice}</span>
+                        <span className="text-xs font-bold text-primary font-body">${card.discountPrice}</span>
                         <span className="text-[10px] text-muted-foreground line-through font-body">${card.price}</span>
                       </>
                     ) : (
-                      <span className="text-sm font-bold text-foreground font-body">${card.price}</span>
+                      <span className="text-xs font-bold text-foreground font-body">${card.price}</span>
                     )}
                   </div>
 
-                  {/* Stylist info — name links to profile */}
+                  {/* Stylist info */}
                   <div className="flex items-center justify-between pt-1 border-t border-border/50">
                     <Link
                       to={`/stylist/${card.providerId}`}
-                      className="text-[11px] text-primary font-body font-semibold truncate mr-1 hover:underline"
+                      className="text-[10px] text-primary font-body font-semibold truncate mr-1 hover:underline"
                       onClick={(e) => e.stopPropagation()}
                     >
                       {card.providerName}
                     </Link>
                     <div className="flex items-center gap-0.5 shrink-0">
                       <Star className="w-3 h-3 fill-gold text-gold" />
-                      <span className="text-[11px] font-semibold text-foreground font-body">{card.rating}</span>
+                      <span className="text-[10px] font-semibold text-foreground font-body">{card.rating}</span>
                     </div>
                   </div>
 
                   {card.city && (
-                    <p className="text-[10px] text-muted-foreground font-body">{card.city}</p>
+                    <p className="text-[9px] text-muted-foreground font-body">{card.city}</p>
                   )}
                 </div>
               </div>
