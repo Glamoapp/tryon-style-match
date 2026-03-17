@@ -314,7 +314,7 @@ const LiveTryOnPage = () => {
               </Button>
               <Link to="/stylists" className="w-full">
                 <Button variant="gold" size="lg" className="w-full">
-                  <Users className="w-5 h-5 mr-2" /> Find a Stylist
+                  <Users className="w-5 h-5 mr-2" /> Select a Stylist
                 </Button>
               </Link>
               <Link to="/extensions" className="w-full">

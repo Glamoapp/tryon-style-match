@@ -147,7 +147,7 @@ const TryOnPage = () => {
                     <Link to={`/stylists?specialty=${encodeURIComponent(currentStyle.category)}`} className="flex-1">
                       <Button variant="hero" className="w-full">
                         <Users className="w-4 h-4 mr-1" />
-                        Find a Stylist
+                        Select a Stylist
                         <ChevronRight className="w-4 h-4" />
                       </Button>
                     </Link>
