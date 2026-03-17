@@ -29,8 +29,7 @@ const NearbyStylists = () => {
     rating: p.rating || 0,
     reviews: p.reviewCount,
     coverPhoto: p.coverPhoto,
-    price: p.services[0] ? `From $${p.services[0].price}` : "",
-    service: p.services[0]?.service_name || "",
+    services: p.services,
     city: p.city,
     distance: getDistance(),
   }));
