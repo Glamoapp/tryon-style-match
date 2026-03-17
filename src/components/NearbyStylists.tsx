@@ -36,11 +36,16 @@ const NearbyStylists = () => {
     <section className="py-8 bg-background">
       <div className="container mx-auto px-6">
         {/* Header row */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <Navigation className="w-4 h-4 text-primary" />
-            <h2 className="text-xl md:text-2xl font-display font-bold text-foreground">
-              In Your Area
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Navigation className="w-4 h-4 text-primary" />
+              <span className="text-sm font-semibold text-primary uppercase tracking-widest font-body">
+                Near You
+              </span>
+            </div>
+            <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground">
+              Services Near You
             </h2>
           </div>
           <Link to="/stylists">
