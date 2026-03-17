@@ -57,7 +57,7 @@ const CategoryStylists = () => {
               </Link>
             </div>
 
-            <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0 md:grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 md:overflow-visible">
+            <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
               {section.providers.slice(0, 6).map((p, index) => {
                 const matchingService = p.services.find((s) =>
                   section.match.some((term) => s.service_name.toLowerCase().includes(term))
@@ -69,7 +69,7 @@ const CategoryStylists = () => {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.08 }}
-                    className="min-w-[160px] md:min-w-0"
+                    className="min-w-[calc(50%-6px)] md:min-w-[calc(25%-9px)] max-w-[calc(50%-6px)] md:max-w-[calc(25%-9px)] flex-shrink-0"
                   >
                     <Link to={`/stylist/${p.id}`} className="block group">
                       <div className="relative rounded-2xl overflow-hidden aspect-[3/4] shadow-card hover:shadow-elevated transition-all duration-300">
