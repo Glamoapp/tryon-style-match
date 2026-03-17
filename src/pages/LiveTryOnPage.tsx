@@ -199,7 +199,7 @@ const LiveTryOnPage = () => {
           <span className="hidden sm:inline">Back</span>
         </Link>
         <h1 className="text-white font-display font-bold text-base">
-          AI Try-On
+          NEXTLOOK AI Try-On
         </h1>
         <div className="w-10" />
       </div>
@@ -318,7 +318,7 @@ const LiveTryOnPage = () => {
                 </Button>
               </Link>
               <Link to="/extensions" className="w-full">
-                <Button variant="outline" size="lg" className="w-full border-white/20 text-white hover:bg-white/10">
+                <Button size="lg" className="w-full bg-black text-white border border-white/20 hover:bg-black/80">
                   <ShoppingBag className="w-5 h-5 mr-2" /> Shop Extensions
                 </Button>
               </Link>
