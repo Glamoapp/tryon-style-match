@@ -78,7 +78,7 @@ const NearbyStylists = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.04 }}
-              className="min-w-[calc(25%-9px)] max-w-[calc(25%-9px)] flex-shrink-0"
+              className="min-w-[calc(50%-6px)] md:min-w-[calc(25%-9px)] max-w-[calc(50%-6px)] md:max-w-[calc(25%-9px)] flex-shrink-0"
             >
               <div className="rounded-2xl overflow-hidden shadow-card hover:shadow-elevated transition-all duration-300 bg-card border border-border/50">
                 {/* Service photo — clicking opens booking */}
