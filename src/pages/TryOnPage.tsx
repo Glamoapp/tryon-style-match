@@ -99,7 +99,7 @@ const TryOnPage = () => {
                 <AnimatePresence mode="wait">
                   <motion.img
                     key={currentStyle.name}
-                    src={currentStyle.image}
+                    src={currentStyle.preview}
                     alt={currentStyle.name}
                     className="w-full h-full object-cover"
                     initial={{ opacity: 0 }}
