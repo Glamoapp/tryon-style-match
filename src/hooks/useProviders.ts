@@ -16,6 +16,8 @@ export interface ProviderListing {
     price: number;
     duration_minutes: number;
     description: string | null;
+    discount_price: number | null;
+    discount_badge: string | null;
     photos: string[];
   }[];
   specialties: string[];
