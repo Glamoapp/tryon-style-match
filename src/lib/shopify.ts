@@ -177,6 +177,53 @@ export const CART_LINES_REMOVE_MUTATION = `
   }
 `;
 
+export const CART_DISCOUNT_CODES_UPDATE = `
+  mutation cartDiscountCodesUpdate($cartId: ID!, $discountCodes: [String!]!) {
+    cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $discountCodes) {
+      cart {
+        id
+        discountCodes { code applicable }
+        cost {
+          totalAmount { amount currencyCode }
+          subtotalAmount { amount currencyCode }
+          totalDutyAmount { amount currencyCode }
+        }
+      }
+      userErrors { field message }
+    }
+  }
+`;
+
+export async function applyDiscountCode(cartId: string, code: string): Promise<{ success: boolean; applicable?: boolean; error?: string }> {
+  try {
+    const data = await storefrontApiRequest(CART_DISCOUNT_CODES_UPDATE, {
+      cartId,
+      discountCodes: [code],
+    });
+    const userErrors = data?.data?.cartDiscountCodesUpdate?.userErrors || [];
+    if (userErrors.length > 0) {
+      return { success: false, error: userErrors[0].message };
+    }
+    const discountCodes = data?.data?.cartDiscountCodesUpdate?.cart?.discountCodes || [];
+    const applied = discountCodes.find((d: { code: string; applicable: boolean }) => d.code === code);
+    return { success: true, applicable: applied?.applicable ?? false };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to apply code" };
+  }
+}
+
+export async function removeDiscountCode(cartId: string): Promise<{ success: boolean }> {
+  try {
+    await storefrontApiRequest(CART_DISCOUNT_CODES_UPDATE, {
+      cartId,
+      discountCodes: [],
+    });
+    return { success: true };
+  } catch {
+    return { success: false };
+  }
+}
+
 function formatCheckoutUrl(checkoutUrl: string): string {
   try {
     const url = new URL(checkoutUrl);
