@@ -16,6 +16,9 @@ export const CartDrawer = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showCrossSell, setShowCrossSell] = useState(false);
   const [checkingOut, setCheckingOut] = useState(false);
+  const [discountCode, setDiscountCode] = useState("");
+  const [appliedDiscount, setAppliedDiscount] = useState<string | null>(null);
+  const [applyingDiscount, setApplyingDiscount] = useState(false);
 
   const {
     items, serviceItems, isLoading, isSyncing, justAdded,
