@@ -39,7 +39,7 @@ const VirtualTryOn = () => {
               transition={{ delay: index * 0.1 }}
               className="relative rounded-2xl overflow-hidden aspect-[3/4] group"
             >
-              <img src={style.image} alt={style.name} className="w-full h-full object-cover" />
+              <img src={style.preview} alt={style.name} className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-transparent to-transparent" />
               <div className="absolute bottom-2 left-2 right-2">
                 <h4 className="font-display font-semibold text-white text-xs">{style.name}</h4>

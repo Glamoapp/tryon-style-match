@@ -183,7 +183,7 @@ const TryOnPage = () => {
                   >
                     <div className="aspect-[3/4]">
                       <img
-                        src={style.image}
+                        src={style.preview}
                         alt={style.name}
                         className="w-full h-full object-cover"
                       />
