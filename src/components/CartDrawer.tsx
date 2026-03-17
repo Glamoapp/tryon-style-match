@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { ShoppingCart, Minus, Plus, Trash2, ExternalLink, Loader2, Scissors, Package, Calendar, Sparkles, CheckCircle } from "lucide-react";
+import { ShoppingCart, Minus, Plus, Trash2, ExternalLink, Loader2, Scissors, Package, Calendar, Sparkles, CheckCircle, Tag, X } from "lucide-react";
 import { useCartStore } from "@/stores/cartStore";
+import { applyDiscountCode, removeDiscountCode } from "@/lib/shopify";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -14,6 +16,9 @@ export const CartDrawer = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showCrossSell, setShowCrossSell] = useState(false);
   const [checkingOut, setCheckingOut] = useState(false);
+  const [discountCode, setDiscountCode] = useState("");
+  const [appliedDiscount, setAppliedDiscount] = useState<string | null>(null);
+  const [applyingDiscount, setApplyingDiscount] = useState(false);
 
   const {
     items, serviceItems, isLoading, isSyncing, justAdded,
@@ -265,6 +270,62 @@ export const CartDrawer = () => {
                   </div>
                 </div>
 
+                {/* Discount code */}
+                <div className="flex-shrink-0 pt-3">
+                  {appliedDiscount ? (
+                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/5 border border-primary/20">
+                      <Tag className="w-4 h-4 text-primary" />
+                      <span className="text-sm font-body font-semibold text-foreground flex-1">{appliedDiscount}</span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={async () => {
+                          const cartId = useCartStore.getState().cartId;
+                          if (cartId) await removeDiscountCode(cartId);
+                          setAppliedDiscount(null);
+                          setDiscountCode("");
+                          toast.info("Discount removed");
+                        }}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Discount code"
+                        value={discountCode}
+                        onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
+                        className="text-sm font-body"
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="px-4 whitespace-nowrap"
+                        disabled={!discountCode.trim() || applyingDiscount}
+                        onClick={async () => {
+                          const cartId = useCartStore.getState().cartId;
+                          if (!cartId) { toast.error("Add items to cart first"); return; }
+                          setApplyingDiscount(true);
+                          const result = await applyDiscountCode(cartId, discountCode.trim());
+                          setApplyingDiscount(false);
+                          if (result.success && result.applicable) {
+                            setAppliedDiscount(discountCode.trim());
+                            toast.success(`Discount "${discountCode.trim()}" applied!`);
+                          } else if (result.success && !result.applicable) {
+                            toast.error("This code is not applicable to your cart");
+                          } else {
+                            toast.error(result.error || "Invalid discount code");
+                          }
+                        }}
+                      >
+                        {applyingDiscount ? <Loader2 className="w-3 h-3 animate-spin" /> : "Apply"}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
                 {/* Totals & checkout */}
                 <div className="flex-shrink-0 space-y-4 pt-4 border-t border-border bg-background">
                   {(hasProducts() && hasServices()) && (
@@ -277,6 +338,12 @@ export const CartDrawer = () => {
                         <span>Services</span>
                         <span>${serviceTotal.toFixed(2)}</span>
                       </div>
+                    </div>
+                  )}
+                  {appliedDiscount && (
+                    <div className="flex justify-between text-sm font-body text-primary">
+                      <span className="flex items-center gap-1"><Tag className="w-3 h-3" /> Discount</span>
+                      <span>Applied at checkout</span>
                     </div>
                   )}
                   <div className="flex justify-between items-center">
