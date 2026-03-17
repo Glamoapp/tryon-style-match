@@ -430,7 +430,18 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
                     )}
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    ${Number(svc.price).toFixed(0)} · {svc.duration_minutes} min
+                    {(svc as any).discount_price ? (
+                      <>
+                        <span className="text-primary font-semibold">${Number((svc as any).discount_price).toFixed(0)}</span>
+                        <span className="line-through ml-1">${Number(svc.price).toFixed(0)}</span>
+                        {(svc as any).discount_badge && (
+                          <span className="ml-1.5 text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-semibold">{(svc as any).discount_badge}</span>
+                        )}
+                      </>
+                    ) : (
+                      <>${Number(svc.price).toFixed(0)}</>
+                    )}
+                    {" · "}{svc.duration_minutes} min
                   </p>
                   {svc.description && (
                     <p className="text-sm text-muted-foreground mt-1 line-clamp-1">{svc.description}</p>
