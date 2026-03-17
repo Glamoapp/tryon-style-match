@@ -70,10 +70,12 @@ export const useCartStore = create<CartStore>()(
           if (!cartId) {
             const result = await createShopifyCart({ ...item, lineId: null });
             if (result) {
+              const addedItem = { ...item, lineId: result.lineId };
               set({
                 cartId: result.cartId,
                 checkoutUrl: result.checkoutUrl,
-                items: [{ ...item, lineId: result.lineId }],
+                items: [addedItem],
+                justAdded: addedItem,
               });
             }
           } else if (existingItem) {
