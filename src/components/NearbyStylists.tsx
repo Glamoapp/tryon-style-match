@@ -22,7 +22,7 @@ const NearbyStylists = () => {
     return distances[Math.floor(Math.random() * distances.length)];
   };
 
-  const cards = providers.slice(0, 6).map((p) => ({
+  const cards = providers.map((p) => ({
     id: p.id,
     name: p.full_name,
     avatar: p.avatar_url,
