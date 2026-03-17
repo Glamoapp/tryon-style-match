@@ -10,7 +10,7 @@ const TopRatedStylists = () => {
   // Sort by rating desc, then by review count
   const topRated = [...providers]
     .sort((a, b) => b.rating - a.rating || b.reviewCount - a.reviewCount)
-    .slice(0, 4);
+    .slice(0, 8);
 
   return (
     <section className="py-12 bg-background">
@@ -35,9 +35,9 @@ const TopRatedStylists = () => {
         </div>
 
         {loading && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="rounded-2xl bg-muted animate-pulse h-48" />
+              <div key={i} className="rounded-2xl bg-muted animate-pulse h-48 min-w-[calc(50%-6px)] md:min-w-[calc(25%-9px)] flex-shrink-0" />
             ))}
           </div>
         )}
@@ -48,14 +48,15 @@ const TopRatedStylists = () => {
           </p>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
           {topRated.map((stylist, index) => (
             <motion.div
               key={stylist.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
+              transition={{ delay: index * 0.06 }}
+              className="min-w-[calc(50%-6px)] md:min-w-[calc(25%-9px)] max-w-[calc(50%-6px)] md:max-w-[calc(25%-9px)] flex-shrink-0"
             >
               <Link to={`/stylist/${stylist.id}`} className="block group">
                 <div className="bg-card rounded-2xl p-5 shadow-card hover:shadow-elevated transition-all duration-300 border border-border/50">
