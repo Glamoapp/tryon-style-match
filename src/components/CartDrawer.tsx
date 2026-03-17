@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { ShoppingCart, Minus, Plus, Trash2, ExternalLink, Loader2, Scissors, Package, Calendar, Sparkles } from "lucide-react";
+import { ShoppingCart, Minus, Plus, Trash2, ExternalLink, Loader2, Scissors, Package, Calendar, Sparkles, CheckCircle } from "lucide-react";
 import { useCartStore } from "@/stores/cartStore";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -16,9 +16,9 @@ export const CartDrawer = () => {
   const [checkingOut, setCheckingOut] = useState(false);
 
   const {
-    items, serviceItems, isLoading, isSyncing,
+    items, serviceItems, isLoading, isSyncing, justAdded,
     updateQuantity, removeItem, removeServiceItem,
-    syncCart, hasProducts, hasServices,
+    syncCart, hasProducts, hasServices, clearJustAdded,
   } = useCartStore();
 
   const totalProductItems = items.reduce((sum, item) => sum + item.quantity, 0);
@@ -29,10 +29,24 @@ export const CartDrawer = () => {
   const serviceTotal = serviceItems.reduce((sum, svc) => sum + svc.price, 0);
   const totalPrice = productTotal + serviceTotal;
 
+  // Auto-open cart when an item is added (Amazon-style)
+  useEffect(() => {
+    if (justAdded) {
+      setIsOpen(true);
+    }
+  }, [justAdded]);
+
   useEffect(() => { if (isOpen) syncCart(); }, [isOpen, syncCart]);
 
+  // Clear justAdded when drawer closes
+  useEffect(() => {
+    if (!isOpen && justAdded) {
+      const timeout = setTimeout(() => clearJustAdded(), 300);
+      return () => clearTimeout(timeout);
+    }
+  }, [isOpen, justAdded, clearJustAdded]);
+
   const handleCheckout = async () => {
-    // Show cross-sell dialog before proceeding
     const onlyProducts = hasProducts() && !hasServices();
     const onlyServices = hasServices() && !hasProducts();
 
@@ -64,7 +78,6 @@ export const CartDrawer = () => {
         price: svc.price,
       }));
 
-      // Get user email
       const { data: { user } } = await supabase.auth.getUser();
 
       const { data, error } = await supabase.functions.invoke("unified-checkout", {
@@ -96,10 +109,8 @@ export const CartDrawer = () => {
     setIsOpen(false);
 
     if (hasProducts() && !hasServices()) {
-      // Products only → go to stylists page to book
       navigate("/stylists");
     } else if (hasServices() && !hasProducts()) {
-      // Services only → go to extensions page to shop
       navigate("/extensions");
     }
   };
@@ -128,7 +139,36 @@ export const CartDrawer = () => {
                 : `${totalItems} item${totalItems !== 1 ? 's' : ''} in your cart`}
             </SheetDescription>
           </SheetHeader>
-          <div className="flex flex-col flex-1 pt-6 min-h-0">
+
+          <div className="flex flex-col flex-1 pt-4 min-h-0">
+            {/* Amazon-style "Added to Cart" confirmation banner */}
+            {justAdded && (
+              <div className="flex gap-3 p-3 mb-4 rounded-xl border-2 border-green-500/30 bg-green-500/5 animate-in slide-in-from-top-2 duration-300">
+                <div className="w-14 h-14 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+                  {justAdded.product.node.images?.edges?.[0]?.node && (
+                    <img
+                      src={justAdded.product.node.images.edges[0].node.url}
+                      alt={justAdded.product.node.title}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                    <span className="text-sm font-semibold text-green-600 font-body">Added to Cart</span>
+                  </div>
+                  <p className="text-sm font-medium text-foreground font-body truncate">{justAdded.product.node.title}</p>
+                  <p className="text-xs text-muted-foreground font-body">
+                    {justAdded.selectedOptions?.map(o => o.value).join(' • ')} — Qty: {justAdded.quantity}
+                  </p>
+                </div>
+                <p className="text-sm font-bold text-foreground font-body flex-shrink-0">
+                  ${parseFloat(justAdded.price.amount).toFixed(2)}
+                </p>
+              </div>
+            )}
+
             {totalItems === 0 ? (
               <div className="flex-1 flex items-center justify-center">
                 <div className="text-center space-y-4">
@@ -183,28 +223,38 @@ export const CartDrawer = () => {
                           Products
                         </div>
                         {items.map((item) => (
-                          <div key={item.variantId} className="flex gap-4 p-2 rounded-xl bg-secondary/30">
-                            <div className="w-16 h-16 bg-muted rounded-lg overflow-hidden flex-shrink-0">
-                              {item.product.node.images?.edges?.[0]?.node && (
+                          <div key={item.variantId} className="flex gap-3 p-3 rounded-xl bg-secondary/30 border border-border/50">
+                            {/* Product image */}
+                            <div className="w-20 h-20 bg-muted rounded-lg overflow-hidden flex-shrink-0">
+                              {item.product.node.images?.edges?.[0]?.node ? (
                                 <img src={item.product.node.images.edges[0].node.url} alt={item.product.node.title} className="w-full h-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <Package className="w-6 h-6 text-muted-foreground" />
+                                </div>
                               )}
                             </div>
+                            {/* Product details */}
                             <div className="flex-1 min-w-0">
-                              <h4 className="font-body font-medium truncate text-foreground">{item.product.node.title}</h4>
-                              <p className="text-sm text-muted-foreground font-body">{item.selectedOptions.map(o => o.value).join(' • ')}</p>
-                              <p className="font-semibold text-foreground font-body">${parseFloat(item.price.amount).toFixed(2)}</p>
-                            </div>
-                            <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeItem(item.variantId)}>
-                                <Trash2 className="h-3 w-3" />
-                              </Button>
-                              <div className="flex items-center gap-1">
-                                <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => updateQuantity(item.variantId, item.quantity - 1)}>
+                              <h4 className="font-body font-semibold text-foreground text-sm leading-tight line-clamp-2">{item.product.node.title}</h4>
+                              {item.selectedOptions.length > 0 && (
+                                <p className="text-xs text-muted-foreground font-body mt-0.5">{item.selectedOptions.map(o => o.value).join(' • ')}</p>
+                              )}
+                              <p className="font-bold text-foreground font-body text-base mt-1">${(parseFloat(item.price.amount) * item.quantity).toFixed(2)}</p>
+                              {item.quantity > 1 && (
+                                <p className="text-xs text-muted-foreground font-body">${parseFloat(item.price.amount).toFixed(2)} each</p>
+                              )}
+                              {/* Quantity controls inline */}
+                              <div className="flex items-center gap-2 mt-2">
+                                <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => updateQuantity(item.variantId, item.quantity - 1)}>
                                   <Minus className="h-3 w-3" />
                                 </Button>
-                                <span className="w-8 text-center text-sm font-body">{item.quantity}</span>
-                                <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => updateQuantity(item.variantId, item.quantity + 1)}>
+                                <span className="w-8 text-center text-sm font-semibold font-body">{item.quantity}</span>
+                                <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => updateQuantity(item.variantId, item.quantity + 1)}>
                                   <Plus className="h-3 w-3" />
+                                </Button>
+                                <Button variant="ghost" size="sm" className="ml-auto text-xs text-destructive hover:text-destructive h-7 px-2" onClick={() => removeItem(item.variantId)}>
+                                  <Trash2 className="h-3 w-3 mr-1" /> Remove
                                 </Button>
                               </div>
                             </div>
@@ -242,7 +292,7 @@ export const CartDrawer = () => {
                   >
                     {isLoading || isSyncing || checkingOut
                       ? <Loader2 className="w-4 h-4 animate-spin" />
-                      : <><ExternalLink className="w-4 h-4 mr-2" />Checkout — ${totalPrice.toFixed(2)}</>}
+                      : <><ExternalLink className="w-4 h-4 mr-2" />Proceed to Checkout — ${totalPrice.toFixed(2)}</>}
                   </Button>
                 </div>
               </>

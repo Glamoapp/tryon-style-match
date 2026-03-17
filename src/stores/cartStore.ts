@@ -37,6 +37,7 @@ interface CartStore {
   checkoutUrl: string | null;
   isLoading: boolean;
   isSyncing: boolean;
+  justAdded: CartItem | null;
   addItem: (item: Omit<CartItem, 'lineId'>) => Promise<void>;
   addServiceItem: (item: ServiceCartItem) => void;
   removeServiceItem: (id: string) => void;
@@ -47,6 +48,7 @@ interface CartStore {
   getCheckoutUrl: () => string | null;
   hasProducts: () => boolean;
   hasServices: () => boolean;
+  clearJustAdded: () => void;
 }
 
 export const useCartStore = create<CartStore>()(
@@ -58,6 +60,7 @@ export const useCartStore = create<CartStore>()(
       checkoutUrl: null,
       isLoading: false,
       isSyncing: false,
+      justAdded: null,
 
       addItem: async (item) => {
         const { items, cartId, clearCart } = get();
@@ -67,10 +70,12 @@ export const useCartStore = create<CartStore>()(
           if (!cartId) {
             const result = await createShopifyCart({ ...item, lineId: null });
             if (result) {
+              const addedItem = { ...item, lineId: result.lineId };
               set({
                 cartId: result.cartId,
                 checkoutUrl: result.checkoutUrl,
-                items: [{ ...item, lineId: result.lineId }],
+                items: [addedItem],
+                justAdded: addedItem,
               });
             }
           } else if (existingItem) {
@@ -78,12 +83,14 @@ export const useCartStore = create<CartStore>()(
             if (!existingItem.lineId) return;
             const result = await updateShopifyCartLine(cartId, existingItem.lineId, newQuantity);
             if (result.success) {
-              set({ items: get().items.map(i => i.variantId === item.variantId ? { ...i, quantity: newQuantity } : i) });
+              const updated = { ...existingItem, quantity: newQuantity };
+              set({ items: get().items.map(i => i.variantId === item.variantId ? { ...i, quantity: newQuantity } : i), justAdded: updated });
             } else if (result.cartNotFound) clearCart();
           } else {
             const result = await addLineToShopifyCart(cartId, { ...item, lineId: null });
             if (result.success) {
-              set({ items: [...get().items, { ...item, lineId: result.lineId ?? null }] });
+              const addedItem = { ...item, lineId: result.lineId ?? null };
+              set({ items: [...get().items, addedItem], justAdded: addedItem });
             } else if (result.cartNotFound) clearCart();
           }
         } catch (error) {
@@ -146,11 +153,12 @@ export const useCartStore = create<CartStore>()(
         }
       },
 
-      clearCart: () => set({ items: [], serviceItems: [], cartId: null, checkoutUrl: null }),
+      clearCart: () => set({ items: [], serviceItems: [], cartId: null, checkoutUrl: null, justAdded: null }),
       getCheckoutUrl: () => get().checkoutUrl,
 
       hasProducts: () => get().items.length > 0,
       hasServices: () => get().serviceItems.length > 0,
+      clearJustAdded: () => set({ justAdded: null }),
 
       syncCart: async () => {
         const { cartId, isSyncing, clearCart, serviceItems } = get();
