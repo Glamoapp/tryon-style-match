@@ -35,9 +35,9 @@ const TopRatedStylists = () => {
         </div>
 
         {loading && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="rounded-2xl bg-muted animate-pulse h-48" />
+              <div key={i} className="rounded-2xl bg-muted animate-pulse h-48 min-w-[calc(50%-6px)] md:min-w-[calc(25%-9px)] flex-shrink-0" />
             ))}
           </div>
         )}
