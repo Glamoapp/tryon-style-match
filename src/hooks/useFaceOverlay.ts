@@ -204,8 +204,8 @@ export function useFaceOverlay({
             ctx.stroke();
           }
 
-          // After scan: draw hair overlay
-          if (complete && hairImgRef.current) {
+          // After scan: draw light filter + hair overlay
+          if (complete) {
             const foreheadTop = lm[10];
             const leftTemple = lm[234];
             const rightTemple = lm[454];
@@ -214,25 +214,41 @@ export function useFaceOverlay({
             const faceWidth = Math.abs(rightTemple.x - leftTemple.x) * w;
             const faceHeight = Math.abs(chin.y - foreheadTop.y) * h;
             const faceCenterX = ((leftTemple.x + rightTemple.x) / 2) * w;
+            const faceCenterY = ((foreheadTop.y + chin.y) / 2) * h;
             const foreheadY = foreheadTop.y * h;
 
-            const angle = Math.atan2(
-              (lm[454].y - lm[234].y) * h,
-              (lm[454].x - lm[234].x) * w
+            // Snapchat-style light filter: soft warm glow on face
+            const glowRadius = Math.max(faceWidth, faceHeight) * 1.2;
+            const glow = ctx.createRadialGradient(
+              faceCenterX, faceCenterY, glowRadius * 0.1,
+              faceCenterX, faceCenterY, glowRadius
             );
+            glow.addColorStop(0, "rgba(255, 235, 210, 0.15)");
+            glow.addColorStop(0.4, "rgba(255, 220, 200, 0.08)");
+            glow.addColorStop(1, "rgba(255, 255, 255, 0)");
+            ctx.fillStyle = glow;
+            ctx.fillRect(0, 0, w, h);
 
-            const hairWidth = faceWidth * 2.8;
-            const hairHeight = faceHeight * 2.8;
-            const hairX = faceCenterX - hairWidth / 2;
-            const hairY = foreheadY - hairHeight * 0.88;
+            // Hair overlay
+            if (hairImgRef.current) {
+              const angle = Math.atan2(
+                (lm[454].y - lm[234].y) * h,
+                (lm[454].x - lm[234].x) * w
+              );
 
-            ctx.save();
-            ctx.translate(faceCenterX, foreheadY);
-            ctx.rotate(angle);
-            ctx.translate(-faceCenterX, -foreheadY);
-            ctx.globalAlpha = 0.88;
-            ctx.drawImage(hairImgRef.current, hairX, hairY, hairWidth, hairHeight);
-            ctx.restore();
+              const hairWidth = faceWidth * 2.8;
+              const hairHeight = faceHeight * 2.8;
+              const hairX = faceCenterX - hairWidth / 2;
+              const hairY = foreheadY - hairHeight * 0.88;
+
+              ctx.save();
+              ctx.translate(faceCenterX, foreheadY);
+              ctx.rotate(angle);
+              ctx.translate(-faceCenterX, -foreheadY);
+              ctx.globalAlpha = 0.88;
+              ctx.drawImage(hairImgRef.current, hairX, hairY, hairWidth, hairHeight);
+              ctx.restore();
+            }
           }
         } else {
           // No face — reset scan
