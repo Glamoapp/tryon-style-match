@@ -37,6 +37,7 @@ interface CartStore {
   checkoutUrl: string | null;
   isLoading: boolean;
   isSyncing: boolean;
+  justAdded: CartItem | null;
   addItem: (item: Omit<CartItem, 'lineId'>) => Promise<void>;
   addServiceItem: (item: ServiceCartItem) => void;
   removeServiceItem: (id: string) => void;
@@ -47,6 +48,7 @@ interface CartStore {
   getCheckoutUrl: () => string | null;
   hasProducts: () => boolean;
   hasServices: () => boolean;
+  clearJustAdded: () => void;
 }
 
 export const useCartStore = create<CartStore>()(
