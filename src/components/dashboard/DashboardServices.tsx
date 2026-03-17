@@ -79,6 +79,8 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
       price: String(svc.price),
       duration_minutes: String(svc.duration_minutes),
       description: svc.description || "",
+      discount_price: (svc as any).discount_price ? String((svc as any).discount_price) : "",
+      discount_badge: (svc as any).discount_badge || "",
     });
   };
 
