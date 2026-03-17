@@ -66,7 +66,7 @@ const TryOnPage = () => {
               </Link>
               <Link to="/stylists">
                 <Button variant="gold" size="lg" className="text-base px-8 py-6">
-                  <Users className="w-5 h-5 mr-2" /> Find a Stylist
+                  <Users className="w-5 h-5 mr-2" /> Select a Stylist
                 </Button>
               </Link>
             </motion.div>
