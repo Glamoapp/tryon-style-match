@@ -10,7 +10,7 @@ import logo from "@/assets/logo.png";
 
 const TryOnPage = () => {
   const [selectedStyle, setSelectedStyle] = useState(0);
-  const [activeCategory, setActiveCategory] = useState<StyleCategory>("Braids");
+  const [activeCategory, setActiveCategory] = useState<StyleCategory>("Wig Frontal & Closure");
 
   const filteredStyles = styles.filter((s) => s.category === activeCategory);
   const currentStyle = filteredStyles[selectedStyle] || filteredStyles[0];
