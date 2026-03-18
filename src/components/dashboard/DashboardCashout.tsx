@@ -144,29 +144,14 @@ export const DashboardCashout = ({ userId }: { userId: string }) => {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {[
-          { label: "Total Earned", value: earnings.total, color: "text-green-600" },
+          { label: "Total Earned", value: earnings.total, color: "text-primary" },
           { label: "Pending", value: earnings.pending, color: "text-gold" },
-          { label: "Available", value: earnings.available, color: "text-primary" },
+          { label: "Available", value: earnings.available, color: "text-foreground" },
         ].map((stat) => (
-          <div key={stat.label} className="rounded-xl border border-border bg-card p-5">
-            <DollarSign className={`mb-2 h-5 w-5 ${stat.color}`} />
-            <p className="text-2xl font-bold">${stat.value.toFixed(0)}</p>
-            <p className="text-sm text-muted-foreground">{stat.label}</p>
-          </div>
-        ))}
-      </div>
-
-      <div className="rounded-xl border border-border bg-card p-6">
-        <h3 className="mb-4 text-lg font-medium">Payout Method</h3>
-
-        {status === "loading" ? (
-          <div className="flex items-center gap-3 text-muted-foreground">
-            <Loader2 className="h-5 w-5 animate-spin" />
-            <p>Checking payout status...</p>
-          </div>
+...
         ) : status === "active" ? (
           <div className="space-y-4">
-            <div className="flex items-center gap-3 text-green-600">
+            <div className="flex items-center gap-3 text-primary">
               <CheckCircle className="h-5 w-5" />
               <p className="font-medium">Stripe Connected — Payouts Active</p>
             </div>
