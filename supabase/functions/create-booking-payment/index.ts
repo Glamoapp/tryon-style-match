@@ -14,10 +14,10 @@ serve(async (req) => {
 
   try {
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
-      apiVersion: "2025-08-27.basil",
+      apiVersion: "2023-10-16",
     });
 
-    const { bookingId, customerName, email, phone, address, styleName, stylistName, date, time, price } = await req.json();
+    const { bookingId, customerName, email, phone, address, styleName, stylistName, date, time, price, providerId } = await req.json();
 
     if (!email) throw new Error("Email is required");
 
@@ -39,9 +39,28 @@ serve(async (req) => {
       customerId = customer.id;
     }
 
+    // Look up provider's Stripe Connect account for 80/20 split
+    let connectedAccountId: string | null = null;
+    if (providerId) {
+      try {
+        const accounts = await stripe.accounts.list({ limit: 100 });
+        const providerAccount = accounts.data.find(
+          (a: any) => a.metadata?.provider_id === providerId
+        );
+        if (providerAccount && providerAccount.charges_enabled) {
+          connectedAccountId = providerAccount.id;
+        }
+      } catch (e) {
+        console.log("Could not look up provider Stripe account:", e);
+      }
+    }
+
     const origin = req.headers.get("origin") || "https://tryon-style-match.lovable.app";
 
-    const session = await stripe.checkout.sessions.create({
+    // Calculate 20% platform fee (80% goes to stylist)
+    const platformFee = Math.round(amountInCents * 0.20);
+
+    const sessionParams: any = {
       customer: customerId,
       line_items: [
         {
@@ -69,8 +88,21 @@ serve(async (req) => {
         customerName,
         phone,
         address,
+        provider_id: providerId || "",
       },
-    });
+    };
+
+    // If provider has a connected Stripe account, use payment_intent_data for automatic split
+    if (connectedAccountId) {
+      sessionParams.payment_intent_data = {
+        application_fee_amount: platformFee,
+        transfer_data: {
+          destination: connectedAccountId,
+        },
+      };
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams);
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
