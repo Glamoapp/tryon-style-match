@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 import { DollarSign, ExternalLink, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -23,8 +23,8 @@ export const DashboardCashout = ({ userId }: { userId: string }) => {
   const [earnings, setEarnings] = useState({ total: 0, pending: 0, available: 0 });
 
   useEffect(() => {
-    fetchEarnings();
-    checkStripeStatus();
+    void fetchEarnings();
+    void checkStripeStatus();
   }, [userId]);
 
   const fetchEarnings = async () => {
@@ -33,15 +33,16 @@ export const DashboardCashout = ({ userId }: { userId: string }) => {
       .select("total_price, status")
       .eq("provider_id", userId);
 
-    if (data) {
-      const completed = data.filter((b) => b.status === "completed");
-      const confirmed = data.filter((b) => b.status === "confirmed");
-      setEarnings({
-        total: completed.reduce((s, b) => s + Number(b.total_price), 0),
-        pending: confirmed.reduce((s, b) => s + Number(b.total_price), 0),
-        available: completed.reduce((s, b) => s + Number(b.total_price), 0),
-      });
-    }
+    if (!data) return;
+
+    const completed = data.filter((booking) => booking.status === "completed");
+    const confirmed = data.filter((booking) => booking.status === "confirmed");
+
+    setEarnings({
+      total: completed.reduce((sum, booking) => sum + Number(booking.total_price), 0),
+      pending: confirmed.reduce((sum, booking) => sum + Number(booking.total_price), 0),
+      available: completed.reduce((sum, booking) => sum + Number(booking.total_price), 0),
+    });
   };
 
   const checkStripeStatus = async () => {
@@ -68,12 +69,17 @@ export const DashboardCashout = ({ userId }: { userId: string }) => {
 
   const connectStripe = async () => {
     setLoading(true);
+
     try {
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("email")
         .eq("id", userId)
         .single();
+
+      if (profileError) {
+        throw new Error(profileError.message);
+      }
 
       const { data, error } = await supabase.functions.invoke<StripeFunctionResponse>("stripe-connect-onboard", {
         body: {
@@ -83,7 +89,9 @@ export const DashboardCashout = ({ userId }: { userId: string }) => {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        throw new Error(error.message);
+      }
 
       if (data?.code === "platform_profile_incomplete" || data?.blocked) {
         setStatus("setup_blocked");
@@ -99,8 +107,8 @@ export const DashboardCashout = ({ userId }: { userId: string }) => {
       }
 
       throw new Error(data?.error || "Failed to start Stripe setup");
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to start Stripe setup";
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to start Stripe setup";
       toast.error(message);
     } finally {
       setLoading(false);
@@ -109,12 +117,15 @@ export const DashboardCashout = ({ userId }: { userId: string }) => {
 
   const openStripeDashboard = async () => {
     setLoading(true);
+
     try {
       const { data, error } = await supabase.functions.invoke<StripeFunctionResponse>("stripe-connect-dashboard", {
         body: { provider_id: userId },
       });
 
-      if (error) throw error;
+      if (error) {
+        throw new Error(error.message);
+      }
 
       if (data?.code === "platform_profile_incomplete" || data?.blocked) {
         setStatus("setup_blocked");
@@ -130,8 +141,8 @@ export const DashboardCashout = ({ userId }: { userId: string }) => {
       }
 
       throw new Error(data?.error || "Failed to open payout dashboard");
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to open payout dashboard";
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to open payout dashboard";
       toast.error(message);
     } finally {
       setLoading(false);
@@ -140,7 +151,7 @@ export const DashboardCashout = ({ userId }: { userId: string }) => {
 
   return (
     <div className="space-y-6">
-      <h2 className="font-display text-2xl font-bold">Cash Out & Payouts</h2>
+      <h2 className="font-display text-2xl font-bold">Cash Out &amp; Payouts</h2>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {[
@@ -148,7 +159,22 @@ export const DashboardCashout = ({ userId }: { userId: string }) => {
           { label: "Pending", value: earnings.pending, color: "text-gold" },
           { label: "Available", value: earnings.available, color: "text-foreground" },
         ].map((stat) => (
-...
+          <div key={stat.label} className="rounded-xl border border-border bg-card p-5">
+            <DollarSign className={`mb-2 h-5 w-5 ${stat.color}`} />
+            <p className="text-2xl font-bold">${stat.value.toFixed(0)}</p>
+            <p className="text-sm text-muted-foreground">{stat.label}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="rounded-xl border border-border bg-card p-6">
+        <h3 className="mb-4 text-lg font-medium">Payout Method</h3>
+
+        {status === "loading" ? (
+          <div className="flex items-center gap-3 text-muted-foreground">
+            <Loader2 className="h-5 w-5 animate-spin" />
+            <p>Checking payout status...</p>
+          </div>
         ) : status === "active" ? (
           <div className="space-y-4">
             <div className="flex items-center gap-3 text-primary">
