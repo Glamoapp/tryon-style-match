@@ -1,10 +1,11 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import Stripe from "https://esm.sh/stripe@14.21.0?target=deno";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
+import {
+  authenticateRequest,
+  corsHeaders,
+  createStripeClient,
+  getConnectPlatformError,
+  json,
+} from "../_shared/stripe-connect.ts";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -12,15 +13,18 @@ serve(async (req) => {
   }
 
   try {
-    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
-    if (!stripeKey) throw new Error("STRIPE_SECRET_KEY not set");
-
-    const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
     const { provider_id, email, return_url } = await req.json();
 
-    if (!provider_id || !email) throw new Error("Missing provider_id or email");
+    if (!provider_id || !email) {
+      return json({ error: "Missing provider_id or email" }, 400);
+    }
 
-    // Check if account already exists (by metadata)
+    const userId = await authenticateRequest(req);
+    if (userId !== provider_id) {
+      return json({ error: "Forbidden" }, 403);
+    }
+
+    const stripe = createStripeClient();
     const existingAccounts = await stripe.accounts.list({ limit: 100 });
     let account = existingAccounts.data.find((a) => a.metadata?.provider_id === provider_id);
 
@@ -36,21 +40,27 @@ serve(async (req) => {
       });
     }
 
+    const fallbackUrl = return_url || req.headers.get("origin") || "http://localhost:3000/provider/dashboard";
     const accountLink = await stripe.accountLinks.create({
       account: account.id,
-      refresh_url: return_url || "http://localhost:3000/provider/dashboard",
-      return_url: return_url || "http://localhost:3000/provider/dashboard",
+      refresh_url: fallbackUrl,
+      return_url: fallbackUrl,
       type: "account_onboarding",
     });
 
-    return new Response(JSON.stringify({ url: accountLink.url }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ url: accountLink.url });
   } catch (error) {
-    const msg = error instanceof Error ? error.message : "Unknown error";
-    return new Response(JSON.stringify({ error: msg }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    const message = error instanceof Error ? error.message : "Unknown error";
+    const platformError = getConnectPlatformError(message);
+
+    if (platformError) {
+      return json({
+        ...platformError,
+        blocked: true,
+      });
+    }
+
+    const status = message === "Unauthorized" ? 401 : 500;
+    return json({ error: message }, status);
   }
 });
