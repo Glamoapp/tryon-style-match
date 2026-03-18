@@ -182,6 +182,10 @@ const StylistProfilePage = () => {
                         </Button>
                       }
                     />
+                    <Button variant="outline" size="sm" className="gap-2" onClick={shareProfile}>
+                      {copied ? <Check className="w-4 h-4 text-green-500" /> : <Share2 className="w-4 h-4" />}
+                      {copied ? "Copied!" : "Share"}
+                    </Button>
                   </div>
                 </div>
               </div>
