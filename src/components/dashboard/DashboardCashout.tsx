@@ -4,7 +4,18 @@ import { DollarSign, ExternalLink, CheckCircle, AlertCircle, Loader2 } from "luc
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-type PayoutStatus = "not_connected" | "pending" | "active" | "loading";
+type PayoutStatus = "not_connected" | "pending" | "active" | "loading" | "setup_blocked";
+
+type StripeFunctionResponse = {
+  url?: string;
+  status?: PayoutStatus;
+  code?: string;
+  error?: string;
+  blocked?: boolean;
+};
+
+const PLATFORM_PROFILE_ERROR =
+  "Stripe platform setup is incomplete. Finish the Connect platform profile/questionnaire in Stripe, then try again.";
 
 export const DashboardCashout = ({ userId }: { userId: string }) => {
   const [status, setStatus] = useState<PayoutStatus>("loading");
@@ -35,13 +46,20 @@ export const DashboardCashout = ({ userId }: { userId: string }) => {
 
   const checkStripeStatus = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke("stripe-connect-status", {
+      const { data, error } = await supabase.functions.invoke<StripeFunctionResponse>("stripe-connect-status", {
         body: { provider_id: userId },
       });
+
       if (error || !data) {
         setStatus("not_connected");
         return;
       }
+
+      if (data.code === "platform_profile_incomplete" || data.status === "setup_blocked") {
+        setStatus("setup_blocked");
+        return;
+      }
+
       setStatus(data.status || "not_connected");
     } catch {
       setStatus("not_connected");
@@ -57,19 +75,33 @@ export const DashboardCashout = ({ userId }: { userId: string }) => {
         .eq("id", userId)
         .single();
 
-      const { data, error } = await supabase.functions.invoke("stripe-connect-onboard", {
+      const { data, error } = await supabase.functions.invoke<StripeFunctionResponse>("stripe-connect-onboard", {
         body: {
           provider_id: userId,
           email: profile?.email,
           return_url: window.location.href,
         },
       });
+
       if (error) throw error;
-      if (data?.url) {
-        window.open(data.url, "_blank");
+
+      if (data?.code === "platform_profile_incomplete" || data?.blocked) {
+        setStatus("setup_blocked");
+        toast.error(PLATFORM_PROFILE_ERROR, {
+          description: data.error,
+        });
+        return;
       }
-    } catch (err: any) {
-      toast.error("Failed to start Stripe setup");
+
+      if (data?.url) {
+        window.open(data.url, "_blank", "noopener,noreferrer");
+        return;
+      }
+
+      throw new Error(data?.error || "Failed to start Stripe setup");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to start Stripe setup";
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -78,15 +110,29 @@ export const DashboardCashout = ({ userId }: { userId: string }) => {
   const openStripeDashboard = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("stripe-connect-dashboard", {
+      const { data, error } = await supabase.functions.invoke<StripeFunctionResponse>("stripe-connect-dashboard", {
         body: { provider_id: userId },
       });
+
       if (error) throw error;
-      if (data?.url) {
-        window.open(data.url, "_blank");
+
+      if (data?.code === "platform_profile_incomplete" || data?.blocked) {
+        setStatus("setup_blocked");
+        toast.error(PLATFORM_PROFILE_ERROR, {
+          description: data.error,
+        });
+        return;
       }
-    } catch {
-      toast.error("Failed to open payout dashboard");
+
+      if (data?.url) {
+        window.open(data.url, "_blank", "noopener,noreferrer");
+        return;
+      }
+
+      throw new Error(data?.error || "Failed to open payout dashboard");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to open payout dashboard";
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -96,48 +142,46 @@ export const DashboardCashout = ({ userId }: { userId: string }) => {
     <div className="space-y-6">
       <h2 className="font-display text-2xl font-bold">Cash Out & Payouts</h2>
 
-      {/* Earnings summary */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {[
           { label: "Total Earned", value: earnings.total, color: "text-green-600" },
           { label: "Pending", value: earnings.pending, color: "text-gold" },
           { label: "Available", value: earnings.available, color: "text-primary" },
         ].map((stat) => (
-          <div key={stat.label} className="p-5 rounded-xl border border-border bg-card">
-            <DollarSign className={`w-5 h-5 ${stat.color} mb-2`} />
+          <div key={stat.label} className="rounded-xl border border-border bg-card p-5">
+            <DollarSign className={`mb-2 h-5 w-5 ${stat.color}`} />
             <p className="text-2xl font-bold">${stat.value.toFixed(0)}</p>
             <p className="text-sm text-muted-foreground">{stat.label}</p>
           </div>
         ))}
       </div>
 
-      {/* Stripe Connect status */}
-      <div className="p-6 rounded-xl border border-border bg-card">
-        <h3 className="font-medium text-lg mb-4">Payout Method</h3>
+      <div className="rounded-xl border border-border bg-card p-6">
+        <h3 className="mb-4 text-lg font-medium">Payout Method</h3>
 
         {status === "loading" ? (
           <div className="flex items-center gap-3 text-muted-foreground">
-            <Loader2 className="w-5 h-5 animate-spin" />
+            <Loader2 className="h-5 w-5 animate-spin" />
             <p>Checking payout status...</p>
           </div>
         ) : status === "active" ? (
           <div className="space-y-4">
             <div className="flex items-center gap-3 text-green-600">
-              <CheckCircle className="w-5 h-5" />
+              <CheckCircle className="h-5 w-5" />
               <p className="font-medium">Stripe Connected — Payouts Active</p>
             </div>
             <p className="text-sm text-muted-foreground">
               Your earnings are automatically deposited to your connected bank account or debit card.
             </p>
             <Button variant="outline" onClick={openStripeDashboard} disabled={loading}>
-              <ExternalLink className="w-4 h-4 mr-2" />
+              <ExternalLink className="mr-2 h-4 w-4" />
               {loading ? "Opening..." : "Manage Payouts"}
             </Button>
           </div>
         ) : status === "pending" ? (
           <div className="space-y-4">
             <div className="flex items-center gap-3 text-gold">
-              <AlertCircle className="w-5 h-5" />
+              <AlertCircle className="h-5 w-5" />
               <p className="font-medium">Setup In Progress</p>
             </div>
             <p className="text-sm text-muted-foreground">
@@ -147,17 +191,30 @@ export const DashboardCashout = ({ userId }: { userId: string }) => {
               {loading ? "Loading..." : "Complete Setup"}
             </Button>
           </div>
+        ) : status === "setup_blocked" ? (
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 text-destructive">
+              <AlertCircle className="h-5 w-5" />
+              <p className="font-medium">Platform Stripe Setup Required</p>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Provider payouts are blocked until the business owner completes the Stripe Connect platform profile and questionnaire.
+            </p>
+            <Button variant="outline" onClick={connectStripe} disabled={loading}>
+              {loading ? "Checking..." : "Check Again"}
+            </Button>
+          </div>
         ) : (
           <div className="space-y-4">
             <div className="flex items-center gap-3 text-muted-foreground">
-              <AlertCircle className="w-5 h-5" />
+              <AlertCircle className="h-5 w-5" />
               <p className="font-medium">No Payout Method Connected</p>
             </div>
             <p className="text-sm text-muted-foreground">
               Connect your bank account or debit card through Stripe to receive automatic payouts for completed services.
             </p>
             <Button variant="hero" onClick={connectStripe} disabled={loading}>
-              <DollarSign className="w-4 h-4 mr-2" />
+              <DollarSign className="mr-2 h-4 w-4" />
               {loading ? "Setting up..." : "Connect Stripe"}
             </Button>
           </div>
