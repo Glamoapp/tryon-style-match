@@ -21,20 +21,39 @@ const StylistProfilePage = () => {
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
+  const getShareUrl = () => {
+    // Use the published domain for shareable links
+    const path = `/stylist/${id}`;
+    return `${window.location.origin}${path}`;
+  };
+
   const shareProfile = async () => {
-    const url = window.location.href;
+    const url = getShareUrl();
     const title = `Check out ${provider?.full_name} on NextLook Beauty`;
 
     if (navigator.share) {
       try {
         await navigator.share({ title, url });
+        return;
       } catch {}
-    } else {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      toast.success("Link copied to clipboard!");
-      setTimeout(() => setCopied(false), 2000);
     }
+
+    // Fallback: copy to clipboard using multiple methods
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      const textarea = document.createElement("textarea");
+      textarea.value = url;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+    }
+    setCopied(true);
+    toast.success("Profile link copied to clipboard!");
+    setTimeout(() => setCopied(false), 2000);
   };
 
   useEffect(() => {
