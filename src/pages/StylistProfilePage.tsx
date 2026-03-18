@@ -10,6 +10,7 @@ import LeaveReview from "@/components/LeaveReview";
 import ProfileChatSection from "@/components/ProfileChatSection";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { toast } from "@/components/ui/sonner";
 import type { ProviderListing } from "@/hooks/useProviders";
 
 const StylistProfilePage = () => {
@@ -18,6 +19,23 @@ const StylistProfilePage = () => {
   const [reviews, setReviews] = useState<{ rating: number; comment: string | null; created_at: string; customer: { full_name: string } | null }[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const shareProfile = async () => {
+    const url = window.location.href;
+    const title = `Check out ${provider?.full_name} on NextLook Beauty`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, url });
+      } catch {}
+    } else {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      toast.success("Link copied to clipboard!");
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   useEffect(() => {
     if (!id) return;
