@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Star, MapPin, ArrowLeft, Clock, Camera, ChevronRight, MessageCircle } from "lucide-react";
+import { Star, MapPin, ArrowLeft, Clock, Camera, ChevronRight, MessageCircle, Share2, Check, Link2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import BookingDialog from "@/components/BookingDialog";
