@@ -120,6 +120,18 @@ const StylistMap = ({
       ],
     });
     googleMapRef.current = map;
+
+    // Center on user's location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const userPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          map.setCenter(userPos);
+          map.setZoom(12);
+        },
+        () => {} // silently fall back to default
+      );
+    }
   }, [mapLoaded]);
 
   // Update markers when stylists change
