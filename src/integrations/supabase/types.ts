@@ -345,6 +345,7 @@ export type Database = {
           phone: string | null
           role: string
           service_category: string | null
+          show_location: boolean
           updated_at: string
         }
         Insert: {
@@ -362,6 +363,7 @@ export type Database = {
           phone?: string | null
           role?: string
           service_category?: string | null
+          show_location?: boolean
           updated_at?: string
         }
         Update: {
@@ -379,6 +381,7 @@ export type Database = {
           phone?: string | null
           role?: string
           service_category?: string | null
+          show_location?: boolean
           updated_at?: string
         }
         Relationships: []
