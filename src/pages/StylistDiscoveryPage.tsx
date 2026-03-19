@@ -63,10 +63,12 @@ const StylistMap = ({
   stylists,
   selectedId,
   onSelectStylist,
+  userLocation,
 }: {
   stylists: StylistCard[];
   selectedId: string | null;
   onSelectStylist: (id: string) => void;
+  userLocation: { lat: number; lng: number } | null;
 }) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const googleMapRef = useRef<any>(null);
@@ -105,10 +107,10 @@ const StylistMap = ({
   useEffect(() => {
     if (!mapLoaded || !mapRef.current || googleMapRef.current) return;
 
-    const defaultCenter = { lat: 33.749, lng: -84.388 };
+    const center = userLocation || { lat: 33.749, lng: -84.388 };
     const map = new (window as any).google.maps.Map(mapRef.current, {
-      center: defaultCenter,
-      zoom: 11,
+      center,
+      zoom: 12,
       disableDefaultUI: true,
       zoomControl: true,
       gestureHandling: "greedy",
@@ -120,19 +122,7 @@ const StylistMap = ({
       ],
     });
     googleMapRef.current = map;
-
-    // Center on user's location
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const userPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-          map.setCenter(userPos);
-          map.setZoom(12);
-        },
-        () => {} // silently fall back to default
-      );
-    }
-  }, [mapLoaded]);
+  }, [mapLoaded, userLocation]);
 
   // Update markers when stylists change
   useEffect(() => {
@@ -143,9 +133,21 @@ const StylistMap = ({
     markersRef.current = [];
 
     const stylistsWithCoords = stylists.filter((s) => s.lat && s.lng);
-    if (stylistsWithCoords.length === 0) return;
+    if (stylistsWithCoords.length === 0) {
+      // No stylists but we have user location — just center there
+      if (userLocation) {
+        googleMapRef.current.setCenter(userLocation);
+        googleMapRef.current.setZoom(12);
+      }
+      return;
+    }
 
     const bounds = new (window as any).google.maps.LatLngBounds();
+
+    // Include user location in bounds so map shows their area
+    if (userLocation) {
+      bounds.extend(userLocation);
+    }
 
     stylistsWithCoords.forEach((stylist) => {
       const position = { lat: stylist.lat!, lng: stylist.lng! };
@@ -176,13 +178,8 @@ const StylistMap = ({
       markersRef.current.push(marker);
     });
 
-    if (stylistsWithCoords.length > 1) {
-      googleMapRef.current.fitBounds(bounds, { top: 50, bottom: 50, left: 50, right: 50 });
-    } else {
-      googleMapRef.current.setCenter({ lat: stylistsWithCoords[0].lat!, lng: stylistsWithCoords[0].lng! });
-      googleMapRef.current.setZoom(13);
-    }
-  }, [stylists, selectedId, mapLoaded, onSelectStylist]);
+    googleMapRef.current.fitBounds(bounds, { top: 50, bottom: 50, left: 50, right: 50 });
+  }, [stylists, selectedId, mapLoaded, onSelectStylist, userLocation]);
 
   // Pan to selected stylist
   useEffect(() => {
