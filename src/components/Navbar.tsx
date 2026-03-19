@@ -119,7 +119,7 @@ const Navbar = () => {
                 </Button>
               </Link>
             )}
-            <Link to="/stylists" onClick={() => setIsOpen(false)}>
+            <Link to="/discover" onClick={() => setIsOpen(false)}>
               <Button variant="hero" className="w-full" size="lg">
                 <Scissors className="w-4 h-4 mr-2" /> Book Now
               </Button>
