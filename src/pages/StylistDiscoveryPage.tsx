@@ -108,7 +108,6 @@ const StylistMap = ({
     const map = new (window as any).google.maps.Map(mapRef.current, {
       center: { lat: 33.749, lng: -84.388 }, // Atlanta default
       zoom: 11,
-      mapId: "stylist-discovery",
       disableDefaultUI: true,
       zoomControl: true,
       gestureHandling: "greedy",
@@ -127,7 +126,7 @@ const StylistMap = ({
     if (!googleMapRef.current || !mapLoaded) return;
 
     // Clear existing markers
-    markersRef.current.forEach((m) => (m.map = null));
+    markersRef.current.forEach((m) => m.setMap(null));
     markersRef.current = [];
 
     const stylistsWithCoords = stylists.filter((s) => s.lat && s.lng);
@@ -141,30 +140,20 @@ const StylistMap = ({
 
       const isSelected = stylist.id === selectedId;
 
-      // Create price pin element
-      const pinEl = document.createElement("div");
-      pinEl.className = "stylist-map-pin";
-      pinEl.innerHTML = `<span>${stylist.price}</span>`;
-      pinEl.style.cssText = `
-        background: ${isSelected ? "hsl(320, 70%, 55%)" : "hsl(270, 20%, 98%)"};
-        color: ${isSelected ? "#fff" : "hsl(270, 30%, 10%)"};
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-weight: 700;
-        font-size: 13px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.18);
-        border: 2px solid ${isSelected ? "hsl(320, 70%, 55%)" : "hsl(270, 15%, 90%)"};
-        cursor: pointer;
-        transition: all 0.2s;
-        white-space: nowrap;
-        font-family: 'Inter', sans-serif;
-      `;
-
-      const marker = new (window as any).google.maps.marker.AdvancedMarkerElement({
+      const marker = new (window as any).google.maps.Marker({
         map: googleMapRef.current!,
         position,
-        content: pinEl,
         title: stylist.name,
+        label: {
+          text: stylist.price,
+          fontWeight: "700",
+          fontSize: "12px",
+          color: isSelected ? "#fff" : "hsl(270, 30%, 10%)",
+        },
+        icon: {
+          path: (window as any).google.maps.SymbolPath.CIRCLE,
+          scale: 0,
+        },
       });
 
       marker.addListener("click", () => {
