@@ -32,7 +32,7 @@ export const DashboardProfile = ({ userId }: { userId: string }) => {
   const fetchProfile = async () => {
     const { data } = await supabase
       .from("profiles")
-      .select("full_name, email, phone, city, bio, avatar_url, service_category")
+      .select("full_name, email, phone, city, bio, avatar_url, service_category, show_location")
       .eq("id", userId)
       .single();
     setProfile(data);
