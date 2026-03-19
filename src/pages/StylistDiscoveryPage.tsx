@@ -160,7 +160,7 @@ const StylistMap = ({
         font-family: 'Inter', sans-serif;
       `;
 
-      const marker = new google.maps.marker.AdvancedMarkerElement({
+      const marker = new (window as any).google.maps.marker.AdvancedMarkerElement({
         map: googleMapRef.current!,
         position,
         content: pinEl,
