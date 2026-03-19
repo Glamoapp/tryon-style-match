@@ -3,7 +3,7 @@ declare global {
   interface Window { google: any; }
 }
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Star, MapPin, Heart, ChevronRight, Search, ArrowLeft, List, Map as MapIcon, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
