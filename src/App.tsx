@@ -37,6 +37,7 @@ const AppContent = () => {
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<PageTransition><Index /></PageTransition>} />
         <Route path="/stylists" element={<PageTransition><StylistsPage /></PageTransition>} />
+        <Route path="/discover" element={<PageTransition><StylistDiscoveryPage /></PageTransition>} />
         <Route path="/stylist/:id" element={<PageTransition><StylistProfilePage /></PageTransition>} />
         <Route path="/tryon" element={<PageTransition><TryOnPage /></PageTransition>} />
         <Route path="/tryon/live" element={<PageTransition><LiveTryOnPage /></PageTransition>} />

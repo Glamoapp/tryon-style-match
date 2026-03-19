@@ -35,30 +35,34 @@ const ServicesSection = () => {
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
           {services.map((service, index) => (
-            <motion.div
+            <Link
               key={service.name}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className={`group relative rounded-2xl overflow-hidden cursor-pointer shadow-card hover:shadow-elevated transition-all duration-500 ${
-                index === 4 ? "col-span-2 md:col-span-1" : ""
-              }`}
+              to={`/discover?service=${encodeURIComponent(service.filterKey)}`}
             >
-              <div className="aspect-[3/4] overflow-hidden">
-                <img
-                  src={service.image}
-                  alt={service.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-charcoal/90 via-charcoal/20 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-5">
-                <div className="text-xs text-gold font-semibold font-body mb-1">{service.price}</div>
-                <h3 className="text-xl font-display font-bold text-cream">{service.name}</h3>
-                <p className="text-cream/60 text-sm font-body mt-1">{service.description}</p>
-              </div>
-            </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className={`group relative rounded-2xl overflow-hidden cursor-pointer shadow-card hover:shadow-elevated transition-all duration-500 ${
+                  index === 4 ? "col-span-2 md:col-span-1" : ""
+                }`}
+              >
+                <div className="aspect-[3/4] overflow-hidden">
+                  <img
+                    src={service.image}
+                    alt={service.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-charcoal/90 via-charcoal/20 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-5">
+                  <div className="text-xs text-gold font-semibold font-body mb-1">{service.price}</div>
+                  <h3 className="text-xl font-display font-bold text-cream">{service.name}</h3>
+                  <p className="text-cream/60 text-sm font-body mt-1">{service.description}</p>
+                </div>
+              </motion.div>
+            </Link>
           ))}
         </div>
       </div>
