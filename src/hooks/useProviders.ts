@@ -8,6 +8,8 @@ export interface ProviderListing {
   bio: string | null;
   city: string | null;
   phone: string | null;
+  latitude: number | null;
+  longitude: number | null;
   rating: number;
   reviewCount: number;
   services: {
