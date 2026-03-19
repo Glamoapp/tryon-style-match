@@ -84,7 +84,7 @@ const Navbar = () => {
           <div className="flex items-center gap-2 sm:gap-3">
             <MessageNotification />
             <CartDrawer />
-            <Link to="/stylists" className="hidden sm:block">
+            <Link to="/discover" className="hidden sm:block">
               <Button variant="hero" size="sm">Book Now</Button>
             </Link>
           </div>
