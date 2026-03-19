@@ -3,7 +3,7 @@ declare global {
   interface Window { google: any; }
 }
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Star, MapPin, Heart, ChevronRight, Search, ArrowLeft, List, Map as MapIcon, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -58,21 +58,128 @@ function mapProviderToCard(p: ProviderListing): StylistCard {
   };
 }
 
+// Custom overlay class for price pin markers
+class PricePinOverlay {
+  private div: HTMLDivElement | null = null;
+  private position: any;
+  private map: any;
+  private price: string;
+  private name: string;
+  private stylistId: string;
+  private isSelected: boolean;
+  private onSelect: (id: string) => void;
+  private onNavigate: (id: string) => void;
+  private overlay: any;
+
+  constructor(
+    map: any,
+    position: any,
+    price: string,
+    name: string,
+    stylistId: string,
+    isSelected: boolean,
+    onSelect: (id: string) => void,
+    onNavigate: (id: string) => void
+  ) {
+    this.map = map;
+    this.position = position;
+    this.price = price;
+    this.name = name;
+    this.stylistId = stylistId;
+    this.isSelected = isSelected;
+    this.onSelect = onSelect;
+    this.onNavigate = onNavigate;
+
+    this.overlay = new (window as any).google.maps.OverlayView();
+    this.overlay.onAdd = () => this.onAdd();
+    this.overlay.draw = () => this.draw();
+    this.overlay.onRemove = () => this.onRemove();
+    this.overlay.setMap(map);
+  }
+
+  onAdd() {
+    this.div = document.createElement("div");
+    this.div.style.position = "absolute";
+    this.div.style.cursor = "pointer";
+    this.div.style.transform = "translate(-50%, -100%)";
+    this.div.style.zIndex = this.isSelected ? "10" : "1";
+    this.div.innerHTML = `
+      <div style="
+        background: ${this.isSelected ? "hsl(270, 50%, 40%)" : "#fff"};
+        color: ${this.isSelected ? "#fff" : "hsl(270, 30%, 10%)"};
+        font-weight: 700;
+        font-size: 13px;
+        padding: 6px 10px;
+        border-radius: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+        border: 2px solid ${this.isSelected ? "hsl(270, 50%, 30%)" : "hsl(270, 20%, 90%)"};
+        white-space: nowrap;
+        transition: all 0.2s;
+        text-align: center;
+        min-width: 48px;
+      ">${this.price}+</div>
+      <div style="
+        width: 0; height: 0;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-top: 6px solid ${this.isSelected ? "hsl(270, 50%, 40%)" : "#fff"};
+        margin: -1px auto 0;
+      "></div>
+    `;
+
+    // Single click selects, double click navigates to profile
+    this.div.addEventListener("click", (e) => {
+      e.stopPropagation();
+      this.onSelect(this.stylistId);
+    });
+    this.div.addEventListener("dblclick", (e) => {
+      e.stopPropagation();
+      this.onNavigate(this.stylistId);
+    });
+
+    const panes = this.overlay.getPanes();
+    panes.overlayMouseTarget.appendChild(this.div);
+  }
+
+  draw() {
+    if (!this.div) return;
+    const projection = this.overlay.getProjection();
+    const point = projection.fromLatLngToDivPixel(this.position);
+    if (point) {
+      this.div.style.left = point.x + "px";
+      this.div.style.top = point.y + "px";
+    }
+  }
+
+  onRemove() {
+    if (this.div?.parentNode) {
+      this.div.parentNode.removeChild(this.div);
+      this.div = null;
+    }
+  }
+
+  remove() {
+    this.overlay.setMap(null);
+  }
+}
+
 // Google Maps component
 const StylistMap = ({
   stylists,
   selectedId,
   onSelectStylist,
+  onNavigateToStylist,
   userLocation,
 }: {
   stylists: StylistCard[];
   selectedId: string | null;
   onSelectStylist: (id: string) => void;
+  onNavigateToStylist: (id: string) => void;
   userLocation: { lat: number; lng: number } | null;
 }) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const googleMapRef = useRef<any>(null);
-  const markersRef = useRef<any[]>([]);
+  const markersRef = useRef<PricePinOverlay[]>([]);
   const [mapLoaded, setMapLoaded] = useState(false);
 
   // Load Google Maps script
@@ -129,12 +236,11 @@ const StylistMap = ({
     if (!googleMapRef.current || !mapLoaded) return;
 
     // Clear existing markers
-    markersRef.current.forEach((m) => m.setMap(null));
+    markersRef.current.forEach((m) => m.remove());
     markersRef.current = [];
 
     const stylistsWithCoords = stylists.filter((s) => s.lat && s.lng);
     if (stylistsWithCoords.length === 0) {
-      // No stylists but we have user location — just center there
       if (userLocation) {
         googleMapRef.current.setCenter(userLocation);
         googleMapRef.current.setZoom(12);
@@ -144,42 +250,30 @@ const StylistMap = ({
 
     const bounds = new (window as any).google.maps.LatLngBounds();
 
-    // Include user location in bounds so map shows their area
     if (userLocation) {
       bounds.extend(userLocation);
     }
 
     stylistsWithCoords.forEach((stylist) => {
-      const position = { lat: stylist.lat!, lng: stylist.lng! };
+      const position = new (window as any).google.maps.LatLng(stylist.lat!, stylist.lng!);
       bounds.extend(position);
 
-      const isSelected = stylist.id === selectedId;
-
-      const marker = new (window as any).google.maps.Marker({
-        map: googleMapRef.current!,
+      const pin = new PricePinOverlay(
+        googleMapRef.current,
         position,
-        title: stylist.name,
-        label: {
-          text: stylist.price,
-          fontWeight: "700",
-          fontSize: "12px",
-          color: isSelected ? "#fff" : "hsl(270, 30%, 10%)",
-        },
-        icon: {
-          path: (window as any).google.maps.SymbolPath.CIRCLE,
-          scale: 0,
-        },
-      });
+        stylist.price,
+        stylist.name,
+        stylist.id,
+        stylist.id === selectedId,
+        onSelectStylist,
+        onNavigateToStylist
+      );
 
-      marker.addListener("click", () => {
-        onSelectStylist(stylist.id);
-      });
-
-      markersRef.current.push(marker);
+      markersRef.current.push(pin);
     });
 
     googleMapRef.current.fitBounds(bounds, { top: 50, bottom: 50, left: 50, right: 50 });
-  }, [stylists, selectedId, mapLoaded, onSelectStylist, userLocation]);
+  }, [stylists, selectedId, mapLoaded, onSelectStylist, onNavigateToStylist, userLocation]);
 
   // Pan to selected stylist
   useEffect(() => {
@@ -275,6 +369,7 @@ const StylistListCard = ({
 
 const StylistDiscoveryPage = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const initialService = searchParams.get("service") || "All";
   const { providers, loading } = useProviders();
   const [search, setSearch] = useState("");
@@ -286,12 +381,10 @@ const StylistDiscoveryPage = () => {
 
   // Get user's location via browser geolocation + IP fallback
   useEffect(() => {
-    // Try browser geolocation first
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
         () => {
-          // Fallback: IP-based geolocation
           fetch("https://ipapi.co/json/")
             .then((r) => r.json())
             .then((data) => {
@@ -326,10 +419,13 @@ const StylistDiscoveryPage = () => {
 
   const handleSelectStylist = useCallback((id: string) => {
     setSelectedStylist((prev) => (prev === id ? null : id));
-    // Scroll to stylist in list
     const el = document.getElementById(`stylist-card-${id}`);
     el?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, []);
+
+  const handleNavigateToStylist = useCallback((id: string) => {
+    navigate(`/stylist/${id}`);
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -441,6 +537,7 @@ const StylistDiscoveryPage = () => {
                 stylists={filtered}
                 selectedId={selectedStylist}
                 onSelectStylist={handleSelectStylist}
+                onNavigateToStylist={handleNavigateToStylist}
                 userLocation={userLocation}
               />
             </div>
