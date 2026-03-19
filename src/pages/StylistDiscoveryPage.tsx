@@ -108,7 +108,6 @@ const StylistMap = ({
     const map = new (window as any).google.maps.Map(mapRef.current, {
       center: { lat: 33.749, lng: -84.388 }, // Atlanta default
       zoom: 11,
-      mapId: "stylist-discovery",
       disableDefaultUI: true,
       zoomControl: true,
       gestureHandling: "greedy",
