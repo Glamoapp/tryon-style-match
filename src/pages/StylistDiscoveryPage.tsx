@@ -368,6 +368,84 @@ const StylistListCard = ({
   </motion.div>
 );
 
+// Mobile bottom sheet for stylist list
+const MobileBottomSheet = ({
+  children,
+  filtered,
+  loading,
+}: {
+  children: React.ReactNode;
+  filtered: StylistCard[];
+  loading: boolean;
+}) => {
+  const [sheetPosition, setSheetPosition] = useState<"peek" | "half" | "full">("peek");
+  const sheetRef = useRef<HTMLDivElement>(null);
+
+  const peekHeight = 140;
+  const halfHeight = typeof window !== "undefined" ? window.innerHeight * 0.5 : 400;
+  const fullHeight = typeof window !== "undefined" ? window.innerHeight - 140 : 700;
+
+  const currentHeight =
+    sheetPosition === "peek" ? peekHeight : sheetPosition === "half" ? halfHeight : fullHeight;
+
+  const cyclePosition = () => {
+    setSheetPosition((prev) =>
+      prev === "peek" ? "half" : prev === "half" ? "full" : "peek"
+    );
+  };
+
+  const handleDragEnd = (_: any, info: { offset: { y: number }; velocity: { y: number } }) => {
+    const { offset, velocity } = info;
+    if (velocity.y < -300 || offset.y < -80) {
+      // Swiped up
+      setSheetPosition((prev) => (prev === "peek" ? "half" : "full"));
+    } else if (velocity.y > 300 || offset.y > 80) {
+      // Swiped down
+      setSheetPosition((prev) => (prev === "full" ? "half" : "peek"));
+    }
+  };
+
+  return (
+    <motion.div
+      ref={sheetRef}
+      className="fixed bottom-0 left-0 right-0 z-40 bg-background rounded-t-3xl shadow-[0_-4px_20px_rgba(0,0,0,0.15)] flex flex-col"
+      animate={{ height: currentHeight }}
+      transition={{ type: "spring", damping: 30, stiffness: 300 }}
+      drag="y"
+      dragConstraints={{ top: 0, bottom: 0 }}
+      dragElastic={0.1}
+      onDragEnd={handleDragEnd}
+      style={{ touchAction: "none" }}
+    >
+      {/* Drag handle */}
+      <div
+        className="flex flex-col items-center pt-2 pb-3 cursor-grab active:cursor-grabbing shrink-0"
+        onClick={cyclePosition}
+      >
+        <div className="w-10 h-1 bg-muted-foreground/30 rounded-full mb-2" />
+        <div className="flex items-center gap-2 px-4 w-full">
+          <span className="text-sm font-display font-bold text-foreground">
+            {loading ? "Loading..." : `${filtered.length} stylists`}
+          </span>
+          <ChevronUp
+            className={`w-4 h-4 text-muted-foreground transition-transform ${
+              sheetPosition === "full" ? "rotate-180" : ""
+            }`}
+          />
+        </div>
+      </div>
+
+      {/* Scrollable list */}
+      <div
+        className="flex-1 overflow-y-auto px-3 pb-6 space-y-2"
+        onTouchStart={(e) => e.stopPropagation()}
+      >
+        {children}
+      </div>
+    </motion.div>
+  );
+};
+
 const StylistDiscoveryPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -379,6 +457,7 @@ const StylistDiscoveryPage = () => {
   const [showMap, setShowMap] = useState(true);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
   // Get user's location via browser geolocation + IP fallback
   useEffect(() => {
@@ -428,6 +507,103 @@ const StylistDiscoveryPage = () => {
     navigate(`/stylist/${id}`);
   }, [navigate]);
 
+  const stylistListContent = (
+    <>
+      {loading && (
+        <div className="space-y-3">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="flex gap-3 p-3 bg-card rounded-xl border border-border/50">
+              <Skeleton className="w-24 h-24 rounded-xl" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-3 w-20" />
+                <Skeleton className="h-3 w-40" />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {!loading && filtered.length === 0 && (
+        <div className="text-center py-16">
+          <p className="text-muted-foreground font-body">No stylists found for this service.</p>
+        </div>
+      )}
+
+      {filtered.map((card) => (
+        <div key={card.id} id={`stylist-card-${card.id}`}>
+          <Link to={`/stylist/${card.id}`} className="block">
+            <StylistListCard
+              card={card}
+              isSelected={selectedStylist === card.id}
+              onSelect={() => handleSelectStylist(card.id)}
+            />
+          </Link>
+        </div>
+      ))}
+    </>
+  );
+
+  // MOBILE LAYOUT: Full-screen map + bottom sheet
+  if (isMobile) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <Navbar />
+        <div className="pt-16 flex-1 flex flex-col relative">
+          {/* Search + filters overlay on top of map */}
+          <div className="absolute top-0 left-0 right-0 z-30 px-3 pt-3 pb-2">
+            <div className="flex gap-2 items-center mb-2">
+              <Link to="/" className="p-2 rounded-full bg-background/90 backdrop-blur-sm shadow-sm border border-border">
+                <ArrowLeft className="w-4 h-4 text-foreground" />
+              </Link>
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search stylists..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-10 h-9 bg-background/90 backdrop-blur-sm border-border text-sm shadow-sm"
+                />
+              </div>
+            </div>
+            <div className="flex gap-1.5 overflow-x-auto scrollbar-hide">
+              {serviceFilters.map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setActiveFilter(f)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-body font-semibold whitespace-nowrap transition-all shadow-sm ${
+                    activeFilter === f
+                      ? "bg-primary text-primary-foreground shadow-soft"
+                      : "bg-background/90 backdrop-blur-sm text-muted-foreground border border-border"
+                  }`}
+                >
+                  {f}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Full-screen map */}
+          <div className="flex-1" style={{ height: "calc(100vh - 64px)" }}>
+            <StylistMap
+              stylists={filtered}
+              selectedId={selectedStylist}
+              onSelectStylist={handleSelectStylist}
+              onNavigateToStylist={handleNavigateToStylist}
+              userLocation={userLocation}
+            />
+          </div>
+
+          {/* Bottom sheet */}
+          <MobileBottomSheet filtered={filtered} loading={loading}>
+            {stylistListContent}
+          </MobileBottomSheet>
+        </div>
+      </div>
+    );
+  }
+
+  // DESKTOP LAYOUT: Side-by-side
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
@@ -472,12 +648,6 @@ const StylistDiscoveryPage = () => {
                   </button>
                 ))}
               </div>
-              <button
-                onClick={() => setShowMap(!showMap)}
-                className="md:hidden p-2 rounded-full bg-card border border-border"
-              >
-                {showMap ? <List className="w-4 h-4" /> : <MapIcon className="w-4 h-4" />}
-              </button>
             </div>
           </div>
         </div>
@@ -487,53 +657,18 @@ const StylistDiscoveryPage = () => {
           {/* Left: Stylist list */}
           <div
             ref={listRef}
-            className={`${
-              showMap ? "hidden md:block" : "block"
-            } w-full md:w-1/2 lg:w-[45%] overflow-y-auto p-4 space-y-2`}
+            className="w-1/2 lg:w-[45%] overflow-y-auto p-4 space-y-2"
             style={{ maxHeight: "calc(100vh - 180px)" }}
           >
-            {loading && (
-              <div className="space-y-3">
-                {[...Array(5)].map((_, i) => (
-                  <div key={i} className="flex gap-3 p-3 bg-card rounded-xl border border-border/50">
-                    <Skeleton className="w-24 h-24 rounded-xl" />
-                    <div className="flex-1 space-y-2">
-                      <Skeleton className="h-4 w-32" />
-                      <Skeleton className="h-3 w-20" />
-                      <Skeleton className="h-3 w-40" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {!loading && filtered.length === 0 && (
-              <div className="text-center py-16">
-                <p className="text-muted-foreground font-body">No stylists found for this service.</p>
-              </div>
-            )}
-
-            {filtered.map((card) => (
-              <div key={card.id} id={`stylist-card-${card.id}`}>
-                <Link to={`/stylist/${card.id}`} className="block">
-                  <StylistListCard
-                    card={card}
-                    isSelected={selectedStylist === card.id}
-                    onSelect={() => handleSelectStylist(card.id)}
-                  />
-                </Link>
-              </div>
-            ))}
+            {stylistListContent}
           </div>
 
           {/* Right: Map */}
           <div
-            className={`${
-              showMap ? "block" : "hidden md:block"
-            } w-full md:w-1/2 lg:w-[55%] sticky top-[180px]`}
+            className="w-1/2 lg:w-[55%] sticky top-[180px]"
             style={{ height: "calc(100vh - 180px)" }}
           >
-            <div className="h-full p-2 md:p-4">
+            <div className="h-full p-4">
               <StylistMap
                 stylists={filtered}
                 selectedId={selectedStylist}
