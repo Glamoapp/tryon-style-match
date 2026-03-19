@@ -84,7 +84,7 @@ const Navbar = () => {
           <div className="flex items-center gap-2 sm:gap-3">
             <MessageNotification />
             <CartDrawer />
-            <Link to="/stylists" className="hidden sm:block">
+            <Link to="/discover" className="hidden sm:block">
               <Button variant="hero" size="sm">Book Now</Button>
             </Link>
           </div>
@@ -119,7 +119,7 @@ const Navbar = () => {
                 </Button>
               </Link>
             )}
-            <Link to="/stylists" onClick={() => setIsOpen(false)}>
+            <Link to="/discover" onClick={() => setIsOpen(false)}>
               <Button variant="hero" className="w-full" size="lg">
                 <Scissors className="w-4 h-4 mr-2" /> Book Now
               </Button>
