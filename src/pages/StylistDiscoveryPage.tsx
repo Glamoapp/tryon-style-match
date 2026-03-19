@@ -105,8 +105,9 @@ const StylistMap = ({
   useEffect(() => {
     if (!mapLoaded || !mapRef.current || googleMapRef.current) return;
 
+    const defaultCenter = { lat: 33.749, lng: -84.388 };
     const map = new (window as any).google.maps.Map(mapRef.current, {
-      center: { lat: 33.749, lng: -84.388 }, // Atlanta default
+      center: defaultCenter,
       zoom: 11,
       disableDefaultUI: true,
       zoomControl: true,
@@ -119,6 +120,18 @@ const StylistMap = ({
       ],
     });
     googleMapRef.current = map;
+
+    // Center on user's location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const userPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          map.setCenter(userPos);
+          map.setZoom(12);
+        },
+        () => {} // silently fall back to default
+      );
+    }
   }, [mapLoaded]);
 
   // Update markers when stylists change
