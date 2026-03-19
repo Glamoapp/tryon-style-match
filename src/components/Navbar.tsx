@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import logoImg from "@/assets/logo.png";
 
 const navLinks = [
-  { label: "Services", href: "/#services", icon: Scissors },
+  { label: "Services", href: "/discover", icon: Scissors },
   { label: "Virtual Try-On", href: "/tryon", icon: Sparkles },
   { label: "Find Stylists", href: "/stylists", icon: Search },
   { label: "Shop Extensions", href: "/extensions", icon: ShoppingBag },
