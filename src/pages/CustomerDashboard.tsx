@@ -365,7 +365,7 @@ const CustomerDashboard = () => {
                 <Calendar className="w-12 h-12 mx-auto mb-4 text-muted-foreground/40" />
                 <p className="font-display font-semibold text-foreground">No upcoming bookings</p>
                 <p className="text-sm text-muted-foreground font-body mt-1 mb-6">Browse stylists and book your next appointment</p>
-                <Link to="/stylists">
+                <Link to="/discover">
                   <Button variant="hero">Find Stylists</Button>
                 </Link>
               </div>
