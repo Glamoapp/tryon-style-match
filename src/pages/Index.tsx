@@ -17,9 +17,9 @@ const Index = () => {
       <Navbar />
       <HomepageHero />
       <NearbyStylists />
-      <ProductsNearYou />
       <CategoryStylists />
       <BestDeals />
+      <ProductsNearYou />
       <TopRatedStylists />
       <FaceScanPromo />
       <Footer />
