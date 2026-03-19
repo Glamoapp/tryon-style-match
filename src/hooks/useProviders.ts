@@ -99,6 +99,8 @@ export function useProviders() {
           bio: profile.bio,
           city: profile.city,
           phone: null,
+          latitude: (profile as any).latitude ?? null,
+          longitude: (profile as any).longitude ?? null,
           rating: avgRating,
           reviewCount: providerReviews.length,
           services: servicesWithPhotos,
