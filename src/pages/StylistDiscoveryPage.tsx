@@ -69,8 +69,8 @@ const StylistMap = ({
   onSelectStylist: (id: string) => void;
 }) => {
   const mapRef = useRef<HTMLDivElement>(null);
-  const googleMapRef = useRef<google.maps.Map | null>(null);
-  const markersRef = useRef<google.maps.marker.AdvancedMarkerElement[]>([]);
+  const googleMapRef = useRef<any>(null);
+  const markersRef = useRef<any[]>([]);
   const [mapLoaded, setMapLoaded] = useState(false);
 
   // Load Google Maps script
