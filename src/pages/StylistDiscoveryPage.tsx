@@ -133,7 +133,7 @@ const StylistMap = ({
     const stylistsWithCoords = stylists.filter((s) => s.lat && s.lng);
     if (stylistsWithCoords.length === 0) return;
 
-    const bounds = new google.maps.LatLngBounds();
+    const bounds = new (window as any).google.maps.LatLngBounds();
 
     stylistsWithCoords.forEach((stylist) => {
       const position = { lat: stylist.lat!, lng: stylist.lng! };
