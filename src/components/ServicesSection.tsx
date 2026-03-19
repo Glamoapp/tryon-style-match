@@ -7,11 +7,11 @@ import wigsImg from "@/assets/service-wigs.jpg";
 import makeupImg from "@/assets/service-makeup.jpg";
 
 const services = [
-  { name: "Weave Installations", image: weaveImg, price: "From $120", description: "Full sew-in, quick weave, closures & frontals" },
-  { name: "Braids", image: braidsImg, price: "From $85", description: "Box braids, cornrows, knotless & more" },
-  { name: "K-Tips", image: ktipsImg, price: "From $150", description: "Keratin tip extensions, fusion bonds" },
-  { name: "Wigs", image: wigsImg, price: "From $95", description: "Lace front, full lace, custom wig installs" },
-  { name: "Makeup", image: makeupImg, price: "From $65", description: "Glam, bridal, editorial looks" },
+  { name: "Weave Installations", image: weaveImg, price: "From $120", description: "Full sew-in, quick weave, closures & frontals", filterKey: "Weave" },
+  { name: "Braids", image: braidsImg, price: "From $85", description: "Box braids, cornrows, knotless & more", filterKey: "Braids" },
+  { name: "K-Tips", image: ktipsImg, price: "From $150", description: "Keratin tip extensions, fusion bonds", filterKey: "K-Tips" },
+  { name: "Wigs", image: wigsImg, price: "From $95", description: "Lace front, full lace, custom wig installs", filterKey: "Wigs" },
+  { name: "Makeup", image: makeupImg, price: "From $65", description: "Glam, bridal, editorial looks", filterKey: "Makeup" },
 ];
 
 const ServicesSection = () => {
