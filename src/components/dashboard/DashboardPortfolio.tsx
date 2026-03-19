@@ -12,7 +12,7 @@ type PortfolioItem = {
   is_video?: boolean;
 };
 
-const MAX_PORTFOLIO = 5;
+const MAX_PORTFOLIO = 20;
 
 export const DashboardPortfolio = ({ userId }: { userId: string }) => {
   const [items, setItems] = useState<PortfolioItem[]>([]);
@@ -122,11 +122,49 @@ export const DashboardPortfolio = ({ userId }: { userId: string }) => {
         <span className="text-sm text-muted-foreground font-body">{items.length}/{MAX_PORTFOLIO}</span>
       </div>
       <p className="text-sm text-muted-foreground font-body">
-        Showcase your best work. Upload up to {MAX_PORTFOLIO} photos or videos.
+        Showcase your best work. Upload up to {MAX_PORTFOLIO} photos or videos to attract more clients.
       </p>
 
+      {/* Upload buttons */}
+      {items.length < MAX_PORTFOLIO && (
+        <div className="flex gap-2">
+          <label className="cursor-pointer">
+            <Button variant="outline" size="sm" asChild disabled={uploading}>
+              <span>
+                <Camera className="w-4 h-4 mr-2" />
+                {uploading ? "Uploading..." : "Add Photos"}
+              </span>
+            </Button>
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleUpload}
+              multiple
+              disabled={uploading}
+            />
+          </label>
+          <label className="cursor-pointer">
+            <Button variant="outline" size="sm" asChild disabled={uploading}>
+              <span>
+                <Film className="w-4 h-4 mr-2" />
+                Add Videos
+              </span>
+            </Button>
+            <input
+              type="file"
+              accept="video/*"
+              className="hidden"
+              onChange={handleUpload}
+              multiple
+              disabled={uploading}
+            />
+          </label>
+        </div>
+      )}
+
       {/* Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
         {items.map((item) => (
           <div key={item.id} className="relative group aspect-square rounded-xl overflow-hidden border border-border bg-muted">
             {isVideo(item.photo_url) ? (
@@ -148,24 +186,19 @@ export const DashboardPortfolio = ({ userId }: { userId: string }) => {
               </Button>
             </div>
             {isVideo(item.photo_url) && (
-              <div className="absolute top-2 left-2">
-                <Film className="w-4 h-4 text-white drop-shadow" />
+              <div className="absolute top-2 left-2 bg-black/50 rounded-full px-2 py-0.5 flex items-center gap-1">
+                <Film className="w-3 h-3 text-white" />
+                <span className="text-[10px] text-white font-medium">Video</span>
               </div>
             )}
           </div>
         ))}
 
-        {/* Upload button */}
+        {/* Drop zone tile */}
         {items.length < MAX_PORTFOLIO && (
           <label className="aspect-square rounded-xl border-2 border-dashed border-border hover:border-primary/50 flex flex-col items-center justify-center cursor-pointer transition-colors gap-2">
-            {uploading ? (
-              <p className="text-xs text-primary font-body">Uploading...</p>
-            ) : (
-              <>
-                <Upload className="w-6 h-6 text-muted-foreground" />
-                <span className="text-xs text-muted-foreground font-body">Photo or Video</span>
-              </>
-            )}
+            <Upload className="w-6 h-6 text-muted-foreground" />
+            <span className="text-xs text-muted-foreground font-body">Drop files here</span>
             <input
               type="file"
               accept="image/*,video/*"
