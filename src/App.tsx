@@ -8,6 +8,7 @@ import { AnimatePresence } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
 import Index from "./pages/Index.tsx";
 import StylistsPage from "./pages/StylistsPage.tsx";
+import StylistDiscoveryPage from "./pages/StylistDiscoveryPage.tsx";
 import StylistProfilePage from "./pages/StylistProfilePage.tsx";
 import TryOnPage from "./pages/TryOnPage.tsx";
 import LiveTryOnPage from "./pages/LiveTryOnPage.tsx";
@@ -36,6 +37,7 @@ const AppContent = () => {
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<PageTransition><Index /></PageTransition>} />
         <Route path="/stylists" element={<PageTransition><StylistsPage /></PageTransition>} />
+        <Route path="/discover" element={<PageTransition><StylistDiscoveryPage /></PageTransition>} />
         <Route path="/stylist/:id" element={<PageTransition><StylistProfilePage /></PageTransition>} />
         <Route path="/tryon" element={<PageTransition><TryOnPage /></PageTransition>} />
         <Route path="/tryon/live" element={<PageTransition><LiveTryOnPage /></PageTransition>} />

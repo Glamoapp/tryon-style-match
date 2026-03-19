@@ -8,6 +8,8 @@ export interface ProviderListing {
   bio: string | null;
   city: string | null;
   phone: string | null;
+  latitude: number | null;
+  longitude: number | null;
   rating: number;
   reviewCount: number;
   services: {
@@ -38,7 +40,7 @@ export function useProviders() {
       // Fetch onboarded providers
       const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
-        .select("id, full_name, avatar_url, bio, city")
+        .select("id, full_name, avatar_url, bio, city, latitude, longitude")
         .eq("role", "provider")
         .eq("is_onboarded", true)
         .eq("is_approved", true);
@@ -97,6 +99,8 @@ export function useProviders() {
           bio: profile.bio,
           city: profile.city,
           phone: null,
+          latitude: (profile as any).latitude ?? null,
+          longitude: (profile as any).longitude ?? null,
           rating: avgRating,
           reviewCount: providerReviews.length,
           services: servicesWithPhotos,
