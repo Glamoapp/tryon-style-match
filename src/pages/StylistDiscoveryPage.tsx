@@ -105,8 +105,9 @@ const StylistMap = ({
   useEffect(() => {
     if (!mapLoaded || !mapRef.current || googleMapRef.current) return;
 
+    const defaultCenter = { lat: 33.749, lng: -84.388 };
     const map = new (window as any).google.maps.Map(mapRef.current, {
-      center: { lat: 33.749, lng: -84.388 }, // Atlanta default
+      center: defaultCenter,
       zoom: 11,
       disableDefaultUI: true,
       zoomControl: true,
