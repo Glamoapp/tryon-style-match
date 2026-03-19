@@ -5,7 +5,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
-import { Camera, Save, User, MapPin } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Camera, Save, User, MapPin, Scissors } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -72,6 +73,21 @@ export const DashboardProfile = ({ userId }: { userId: string }) => {
     }
   };
 
+  const SERVICE_CATEGORIES = [
+    "Weave", "Braids", "K-Tips", "Wigs", "Updo", "Makeup", "Locs", "Natural Hair", "Haircut"
+  ];
+
+  const selectedCategories = profile?.service_category
+    ? profile.service_category.split(",").map((s) => s.trim()).filter(Boolean)
+    : [];
+
+  const toggleCategory = (cat: string) => {
+    const updated = selectedCategories.includes(cat)
+      ? selectedCategories.filter((c) => c !== cat)
+      : [...selectedCategories, cat];
+    setProfile((p) => p ? { ...p, service_category: updated.join(", ") } : p);
+  };
+
   const handleSave = async () => {
     if (!profile) return;
     setSaving(true);
@@ -83,6 +99,7 @@ export const DashboardProfile = ({ userId }: { userId: string }) => {
           phone: profile.phone,
           city: profile.city,
           bio: profile.bio,
+          service_category: profile.service_category,
           updated_at: new Date().toISOString(),
         })
         .eq("id", userId);
@@ -179,6 +196,31 @@ export const DashboardProfile = ({ userId }: { userId: string }) => {
             value={profile.city || ""}
             onChange={(e) => setProfile((p) => p ? { ...p, city: e.target.value } : p)}
           />
+        </div>
+        <div>
+          <Label className="flex items-center gap-2 mb-2">
+            <Scissors className="w-4 h-4" />
+            Service Categories
+          </Label>
+          <p className="text-xs text-muted-foreground mb-3">Select all the services you offer</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {SERVICE_CATEGORIES.map((cat) => (
+              <label
+                key={cat}
+                className={`flex items-center gap-2 p-2.5 rounded-lg border cursor-pointer transition-colors ${
+                  selectedCategories.includes(cat)
+                    ? "border-primary bg-primary/5"
+                    : "border-border hover:border-muted-foreground/30"
+                }`}
+              >
+                <Checkbox
+                  checked={selectedCategories.includes(cat)}
+                  onCheckedChange={() => toggleCategory(cat)}
+                />
+                <span className="text-sm font-medium">{cat}</span>
+              </label>
+            ))}
+          </div>
         </div>
         <div>
           <Label>Bio</Label>
