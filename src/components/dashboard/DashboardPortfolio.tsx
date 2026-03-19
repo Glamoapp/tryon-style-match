@@ -12,7 +12,7 @@ type PortfolioItem = {
   is_video?: boolean;
 };
 
-const MAX_PORTFOLIO = 5;
+const MAX_PORTFOLIO = 20;
 
 export const DashboardPortfolio = ({ userId }: { userId: string }) => {
   const [items, setItems] = useState<PortfolioItem[]>([]);
