@@ -105,7 +105,7 @@ const StylistMap = ({
   useEffect(() => {
     if (!mapLoaded || !mapRef.current || googleMapRef.current) return;
 
-    const map = new google.maps.Map(mapRef.current, {
+    const map = new (window as any).google.maps.Map(mapRef.current, {
       center: { lat: 33.749, lng: -84.388 }, // Atlanta default
       zoom: 11,
       mapId: "stylist-discovery",
