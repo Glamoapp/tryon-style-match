@@ -441,6 +441,7 @@ const StylistDiscoveryPage = () => {
                 stylists={filtered}
                 selectedId={selectedStylist}
                 onSelectStylist={handleSelectStylist}
+                userLocation={userLocation}
               />
             </div>
           </div>
