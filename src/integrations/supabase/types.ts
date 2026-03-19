@@ -340,6 +340,8 @@ export type Database = {
           id: string
           is_approved: boolean
           is_onboarded: boolean
+          latitude: number | null
+          longitude: number | null
           phone: string | null
           role: string
           service_category: string | null
@@ -355,6 +357,8 @@ export type Database = {
           id: string
           is_approved?: boolean
           is_onboarded?: boolean
+          latitude?: number | null
+          longitude?: number | null
           phone?: string | null
           role?: string
           service_category?: string | null
@@ -370,6 +374,8 @@ export type Database = {
           id?: string
           is_approved?: boolean
           is_onboarded?: boolean
+          latitude?: number | null
+          longitude?: number | null
           phone?: string | null
           role?: string
           service_category?: string | null
