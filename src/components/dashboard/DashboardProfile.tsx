@@ -122,6 +122,35 @@ export const DashboardProfile = ({ userId }: { userId: string }) => {
         </div>
       </div>
 
+      {/* Location visibility toggle */}
+      <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-card max-w-lg">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+            <MapPin className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <p className="font-medium text-sm">Show on Discovery Map</p>
+            <p className="text-xs text-muted-foreground">When off, your profile won't appear in location-based searches</p>
+          </div>
+        </div>
+        <Switch
+          checked={profile.show_location}
+          onCheckedChange={async (checked) => {
+            setProfile((p) => p ? { ...p, show_location: checked } : p);
+            const { error } = await supabase
+              .from("profiles")
+              .update({ show_location: checked, updated_at: new Date().toISOString() } as any)
+              .eq("id", userId);
+            if (error) {
+              setProfile((p) => p ? { ...p, show_location: !checked } : p);
+              toast.error("Failed to update location visibility");
+            } else {
+              toast.success(checked ? "You're now visible on the map" : "Hidden from the map");
+            }
+          }}
+        />
+      </div>
+
       {/* Form */}
       <div className="space-y-4 max-w-lg">
         <div>
