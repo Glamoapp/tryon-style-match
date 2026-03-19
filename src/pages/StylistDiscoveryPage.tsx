@@ -281,7 +281,30 @@ const StylistDiscoveryPage = () => {
   const [activeFilter, setActiveFilter] = useState(initialService);
   const [selectedStylist, setSelectedStylist] = useState<string | null>(null);
   const [showMap, setShowMap] = useState(true);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
+
+  // Get user's location via browser geolocation + IP fallback
+  useEffect(() => {
+    // Try browser geolocation first
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        () => {
+          // Fallback: IP-based geolocation
+          fetch("https://ipapi.co/json/")
+            .then((r) => r.json())
+            .then((data) => {
+              if (data.latitude && data.longitude) {
+                setUserLocation({ lat: data.latitude, lng: data.longitude });
+              }
+            })
+            .catch(() => {});
+        },
+        { timeout: 5000 }
+      );
+    }
+  }, []);
 
   const allCards = useMemo(() => providers.map(mapProviderToCard), [providers]);
 
