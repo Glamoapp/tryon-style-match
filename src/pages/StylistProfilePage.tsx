@@ -96,6 +96,8 @@ const StylistProfilePage = () => {
         bio: profile.bio,
         city: profile.city,
         phone: profile.phone,
+        latitude: null,
+        longitude: null,
         rating: avgRating,
         reviewCount: rvws.length,
         services: servicesWithPhotos,
