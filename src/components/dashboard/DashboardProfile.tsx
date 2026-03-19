@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Camera, Save, User } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Camera, Save, User, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -16,6 +17,7 @@ type Profile = {
   bio: string | null;
   avatar_url: string | null;
   service_category: string | null;
+  show_location: boolean;
 };
 
 export const DashboardProfile = ({ userId }: { userId: string }) => {
@@ -30,7 +32,7 @@ export const DashboardProfile = ({ userId }: { userId: string }) => {
   const fetchProfile = async () => {
     const { data } = await supabase
       .from("profiles")
-      .select("full_name, email, phone, city, bio, avatar_url, service_category")
+      .select("full_name, email, phone, city, bio, avatar_url, service_category, show_location")
       .eq("id", userId)
       .single();
     setProfile(data);
@@ -118,6 +120,35 @@ export const DashboardProfile = ({ userId }: { userId: string }) => {
           <p className="text-sm text-muted-foreground">{profile.service_category}</p>
           {uploading && <p className="text-xs text-primary mt-1">Uploading...</p>}
         </div>
+      </div>
+
+      {/* Location visibility toggle */}
+      <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-card max-w-lg">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+            <MapPin className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <p className="font-medium text-sm">Show on Discovery Map</p>
+            <p className="text-xs text-muted-foreground">When off, your profile won't appear in location-based searches</p>
+          </div>
+        </div>
+        <Switch
+          checked={profile.show_location}
+          onCheckedChange={async (checked) => {
+            setProfile((p) => p ? { ...p, show_location: checked } : p);
+            const { error } = await supabase
+              .from("profiles")
+              .update({ show_location: checked, updated_at: new Date().toISOString() } as any)
+              .eq("id", userId);
+            if (error) {
+              setProfile((p) => p ? { ...p, show_location: !checked } : p);
+              toast.error("Failed to update location visibility");
+            } else {
+              toast.success(checked ? "You're now visible on the map" : "Hidden from the map");
+            }
+          }}
+        />
       </div>
 
       {/* Form */}

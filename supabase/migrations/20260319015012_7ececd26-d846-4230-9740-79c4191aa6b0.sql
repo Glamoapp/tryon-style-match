@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN show_location boolean NOT NULL DEFAULT true;

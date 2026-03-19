@@ -40,10 +40,11 @@ export function useProviders() {
       // Fetch onboarded providers
       const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
-        .select("id, full_name, avatar_url, bio, city, latitude, longitude")
+        .select("id, full_name, avatar_url, bio, city, latitude, longitude, show_location")
         .eq("role", "provider")
         .eq("is_onboarded", true)
-        .eq("is_approved", true);
+        .eq("is_approved", true)
+        .eq("show_location", true);
 
       if (profilesError || !profiles?.length) {
         setProviders([]);
