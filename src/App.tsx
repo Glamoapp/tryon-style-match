@@ -8,6 +8,7 @@ import { AnimatePresence } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
 import Index from "./pages/Index.tsx";
 import StylistsPage from "./pages/StylistsPage.tsx";
+import StylistDiscoveryPage from "./pages/StylistDiscoveryPage.tsx";
 import StylistProfilePage from "./pages/StylistProfilePage.tsx";
 import TryOnPage from "./pages/TryOnPage.tsx";
 import LiveTryOnPage from "./pages/LiveTryOnPage.tsx";
