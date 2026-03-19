@@ -4,14 +4,15 @@ declare global {
 }
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Star, MapPin, Heart, ChevronRight, Search, ArrowLeft, List, Map as MapIcon, SlidersHorizontal } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Star, MapPin, Heart, ChevronRight, Search, ArrowLeft, List, Map as MapIcon, SlidersHorizontal, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useProviders, ProviderListing } from "@/hooks/useProviders";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const serviceFilters = [
   "All",
