@@ -369,6 +369,7 @@ const StylistListCard = ({
 
 const StylistDiscoveryPage = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const initialService = searchParams.get("service") || "All";
   const { providers, loading } = useProviders();
   const [search, setSearch] = useState("");
@@ -380,12 +381,10 @@ const StylistDiscoveryPage = () => {
 
   // Get user's location via browser geolocation + IP fallback
   useEffect(() => {
-    // Try browser geolocation first
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
         () => {
-          // Fallback: IP-based geolocation
           fetch("https://ipapi.co/json/")
             .then((r) => r.json())
             .then((data) => {
@@ -420,10 +419,13 @@ const StylistDiscoveryPage = () => {
 
   const handleSelectStylist = useCallback((id: string) => {
     setSelectedStylist((prev) => (prev === id ? null : id));
-    // Scroll to stylist in list
     const el = document.getElementById(`stylist-card-${id}`);
     el?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, []);
+
+  const handleNavigateToStylist = useCallback((id: string) => {
+    navigate(`/stylist/${id}`);
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
