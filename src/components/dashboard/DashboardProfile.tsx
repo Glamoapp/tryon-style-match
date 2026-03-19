@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Camera, Save, User } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Camera, Save, User, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -16,6 +17,7 @@ type Profile = {
   bio: string | null;
   avatar_url: string | null;
   service_category: string | null;
+  show_location: boolean;
 };
 
 export const DashboardProfile = ({ userId }: { userId: string }) => {
