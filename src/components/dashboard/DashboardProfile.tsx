@@ -198,6 +198,31 @@ export const DashboardProfile = ({ userId }: { userId: string }) => {
           />
         </div>
         <div>
+          <Label className="flex items-center gap-2 mb-2">
+            <Scissors className="w-4 h-4" />
+            Service Categories
+          </Label>
+          <p className="text-xs text-muted-foreground mb-3">Select all the services you offer</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {SERVICE_CATEGORIES.map((cat) => (
+              <label
+                key={cat}
+                className={`flex items-center gap-2 p-2.5 rounded-lg border cursor-pointer transition-colors ${
+                  selectedCategories.includes(cat)
+                    ? "border-primary bg-primary/5"
+                    : "border-border hover:border-muted-foreground/30"
+                }`}
+              >
+                <Checkbox
+                  checked={selectedCategories.includes(cat)}
+                  onCheckedChange={() => toggleCategory(cat)}
+                />
+                <span className="text-sm font-medium">{cat}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+        <div>
           <Label>Bio</Label>
           <Textarea
             value={profile.bio || ""}
