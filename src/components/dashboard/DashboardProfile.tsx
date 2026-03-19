@@ -73,6 +73,21 @@ export const DashboardProfile = ({ userId }: { userId: string }) => {
     }
   };
 
+  const SERVICE_CATEGORIES = [
+    "Weave", "Braids", "K-Tips", "Wigs", "Updo", "Makeup", "Locs", "Natural Hair", "Haircut"
+  ];
+
+  const selectedCategories = profile?.service_category
+    ? profile.service_category.split(",").map((s) => s.trim()).filter(Boolean)
+    : [];
+
+  const toggleCategory = (cat: string) => {
+    const updated = selectedCategories.includes(cat)
+      ? selectedCategories.filter((c) => c !== cat)
+      : [...selectedCategories, cat];
+    setProfile((p) => p ? { ...p, service_category: updated.join(", ") } : p);
+  };
+
   const handleSave = async () => {
     if (!profile) return;
     setSaving(true);
@@ -84,6 +99,7 @@ export const DashboardProfile = ({ userId }: { userId: string }) => {
           phone: profile.phone,
           city: profile.city,
           bio: profile.bio,
+          service_category: profile.service_category,
           updated_at: new Date().toISOString(),
         })
         .eq("id", userId);
