@@ -25,6 +25,8 @@ import MessagesPage from "./pages/MessagesPage.tsx";
 import AdminDashboard from "./pages/AdminDashboard.tsx";
 import CustomerDashboard from "./pages/CustomerDashboard.tsx";
 import GlowUpMondayPage from "./pages/GlowUpMondayPage.tsx";
+import HandbookPage from "./pages/HandbookPage.tsx";
+import TermsPage from "./pages/TermsPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
