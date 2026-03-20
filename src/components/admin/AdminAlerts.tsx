@@ -28,7 +28,7 @@ const AdminAlerts = () => {
       // Fetch recent bookings as alerts
       const { data: bookings } = await supabase
         .from("bookings")
-        .select("id, status, booking_date, booking_time, created_at, customer:profiles!bookings_customer_id_fkey(full_name), provider:profiles!bookings_provider_id_fkey(full_name)")
+        .select("id, status, booking_date, booking_time, created_at, completion_code, customer:profiles!bookings_customer_id_fkey(full_name), provider:profiles!bookings_provider_id_fkey(full_name)")
         .order("created_at", { ascending: false })
         .limit(20);
 
@@ -40,6 +40,7 @@ const AdminAlerts = () => {
         message: `${b.customer?.full_name || "Customer"} → ${b.provider?.full_name || "Stylist"} on ${b.booking_date} at ${b.booking_time}`,
         created_at: b.created_at,
         is_read: false,
+        completion_code: b.completion_code || null,
       }));
 
       setAlerts(alertItems);
