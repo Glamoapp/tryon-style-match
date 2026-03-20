@@ -43,12 +43,18 @@ const Footer = () => {
                   const isObj = typeof link === "object";
                   const label = isObj ? link.label : link;
                   const href = isObj ? link.href : "#";
-                  const target = isObj ? "_blank" : undefined;
+                  const isInternal = isObj && href.startsWith("/");
                   return (
                     <li key={label}>
-                      <a href={href} target={target} rel={target ? "noopener noreferrer" : undefined} className="text-sm text-cream/50 hover:text-cream transition-colors font-body">
-                        {label}
-                      </a>
+                      {isInternal ? (
+                        <Link to={href} className="text-sm text-cream/50 hover:text-cream transition-colors font-body">
+                          {label}
+                        </Link>
+                      ) : (
+                        <a href={href} target={isObj ? "_blank" : undefined} rel={isObj ? "noopener noreferrer" : undefined} className="text-sm text-cream/50 hover:text-cream transition-colors font-body">
+                          {label}
+                        </a>
+                      )}
                     </li>
                   );
                 })}
