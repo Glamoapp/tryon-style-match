@@ -30,9 +30,9 @@ const Footer = () => {
               links: [
                 "Help Center",
                 "Safety",
-                "Terms of Service",
-                "Privacy Policy",
-                { label: "Stylist Handbook", href: "https://wmumnlhzjvscoyuqljyj.supabase.co/storage/v1/object/public/handbook/NEXTLOOK-Stylist-Handbook.pdf" },
+                { label: "Terms of Service", href: "/terms" },
+                { label: "Privacy Policy", href: "/terms?tab=privacy" },
+                { label: "Stylist Handbook", href: "/handbook" },
               ],
             },
           ].map((col) => (

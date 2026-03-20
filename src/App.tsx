@@ -56,6 +56,8 @@ const AppContent = () => {
         <Route path="/admin" element={<PageTransition><AdminDashboard /></PageTransition>} />
         <Route path="/dashboard" element={<PageTransition><CustomerDashboard /></PageTransition>} />
         <Route path="/glowup-monday" element={<PageTransition><GlowUpMondayPage /></PageTransition>} />
+        <Route path="/handbook" element={<PageTransition><HandbookPage /></PageTransition>} />
+        <Route path="/terms" element={<PageTransition><TermsPage /></PageTransition>} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
