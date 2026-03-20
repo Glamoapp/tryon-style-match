@@ -10,6 +10,7 @@ interface AlertItem {
   message: string;
   created_at: string;
   is_read: boolean;
+  completion_code: string | null;
 }
 
 const iconMap: Record<string, typeof Bell> = {
@@ -28,7 +29,7 @@ const AdminAlerts = () => {
       // Fetch recent bookings as alerts
       const { data: bookings } = await supabase
         .from("bookings")
-        .select("id, status, booking_date, booking_time, created_at, customer:profiles!bookings_customer_id_fkey(full_name), provider:profiles!bookings_provider_id_fkey(full_name)")
+        .select("id, status, booking_date, booking_time, created_at, completion_code, customer:profiles!bookings_customer_id_fkey(full_name), provider:profiles!bookings_provider_id_fkey(full_name)")
         .order("created_at", { ascending: false })
         .limit(20);
 
@@ -40,6 +41,7 @@ const AdminAlerts = () => {
         message: `${b.customer?.full_name || "Customer"} → ${b.provider?.full_name || "Stylist"} on ${b.booking_date} at ${b.booking_time}`,
         created_at: b.created_at,
         is_read: false,
+        completion_code: b.completion_code || null,
       }));
 
       setAlerts(alertItems);
@@ -85,6 +87,11 @@ const AdminAlerts = () => {
                     <div className="flex-1 min-w-0">
                       <p className="font-body font-semibold text-foreground text-sm">{alert.title}</p>
                       <p className="text-xs text-muted-foreground font-body mt-0.5">{alert.message}</p>
+                      {alert.completion_code && (
+                        <p className="text-xs font-mono mt-1 px-2 py-0.5 bg-primary/10 text-primary rounded-md inline-block">
+                          Code: {alert.completion_code}
+                        </p>
+                      )}
                     </div>
                     <span className="text-[10px] text-muted-foreground font-body whitespace-nowrap">
                       {new Date(alert.created_at).toLocaleDateString()}
