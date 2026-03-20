@@ -73,7 +73,7 @@ export function useFaceOverlay({
           "@mediapipe/tasks-vision"
         );
         const vision = await FilesetResolver.forVisionTasks(
-          "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/wasm"
+          "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.33/wasm"
         );
         landmarkerRef.current = await FaceLandmarker.createFromOptions(vision, {
           baseOptions: {
