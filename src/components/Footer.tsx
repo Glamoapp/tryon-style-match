@@ -19,7 +19,7 @@ const Footer = () => {
           {[
             {
               title: "Services",
-              links: ["Weave Installations", "Braids", "K-Tips", "Wigs", "Makeup"],
+              links: ["Weave Installations", "Braids", "K-Tips", "Wigs", "Makeup", "Barber"],
             },
             {
               title: "Company",
