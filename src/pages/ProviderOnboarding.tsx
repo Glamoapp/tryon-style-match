@@ -183,6 +183,9 @@ const ProviderOnboarding = () => {
       const availableDays = schedule.filter((d) => d.isAvailable);
       if (availableDays.length === 0) { toast.error("Please select at least one available day"); setLoading(false); return; }
 
+      // Delete existing schedule first to avoid duplicate key errors
+      await supabase.from("provider_schedule").delete().eq("provider_id", userId);
+
       const scheduleRows = availableDays.map((d) => ({
         provider_id: userId,
         day_of_week: d.dayOfWeek,
