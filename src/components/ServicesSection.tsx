@@ -5,6 +5,7 @@ import braidsImg from "@/assets/service-braids.jpg";
 import ktipsImg from "@/assets/service-ktips.jpg";
 import wigsImg from "@/assets/service-wigs.jpg";
 import makeupImg from "@/assets/service-makeup.jpg";
+import barberImg from "@/assets/service-barber.jpg";
 
 const services = [
   { name: "Weave Installations", image: weaveImg, price: "From $120", description: "Full sew-in, quick weave, closures & frontals", filterKey: "Weave" },
@@ -12,6 +13,7 @@ const services = [
   { name: "K-Tips", image: ktipsImg, price: "From $150", description: "Keratin tip extensions, fusion bonds", filterKey: "K-Tips" },
   { name: "Wigs", image: wigsImg, price: "From $95", description: "Lace front, full lace, custom wig installs", filterKey: "Wigs" },
   { name: "Makeup", image: makeupImg, price: "From $65", description: "Glam, bridal, editorial looks", filterKey: "Makeup" },
+  { name: "Barber", image: barberImg, price: "From $25", description: "Fades, lineups, beard trims & cuts", filterKey: "Barber" },
 ];
 
 const ServicesSection = () => {
@@ -44,9 +46,7 @@ const ServicesSection = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className={`group relative rounded-2xl overflow-hidden cursor-pointer shadow-card hover:shadow-elevated transition-all duration-500 ${
-                  index === 4 ? "col-span-2 md:col-span-1" : ""
-                }`}
+                className="group relative rounded-2xl overflow-hidden cursor-pointer shadow-card hover:shadow-elevated transition-all duration-500"
               >
                 <div className="aspect-[3/4] overflow-hidden">
                   <img

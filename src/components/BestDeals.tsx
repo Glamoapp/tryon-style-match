@@ -8,6 +8,7 @@ import braidsImg from "@/assets/service-braids.jpg";
 import ktipsImg from "@/assets/service-ktips.jpg";
 import wigsImg from "@/assets/service-wigs.jpg";
 import makeupImg from "@/assets/service-makeup.jpg";
+import barberImg from "@/assets/service-barber.jpg";
 import bodyWaveImg from "@/assets/style-body-wave.jpg";
 import frontalImg from "@/assets/style-frontal.jpg";
 import deepWaveImg from "@/assets/style-deep-wave.jpg";
@@ -26,6 +27,7 @@ const fallbackImages: Record<string, string> = {
   "k-tip": ktipsImg, ktip: ktipsImg, extension: ktipsImg, "i-tip": ktipsImg,
   wig: wigsImg, frontal: wigsImg, closure: wigsImg, "lace front": wigsImg,
   makeup: makeupImg, glam: makeupImg, beat: makeupImg,
+  barber: barberImg, fade: barberImg, lineup: barberImg, taper: barberImg, haircut: barberImg,
 };
 
 const getFallbackImage = (serviceName: string) => {
