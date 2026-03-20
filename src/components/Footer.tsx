@@ -19,7 +19,7 @@ const Footer = () => {
           {[
             {
               title: "Services",
-              links: ["Weave Installations", "Braids", "K-Tips", "Wigs", "Makeup"],
+              links: ["Weave Installations", "Braids", "K-Tips", "Wigs", "Makeup", "Barber"],
             },
             {
               title: "Company",
@@ -30,9 +30,9 @@ const Footer = () => {
               links: [
                 "Help Center",
                 "Safety",
-                "Terms of Service",
-                "Privacy Policy",
-                { label: "Stylist Handbook", href: "https://wmumnlhzjvscoyuqljyj.supabase.co/storage/v1/object/public/handbook/NEXTLOOK-Stylist-Handbook.pdf" },
+                { label: "Terms of Service", href: "/terms" },
+                { label: "Privacy Policy", href: "/terms?tab=privacy" },
+                { label: "Stylist Handbook", href: "/handbook" },
               ],
             },
           ].map((col) => (
@@ -43,12 +43,18 @@ const Footer = () => {
                   const isObj = typeof link === "object";
                   const label = isObj ? link.label : link;
                   const href = isObj ? link.href : "#";
-                  const target = isObj ? "_blank" : undefined;
+                  const isInternal = isObj && href.startsWith("/");
                   return (
                     <li key={label}>
-                      <a href={href} target={target} rel={target ? "noopener noreferrer" : undefined} className="text-sm text-cream/50 hover:text-cream transition-colors font-body">
-                        {label}
-                      </a>
+                      {isInternal ? (
+                        <Link to={href} className="text-sm text-cream/50 hover:text-cream transition-colors font-body">
+                          {label}
+                        </Link>
+                      ) : (
+                        <a href={href} target={isObj ? "_blank" : undefined} rel={isObj ? "noopener noreferrer" : undefined} className="text-sm text-cream/50 hover:text-cream transition-colors font-body">
+                          {label}
+                        </a>
+                      )}
                     </li>
                   );
                 })}
