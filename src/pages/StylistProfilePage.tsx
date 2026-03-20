@@ -291,7 +291,11 @@ const StylistProfilePage = () => {
             <h2 className="text-xl font-display font-bold text-foreground mb-4">Services</h2>
             <div className="grid gap-4">
               {provider.services.map((service) => (
-                <div key={service.id} className="bg-card rounded-2xl border border-border/50 overflow-hidden">
+                <div
+                  key={service.id}
+                  ref={(el) => { serviceRefs.current[service.id] = el; }}
+                  className="bg-card rounded-2xl border border-border/50 overflow-hidden transition-all duration-300"
+                >
                   <div className="flex flex-col sm:flex-row">
                     {service.photos[0] && (
                       <div className="sm:w-40 h-32 sm:h-auto shrink-0 overflow-hidden">
@@ -299,9 +303,18 @@ const StylistProfilePage = () => {
                       </div>
                     )}
                     <div className="p-5 flex-1 flex flex-col justify-between">
-                      <div>
-                        <h3 className="font-display font-bold text-foreground text-lg">{service.service_name}</h3>
-                        {service.description && <p className="text-sm text-muted-foreground font-body mt-1">{service.description}</p>}
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h3 className="font-display font-bold text-foreground text-lg">{service.service_name}</h3>
+                          {service.description && <p className="text-sm text-muted-foreground font-body mt-1">{service.description}</p>}
+                        </div>
+                        <button
+                          onClick={() => shareService(service.id, service.service_name)}
+                          className="shrink-0 ml-2 p-1.5 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+                          title="Share this service"
+                        >
+                          {copiedServiceId === service.id ? <Check className="w-4 h-4 text-green-500" /> : <Share2 className="w-4 h-4" />}
+                        </button>
                       </div>
                       <div className="flex items-center justify-between mt-4">
                         <div className="flex items-center gap-4 text-sm font-body">
