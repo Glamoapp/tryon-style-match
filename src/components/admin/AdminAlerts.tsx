@@ -10,6 +10,7 @@ interface AlertItem {
   message: string;
   created_at: string;
   is_read: boolean;
+  completion_code: string | null;
 }
 
 const iconMap: Record<string, typeof Bell> = {
