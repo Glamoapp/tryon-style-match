@@ -46,9 +46,7 @@ const ServicesSection = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className={`group relative rounded-2xl overflow-hidden cursor-pointer shadow-card hover:shadow-elevated transition-all duration-500 ${
-                  index === 4 ? "col-span-2 md:col-span-1" : ""
-                }`}
+                className="group relative rounded-2xl overflow-hidden cursor-pointer shadow-card hover:shadow-elevated transition-all duration-500"
               >
                 <div className="aspect-[3/4] overflow-hidden">
                   <img
