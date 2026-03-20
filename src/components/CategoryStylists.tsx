@@ -11,6 +11,7 @@ const CATEGORIES = [
   { label: "Locs", match: ["loc", "dreadlock", "faux loc", "goddess loc"] },
   { label: "Extensions", match: ["extension", "k-tip", "ktip", "i-tip", "nano", "fusion", "tape-in"] },
   { label: "Makeup", match: ["makeup", "make up", "glam", "beat", "bridal makeup"] },
+  { label: "Barber", match: ["barber", "fade", "lineup", "line up", "taper", "beard trim", "haircut", "cut"] },
 ];
 
 const getDistance = () => {
