@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { useParams, Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Star, MapPin, ArrowLeft, Clock, Camera, ChevronRight, MessageCircle, Share2, Check, Link2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,11 +15,14 @@ import type { ProviderListing } from "@/hooks/useProviders";
 
 const StylistProfilePage = () => {
   const { id } = useParams<{ id: string }>();
+  const location = useLocation();
   const [provider, setProvider] = useState<ProviderListing | null>(null);
   const [reviews, setReviews] = useState<{ rating: number; comment: string | null; created_at: string; customer: { full_name: string } | null }[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [copiedServiceId, setCopiedServiceId] = useState<string | null>(null);
+  const serviceRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const getShareUrl = () => {
     // Use the published domain for shareable links
@@ -55,6 +58,48 @@ const StylistProfilePage = () => {
     toast.success("Profile link copied to clipboard!");
     setTimeout(() => setCopied(false), 2000);
   };
+
+  const shareService = async (serviceId: string, serviceName: string) => {
+    const url = `${window.location.origin}/stylist/${id}#service-${serviceId}`;
+    const title = `${serviceName} by ${provider?.full_name} on NextLook Beauty`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, url });
+        return;
+      } catch {}
+    }
+
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      const textarea = document.createElement("textarea");
+      textarea.value = url;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+    }
+    setCopiedServiceId(serviceId);
+    toast.success("Service link copied to clipboard!");
+    setTimeout(() => setCopiedServiceId(null), 2000);
+  };
+
+  // Scroll to service when hash is present
+  useEffect(() => {
+    if (!loading && provider && location.hash.startsWith("#service-")) {
+      const serviceId = location.hash.replace("#service-", "");
+      setTimeout(() => {
+        serviceRefs.current[serviceId]?.scrollIntoView({ behavior: "smooth", block: "center" });
+        serviceRefs.current[serviceId]?.classList.add("ring-2", "ring-primary", "ring-offset-2");
+        setTimeout(() => {
+          serviceRefs.current[serviceId]?.classList.remove("ring-2", "ring-primary", "ring-offset-2");
+        }, 2000);
+      }, 300);
+    }
+  }, [loading, provider, location.hash]);
 
   useEffect(() => {
     if (!id) return;
@@ -246,7 +291,11 @@ const StylistProfilePage = () => {
             <h2 className="text-xl font-display font-bold text-foreground mb-4">Services</h2>
             <div className="grid gap-4">
               {provider.services.map((service) => (
-                <div key={service.id} className="bg-card rounded-2xl border border-border/50 overflow-hidden">
+                <div
+                  key={service.id}
+                  ref={(el) => { serviceRefs.current[service.id] = el; }}
+                  className="bg-card rounded-2xl border border-border/50 overflow-hidden transition-all duration-300"
+                >
                   <div className="flex flex-col sm:flex-row">
                     {service.photos[0] && (
                       <div className="sm:w-40 h-32 sm:h-auto shrink-0 overflow-hidden">
@@ -254,9 +303,18 @@ const StylistProfilePage = () => {
                       </div>
                     )}
                     <div className="p-5 flex-1 flex flex-col justify-between">
-                      <div>
-                        <h3 className="font-display font-bold text-foreground text-lg">{service.service_name}</h3>
-                        {service.description && <p className="text-sm text-muted-foreground font-body mt-1">{service.description}</p>}
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h3 className="font-display font-bold text-foreground text-lg">{service.service_name}</h3>
+                          {service.description && <p className="text-sm text-muted-foreground font-body mt-1">{service.description}</p>}
+                        </div>
+                        <button
+                          onClick={() => shareService(service.id, service.service_name)}
+                          className="shrink-0 ml-2 p-1.5 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+                          title="Share this service"
+                        >
+                          {copiedServiceId === service.id ? <Check className="w-4 h-4 text-green-500" /> : <Share2 className="w-4 h-4" />}
+                        </button>
                       </div>
                       <div className="flex items-center justify-between mt-4">
                         <div className="flex items-center gap-4 text-sm font-body">
