@@ -39,13 +39,19 @@ const Footer = () => {
             <div key={col.title}>
               <h4 className="font-display font-semibold text-cream mb-4">{col.title}</h4>
               <ul className="space-y-2">
-                {col.links.map((link) => (
-                  <li key={link}>
-                    <a href="#" className="text-sm text-cream/50 hover:text-cream transition-colors font-body">
-                      {link}
-                    </a>
-                  </li>
-                ))}
+                {col.links.map((link) => {
+                  const isObj = typeof link === "object";
+                  const label = isObj ? link.label : link;
+                  const href = isObj ? link.href : "#";
+                  const target = isObj ? "_blank" : undefined;
+                  return (
+                    <li key={label}>
+                      <a href={href} target={target} rel={target ? "noopener noreferrer" : undefined} className="text-sm text-cream/50 hover:text-cream transition-colors font-body">
+                        {label}
+                      </a>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}
