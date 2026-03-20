@@ -1,5 +1,5 @@
+import React, { useEffect, ReactNode } from "react";
 import { motion } from "framer-motion";
-import { ReactNode, useEffect } from "react";
 
 const PageTransition = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
