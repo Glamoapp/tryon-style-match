@@ -100,6 +100,8 @@ const StylistProfilePage = () => {
       }, 300);
     }
   }, [loading, provider, location.hash]);
+
+  useEffect(() => {
     if (!id) return;
     fetchProvider();
     fetchReviews();
