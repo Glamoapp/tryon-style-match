@@ -6,7 +6,9 @@ import { Label } from "@/components/ui/label";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable/index";
 import { toast } from "sonner";
+import { Separator } from "@/components/ui/separator";
 
 const ProviderLogin = () => {
   const navigate = useNavigate();
