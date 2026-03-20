@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 
 const PageTransition = ({ children }: { children: ReactNode }) => {
-  React.useEffect(() => {
+  useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
