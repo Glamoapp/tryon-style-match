@@ -112,6 +112,26 @@ const AdminStylists = () => {
       if (previewStylist?.id === id) {
         setPreviewStylist((prev) => prev ? { ...prev, is_approved: !current } : null);
       }
+
+      // Send welcome email when approving (not revoking)
+      if (!current) {
+        const stylist = stylists.find((s) => s.id === id) || previewStylist;
+        if (stylist?.email) {
+          try {
+            await supabase.functions.invoke("send-welcome-email", {
+              body: {
+                stylistId: id,
+                stylistName: stylist.full_name,
+                stylistEmail: stylist.email,
+              },
+            });
+            toast({ title: "Welcome email sent!", description: `Handbook sent to ${stylist.email}` });
+          } catch (emailErr) {
+            console.error("Welcome email error:", emailErr);
+            toast({ title: "Approved, but email failed", description: "Stylist was approved but the welcome email could not be sent.", variant: "destructive" });
+          }
+        }
+      }
     }
   };
 

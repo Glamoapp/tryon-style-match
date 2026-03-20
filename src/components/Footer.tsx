@@ -27,7 +27,13 @@ const Footer = () => {
             },
             {
               title: "Support",
-              links: ["Help Center", "Safety", "Terms of Service", "Privacy Policy"],
+              links: [
+                "Help Center",
+                "Safety",
+                "Terms of Service",
+                "Privacy Policy",
+                { label: "Stylist Handbook", href: "https://wmumnlhzjvscoyuqljyj.supabase.co/storage/v1/object/public/handbook/NEXTLOOK-Stylist-Handbook.pdf" },
+              ],
             },
           ].map((col) => (
             <div key={col.title}>
