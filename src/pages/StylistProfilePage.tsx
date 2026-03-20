@@ -59,7 +59,47 @@ const StylistProfilePage = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const shareService = async (serviceId: string, serviceName: string) => {
+    const url = `${window.location.origin}/stylist/${id}#service-${serviceId}`;
+    const title = `${serviceName} by ${provider?.full_name} on NextLook Beauty`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, url });
+        return;
+      } catch {}
+    }
+
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      const textarea = document.createElement("textarea");
+      textarea.value = url;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+    }
+    setCopiedServiceId(serviceId);
+    toast.success("Service link copied to clipboard!");
+    setTimeout(() => setCopiedServiceId(null), 2000);
+  };
+
+  // Scroll to service when hash is present
   useEffect(() => {
+    if (!loading && provider && location.hash.startsWith("#service-")) {
+      const serviceId = location.hash.replace("#service-", "");
+      setTimeout(() => {
+        serviceRefs.current[serviceId]?.scrollIntoView({ behavior: "smooth", block: "center" });
+        serviceRefs.current[serviceId]?.classList.add("ring-2", "ring-primary", "ring-offset-2");
+        setTimeout(() => {
+          serviceRefs.current[serviceId]?.classList.remove("ring-2", "ring-primary", "ring-offset-2");
+        }, 2000);
+      }, 300);
+    }
+  }, [loading, provider, location.hash]);
     if (!id) return;
     fetchProvider();
     fetchReviews();
