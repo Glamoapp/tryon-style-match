@@ -15,11 +15,14 @@ import type { ProviderListing } from "@/hooks/useProviders";
 
 const StylistProfilePage = () => {
   const { id } = useParams<{ id: string }>();
+  const location = useLocation();
   const [provider, setProvider] = useState<ProviderListing | null>(null);
   const [reviews, setReviews] = useState<{ rating: number; comment: string | null; created_at: string; customer: { full_name: string } | null }[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [copiedServiceId, setCopiedServiceId] = useState<string | null>(null);
+  const serviceRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const getShareUrl = () => {
     // Use the published domain for shareable links
