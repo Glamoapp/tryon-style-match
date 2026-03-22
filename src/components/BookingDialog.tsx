@@ -171,7 +171,17 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
 
     setOpen(false);
     resetForm();
-    toast.success("Service added to cart! Open your cart to checkout.", { position: "top-center" });
+    toast.success(
+      "Service added to cart! Would you like to shop for hair products too?",
+      {
+        position: "top-center",
+        duration: 6000,
+        action: {
+          label: "Shop Products",
+          onClick: () => navigate("/extensions"),
+        },
+      }
+    );
   };
 
   const canProceedStep1 = date && time;
