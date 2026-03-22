@@ -264,17 +264,17 @@ const CheckoutPage = () => {
 
                 <div className="flex gap-4 mb-4 pb-4 border-b border-border">
                   <div className="w-20 h-20 rounded-xl overflow-hidden bg-muted flex-shrink-0">
-                    {image ? (
-                      <img src={image.url} alt={item.product.node.title} className="w-full h-full object-cover" />
+                    {imageUrl ? (
+                      <img src={imageUrl} alt={productTitle} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center"><Package className="w-8 h-8 text-muted-foreground" /></div>
                     )}
                   </div>
                   <div className="min-w-0">
-                    <h3 className="font-body font-semibold text-foreground text-sm truncate">{item.product.node.title}</h3>
-                    <p className="text-xs text-muted-foreground font-body">{item.selectedOptions.map(o => o.value).join(" • ")}</p>
+                    <h3 className="font-body font-semibold text-foreground text-sm truncate">{productTitle}</h3>
+                    {optionsText && <p className="text-xs text-muted-foreground font-body">{optionsText}</p>}
                     <p className="text-sm font-bold text-foreground font-body mt-1">
-                      ${unitPrice.toFixed(2)} × {item.quantity}
+                      ${unitPrice.toFixed(2)} × {quantity}
                     </p>
                   </div>
                 </div>
