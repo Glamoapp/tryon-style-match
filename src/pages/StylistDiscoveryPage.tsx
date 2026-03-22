@@ -346,8 +346,8 @@ const StylistListCard = ({
           <h3 className="font-display font-bold text-foreground text-sm truncate">{card.name}</h3>
         </div>
         <FavoriteButton
-          isFavorite={isFavorite(card.id)}
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(card.id); }}
+          isFavorite={isFavorite}
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggleFavorite(); }}
           size="sm"
         />
       </div>
