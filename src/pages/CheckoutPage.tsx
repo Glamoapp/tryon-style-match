@@ -30,6 +30,7 @@ interface VendorCheckoutItem {
   image?: string;
   vendor?: string;
   quantity?: number;
+  variantLabel?: string;
 }
 
 const CheckoutPage = () => {
@@ -80,7 +81,9 @@ const CheckoutPage = () => {
   const unitPrice = item ? parseFloat(item.price.amount) : vendorItem!.price;
   const quantity = item ? item.quantity : (vendorItem!.quantity || 1);
   const imageUrl = item ? item.product.node.images?.edges?.[0]?.node?.url : vendorItem!.image;
-  const optionsText = item ? item.selectedOptions.map(o => o.value).join(" • ") : (vendorItem!.vendor ? `by ${vendorItem!.vendor}` : "");
+  const optionsText = item
+    ? item.selectedOptions.map(o => o.value).join(" • ")
+    : [vendorItem!.variantLabel, vendorItem!.vendor ? `by ${vendorItem!.vendor}` : ""].filter(Boolean).join(" • ");
 
   const expressFee = 9.99;
   const deliveryFee = deliveryType === "express" ? expressFee : 0;
