@@ -5,6 +5,7 @@ import {
   Calendar, Clock, MapPin, Phone, MessageCircle, CheckCircle2, Circle,
   ArrowLeft, User, History, ChevronRight, Video, Navigation, Star
 } from "lucide-react";
+import LeaveReview from "@/components/LeaveReview";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -73,6 +74,7 @@ const CustomerDashboard = () => {
   const [bookings, setBookings] = useState<BookingWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedBooking, setSelectedBooking] = useState<string | null>(null);
+  const [reviewedProviders, setReviewedProviders] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -109,8 +111,20 @@ const CustomerDashboard = () => {
     setLoading(false);
   };
 
+  const fetchReviewedProviders = async () => {
+    if (!userId) return;
+    const { data } = await supabase
+      .from("reviews")
+      .select("provider_id")
+      .eq("customer_id", userId);
+    if (data) {
+      setReviewedProviders(new Set(data.map((r) => r.provider_id)));
+    }
+  };
+
   useEffect(() => {
     fetchBookings();
+    fetchReviewedProviders();
   }, [userId]);
 
   // Realtime subscription for booking updates + notifications
@@ -324,6 +338,30 @@ const CustomerDashboard = () => {
               <p className="text-sm text-muted-foreground font-body mb-1">Your Completion Code</p>
               <p className="font-display text-3xl font-bold text-gold tracking-widest">{detail.completion_code}</p>
               <p className="text-xs text-muted-foreground font-body mt-2">Give this code to your stylist when the service is done</p>
+            </motion.div>
+          )}
+
+          {/* Leave Review - show for completed bookings */}
+          {detail.status === "completed" && providerId && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35 }}
+              className="mt-6"
+            >
+              {reviewedProviders.has(providerId) ? (
+                <div className="bg-card rounded-2xl border border-border/50 p-5 text-center">
+                  <Star className="w-6 h-6 text-gold mx-auto mb-2" />
+                  <p className="font-display font-semibold text-foreground">Thanks for your review!</p>
+                  <p className="text-sm text-muted-foreground font-body mt-1">You already rated {providerName}</p>
+                </div>
+              ) : (
+                <LeaveReview
+                  providerId={providerId}
+                  providerName={providerName}
+                  onReviewSubmitted={() => fetchReviewedProviders()}
+                />
+              )}
             </motion.div>
           )}
         </div>
