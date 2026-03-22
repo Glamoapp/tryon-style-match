@@ -66,58 +66,10 @@ export const CartDrawer = () => {
     await processCheckout();
   };
 
-  const processCheckout = async () => {
-    setCheckingOut(true);
+  const processCheckout = () => {
     setShowCrossSell(false);
-
-    try {
-      const products = [
-        ...items.map(item => ({
-          title: item.product.node.title,
-          price: item.price.amount,
-          quantity: item.quantity,
-          imageUrl: item.product.node.images?.edges?.[0]?.node?.url || null,
-        })),
-        ...vendorItems.map(item => ({
-          title: item.title,
-          price: String(item.price),
-          quantity: item.quantity,
-          imageUrl: item.image || null,
-        })),
-      ];
-
-      const services = serviceItems.map(svc => ({
-        serviceName: svc.serviceName,
-        providerName: svc.providerName,
-        date: svc.date,
-        time: svc.time,
-        price: svc.price,
-      }));
-
-      const { data: { user } } = await supabase.auth.getUser();
-
-      const { data, error } = await supabase.functions.invoke("unified-checkout", {
-        body: {
-          products: products.length > 0 ? products : undefined,
-          services: services.length > 0 ? services : undefined,
-          customerEmail: user?.email || serviceItems[0]?.email || "",
-          customerName: user?.user_metadata?.full_name || serviceItems[0]?.customerName || "",
-        },
-      });
-
-      if (error) throw error;
-      if (data?.url) {
-        window.open(data.url, '_blank');
-        setIsOpen(false);
-      } else {
-        throw new Error("No checkout URL returned");
-      }
-    } catch (err) {
-      console.error("Checkout error:", err);
-      toast.error("Checkout failed. Please try again.");
-    } finally {
-      setCheckingOut(false);
-    }
+    setIsOpen(false);
+    navigate("/checkout", { state: { fromCart: true } });
   };
 
   const handleCrossSellAction = () => {
