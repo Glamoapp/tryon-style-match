@@ -1,0 +1,233 @@
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Plus, Pencil, Trash2, Package, Loader2, ImagePlus } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+
+type Product = {
+  id: string;
+  title: string;
+  description: string | null;
+  price: number;
+  compare_at_price: number | null;
+  category: string | null;
+  image_urls: string[];
+  is_active: boolean;
+  inventory_count: number;
+};
+
+export const VendorProducts = ({ vendorId, isApproved }: { vendorId: string; isApproved: boolean }) => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [form, setForm] = useState({
+    title: "", description: "", price: "", compare_at_price: "", category: "Hair Extensions", inventory_count: "0", image_urls: [] as string[],
+  });
+
+  const fetchProducts = async () => {
+    const { data } = await supabase
+      .from("vendor_products")
+      .select("*")
+      .eq("vendor_id", vendorId)
+      .order("created_at", { ascending: false });
+    setProducts((data as any) || []);
+    setLoading(false);
+  };
+
+  useEffect(() => { fetchProducts(); }, [vendorId]);
+
+  const resetForm = () => {
+    setForm({ title: "", description: "", price: "", compare_at_price: "", category: "Hair Extensions", inventory_count: "0", image_urls: [] });
+    setEditingProduct(null);
+  };
+
+  const openEdit = (p: Product) => {
+    setEditingProduct(p);
+    setForm({
+      title: p.title,
+      description: p.description || "",
+      price: String(p.price),
+      compare_at_price: p.compare_at_price ? String(p.compare_at_price) : "",
+      category: p.category || "Hair Extensions",
+      inventory_count: String(p.inventory_count),
+      image_urls: p.image_urls || [],
+    });
+    setDialogOpen(true);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files?.length) return;
+    setUploading(true);
+    const newUrls: string[] = [];
+    for (const file of Array.from(files)) {
+      const ext = file.name.split(".").pop();
+      const path = `${vendorId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error } = await supabase.storage.from("vendor-products").upload(path, file);
+      if (error) { toast.error("Upload failed"); continue; }
+      const { data: urlData } = supabase.storage.from("vendor-products").getPublicUrl(path);
+      newUrls.push(urlData.publicUrl);
+    }
+    setForm(prev => ({ ...prev, image_urls: [...prev.image_urls, ...newUrls] }));
+    setUploading(false);
+  };
+
+  const removeImage = (idx: number) => {
+    setForm(prev => ({ ...prev, image_urls: prev.image_urls.filter((_, i) => i !== idx) }));
+  };
+
+  const handleSave = async () => {
+    if (!form.title || !form.price) { toast.error("Title and price are required"); return; }
+    setSaving(true);
+    const payload = {
+      vendor_id: vendorId,
+      title: form.title,
+      description: form.description || null,
+      price: parseFloat(form.price),
+      compare_at_price: form.compare_at_price ? parseFloat(form.compare_at_price) : null,
+      category: form.category,
+      inventory_count: parseInt(form.inventory_count) || 0,
+      image_urls: form.image_urls,
+    };
+
+    if (editingProduct) {
+      const { error } = await supabase.from("vendor_products").update(payload).eq("id", editingProduct.id);
+      if (error) { toast.error(error.message); } else { toast.success("Product updated"); }
+    } else {
+      const { error } = await supabase.from("vendor_products").insert(payload);
+      if (error) { toast.error(error.message); } else { toast.success("Product added"); }
+    }
+    setSaving(false);
+    setDialogOpen(false);
+    resetForm();
+    fetchProducts();
+  };
+
+  const toggleActive = async (p: Product) => {
+    await supabase.from("vendor_products").update({ is_active: !p.is_active }).eq("id", p.id);
+    fetchProducts();
+  };
+
+  const deleteProduct = async (id: string) => {
+    if (!confirm("Delete this product?")) return;
+    await supabase.from("vendor_products").delete().eq("id", id);
+    toast.success("Product deleted");
+    fetchProducts();
+  };
+
+  if (loading) return <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>;
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="font-display text-2xl font-bold">My Products</h2>
+        <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) resetForm(); }}>
+          <DialogTrigger asChild>
+            <Button variant="hero" size="sm" disabled={!isApproved}>
+              <Plus className="w-4 h-4 mr-1" /> Add Product
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{editingProduct ? "Edit Product" : "Add New Product"}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 mt-4">
+              <div>
+                <Label>Title *</Label>
+                <Input value={form.title} onChange={(e) => setForm(p => ({ ...p, title: e.target.value }))} placeholder="e.g. Brazilian Body Wave Bundle" />
+              </div>
+              <div>
+                <Label>Description</Label>
+                <Textarea value={form.description} onChange={(e) => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Describe your product..." rows={3} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>Price ($) *</Label>
+                  <Input type="number" step="0.01" value={form.price} onChange={(e) => setForm(p => ({ ...p, price: e.target.value }))} />
+                </div>
+                <div>
+                  <Label>Compare At Price ($)</Label>
+                  <Input type="number" step="0.01" value={form.compare_at_price} onChange={(e) => setForm(p => ({ ...p, compare_at_price: e.target.value }))} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>Category</Label>
+                  <Input value={form.category} onChange={(e) => setForm(p => ({ ...p, category: e.target.value }))} />
+                </div>
+                <div>
+                  <Label>Inventory</Label>
+                  <Input type="number" value={form.inventory_count} onChange={(e) => setForm(p => ({ ...p, inventory_count: e.target.value }))} />
+                </div>
+              </div>
+              {/* Images */}
+              <div>
+                <Label>Images</Label>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {form.image_urls.map((url, i) => (
+                    <div key={i} className="relative w-20 h-20 rounded-lg overflow-hidden border border-border">
+                      <img src={url} alt="" className="w-full h-full object-cover" />
+                      <button onClick={() => removeImage(i)} className="absolute top-0.5 right-0.5 bg-destructive text-destructive-foreground rounded-full w-5 h-5 flex items-center justify-center text-xs">×</button>
+                    </div>
+                  ))}
+                  <label className="w-20 h-20 rounded-lg border-2 border-dashed border-border flex items-center justify-center cursor-pointer hover:border-primary/50 transition-colors">
+                    {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <ImagePlus className="w-5 h-5 text-muted-foreground" />}
+                    <input type="file" accept="image/*" multiple className="hidden" onChange={handleImageUpload} />
+                  </label>
+                </div>
+              </div>
+              <Button onClick={handleSave} className="w-full" disabled={saving}>
+                {saving ? "Saving..." : editingProduct ? "Update Product" : "Add Product"}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {!isApproved && (
+        <p className="text-sm text-muted-foreground mb-4 p-3 rounded-lg bg-muted">
+          Your account needs approval before you can add products.
+        </p>
+      )}
+
+      {products.length === 0 ? (
+        <div className="text-center py-16">
+          <Package className="w-12 h-12 text-muted-foreground mx-auto mb-3 opacity-40" />
+          <p className="font-medium text-foreground">No products yet</p>
+          <p className="text-sm text-muted-foreground">Add your first product to start selling</p>
+        </div>
+      ) : (
+        <div className="grid gap-4">
+          {products.map((p) => (
+            <div key={p.id} className="flex items-center gap-4 p-4 rounded-xl border border-border bg-card">
+              <div className="w-16 h-16 rounded-lg bg-muted overflow-hidden flex-shrink-0">
+                {p.image_urls?.[0] ? (
+                  <img src={p.image_urls[0]} alt={p.title} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center"><Package className="w-6 h-6 text-muted-foreground" /></div>
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-foreground truncate">{p.title}</p>
+                <p className="text-sm text-muted-foreground">${Number(p.price).toFixed(2)} · {p.inventory_count} in stock</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch checked={p.is_active} onCheckedChange={() => toggleActive(p)} />
+                <Button variant="ghost" size="icon" onClick={() => openEdit(p)}><Pencil className="w-4 h-4" /></Button>
+                <Button variant="ghost" size="icon" onClick={() => deleteProduct(p.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
