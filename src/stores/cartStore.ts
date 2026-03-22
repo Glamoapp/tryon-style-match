@@ -133,6 +133,28 @@ export const useCartStore = create<CartStore>()(
         set({ serviceItems: get().serviceItems.filter(s => s.id !== id) });
       },
 
+      addVendorItem: (item) => {
+        const { vendorItems } = get();
+        const existing = vendorItems.find(v => v.id === item.id);
+        if (existing) {
+          set({ vendorItems: vendorItems.map(v => v.id === item.id ? { ...v, quantity: v.quantity + item.quantity } : v) });
+        } else {
+          set({ vendorItems: [...vendorItems, item] });
+        }
+      },
+
+      updateVendorQuantity: (id, quantity) => {
+        if (quantity <= 0) {
+          set({ vendorItems: get().vendorItems.filter(v => v.id !== id) });
+        } else {
+          set({ vendorItems: get().vendorItems.map(v => v.id === id ? { ...v, quantity } : v) });
+        }
+      },
+
+      removeVendorItem: (id) => {
+        set({ vendorItems: get().vendorItems.filter(v => v.id !== id) });
+      },
+
       updateQuantity: async (variantId, quantity) => {
         if (quantity <= 0) { await get().removeItem(variantId); return; }
         const { items, cartId, clearCart } = get();
