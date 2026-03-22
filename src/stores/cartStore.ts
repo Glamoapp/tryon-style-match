@@ -75,6 +75,7 @@ export const useCartStore = create<CartStore>()(
     (set, get) => ({
       items: [],
       serviceItems: [],
+      vendorItems: [],
       cartId: null,
       checkoutUrl: null,
       isLoading: false,
