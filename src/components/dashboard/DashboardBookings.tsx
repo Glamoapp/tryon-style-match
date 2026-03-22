@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, DollarSign, Users, MapPin, Timer } from "lucide-react";
+import { Calendar, Clock, DollarSign, Users, MapPin, Timer, Loader2, CheckCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
@@ -16,6 +16,7 @@ type Booking = {
   customer_address: string | null;
   notes: string | null;
   customer_id: string;
+  payment_intent_id: string | null;
   customer: { full_name: string } | null;
   service: { service_name: string; duration_minutes: number } | null;
 };
@@ -24,9 +25,17 @@ const statusColor = (status: string) => {
   switch (status) {
     case "pending": return "bg-gold/20 text-gold border-gold/30";
     case "confirmed": return "bg-primary/10 text-primary border-primary/20";
+    case "payment_captured": return "bg-blue-100 text-blue-700 border-blue-200";
     case "completed": return "bg-green-100 text-green-700 border-green-200";
     case "rejected": return "bg-destructive/10 text-destructive border-destructive/20";
     default: return "bg-muted text-muted-foreground border-border";
+  }
+};
+
+const statusLabel = (status: string) => {
+  switch (status) {
+    case "payment_captured": return "Payment Captured";
+    default: return status;
   }
 };
 
@@ -37,6 +46,8 @@ export const DashboardBookings = ({
   bookings: Booking[];
   onUpdate: () => void;
 }) => {
+  const [loadingAction, setLoadingAction] = useState<string | null>(null);
+
   const handleBookingAction = async (booking: Booking, action: "confirmed" | "rejected") => {
     const { error } = await supabase
       .from("bookings")
@@ -86,16 +97,59 @@ export const DashboardBookings = ({
     onUpdate();
   };
 
+  // Step 1: Verify completion code → Capture payment (pull money from customer)
   const handleVerifyCode = async (bookingId: string) => {
     const code = prompt("Enter the customer's completion code:");
     if (!code) return;
+
     const booking = bookings.find((b) => b.id === bookingId);
-    if (booking?.completion_code === code) {
-      await supabase.from("bookings").update({ status: "completed", updated_at: new Date().toISOString() }).eq("id", bookingId);
-      toast.success("Service completed! Earnings added.");
-      onUpdate();
-    } else {
+    if (!booking) return;
+
+    if (booking.completion_code !== code) {
       toast.error("Invalid completion code");
+      return;
+    }
+
+    setLoadingAction(bookingId + "-capture");
+
+    try {
+      const { data, error } = await supabase.functions.invoke("capture-booking-payment", {
+        body: { bookingId, completionCode: code },
+      });
+
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      toast.success("Payment captured! Customer has been charged. You can now complete the service.");
+      onUpdate();
+    } catch (err) {
+      console.error("Capture error:", err);
+      toast.error(err instanceof Error ? err.message : "Failed to capture payment");
+    } finally {
+      setLoadingAction(null);
+    }
+  };
+
+  // Step 2: Mark service as completed → Transfer money to stylist
+  const handleCompleteService = async (bookingId: string) => {
+    setLoadingAction(bookingId + "-complete");
+
+    try {
+      const { data, error } = await supabase.functions.invoke("complete-booking-payout", {
+        body: { bookingId },
+      });
+
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      const payoutAmount = data?.payout ? `$${data.payout.toFixed(2)}` : "";
+      toast.success(`Service completed! ${payoutAmount ? `${payoutAmount} has been transferred to your account.` : "Earnings added."}`);
+      onUpdate();
+    } catch (err) {
+      console.error("Payout error:", err);
+      toast.error(err instanceof Error ? err.message : "Failed to complete payout");
+    } finally {
+      setLoadingAction(null);
     }
   };
 
@@ -117,7 +171,7 @@ export const DashboardBookings = ({
                 <p className="text-sm text-muted-foreground">{(booking.service as any)?.service_name || "Service"}</p>
               </div>
               <span className={`text-xs px-2.5 py-1 rounded-full border font-medium capitalize ${statusColor(booking.status)}`}>
-                {booking.status}
+                {statusLabel(booking.status)}
               </span>
             </div>
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground mb-2">
@@ -136,6 +190,16 @@ export const DashboardBookings = ({
             {booking.notes && (
               <p className="text-xs text-muted-foreground mb-3 italic">Note: {booking.notes}</p>
             )}
+
+            {/* Payment status indicator */}
+            {booking.payment_intent_id && booking.status === "confirmed" && (
+              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3 bg-secondary/50 rounded-lg px-3 py-2">
+                <DollarSign className="w-3.5 h-3.5 text-gold" />
+                <span>Funds on hold — Enter completion code to charge</span>
+              </div>
+            )}
+
+            {/* Pending: Confirm or Pass */}
             {booking.status === "pending" && (
               <div className="flex gap-2 pt-2 border-t border-border/50">
                 <Button size="sm" variant="hero" onClick={() => handleBookingAction(booking, "confirmed")}>
@@ -146,9 +210,60 @@ export const DashboardBookings = ({
                 </Button>
               </div>
             )}
+
+            {/* Confirmed: Enter completion code to capture payment */}
             {booking.status === "confirmed" && (
               <div className="pt-2 border-t border-border/50">
-                <Button size="sm" variant="gold" onClick={() => handleVerifyCode(booking.id)}>Enter Completion Code</Button>
+                <Button
+                  size="sm"
+                  variant="gold"
+                  onClick={() => handleVerifyCode(booking.id)}
+                  disabled={loadingAction === booking.id + "-capture"}
+                >
+                  {loadingAction === booking.id + "-capture" ? (
+                    <><Loader2 className="w-3.5 h-3.5 animate-spin mr-1" /> Capturing Payment...</>
+                  ) : (
+                    "Enter Completion Code"
+                  )}
+                </Button>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Ask the customer for their 6-digit code to charge their card
+                </p>
+              </div>
+            )}
+
+            {/* Payment Captured: Complete service to transfer to stylist */}
+            {booking.status === "payment_captured" && (
+              <div className="pt-2 border-t border-border/50 space-y-2">
+                <div className="flex items-center gap-2 text-sm text-green-600">
+                  <CheckCircle className="w-4 h-4" />
+                  <span className="font-medium">Payment charged — ${Number(booking.total_price).toFixed(0)}</span>
+                </div>
+                <Button
+                  size="sm"
+                  variant="hero"
+                  onClick={() => handleCompleteService(booking.id)}
+                  disabled={loadingAction === booking.id + "-complete"}
+                >
+                  {loadingAction === booking.id + "-complete" ? (
+                    <><Loader2 className="w-3.5 h-3.5 animate-spin mr-1" /> Processing Payout...</>
+                  ) : (
+                    "Mark Service Completed"
+                  )}
+                </Button>
+                <p className="text-xs text-muted-foreground">
+                  Click when the service is done — your 80% payout will be transferred
+                </p>
+              </div>
+            )}
+
+            {/* Completed */}
+            {booking.status === "completed" && (
+              <div className="pt-2 border-t border-border/50">
+                <div className="flex items-center gap-2 text-sm text-green-600">
+                  <CheckCircle className="w-4 h-4" />
+                  <span className="font-medium">Service completed & paid out</span>
+                </div>
               </div>
             )}
           </motion.div>

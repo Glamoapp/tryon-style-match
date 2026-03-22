@@ -14,17 +14,19 @@ serve(async (req) => {
 
   try {
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
-      apiVersion: "2025-08-27.basil",
+      apiVersion: "2023-10-16",
     });
 
     const { products, services, customerEmail, customerName } = await req.json();
 
     if (!customerEmail) throw new Error("Email is required");
 
-    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
+    const lineItems: any[] = [];
+    const hasProducts = products && products.length > 0;
+    const hasServices = services && services.length > 0;
 
     // Add product line items
-    if (products && products.length > 0) {
+    if (hasProducts) {
       for (const product of products) {
         lineItems.push({
           price_data: {
@@ -41,7 +43,7 @@ serve(async (req) => {
     }
 
     // Add service line items
-    if (services && services.length > 0) {
+    if (hasServices) {
       for (const service of services) {
         lineItems.push({
           price_data: {
@@ -74,20 +76,30 @@ serve(async (req) => {
 
     const origin = req.headers.get("origin") || "https://tryon-style-match.lovable.app";
 
-    const session = await stripe.checkout.sessions.create({
+    const sessionParams: any = {
       customer: customerId,
       line_items: lineItems,
       mode: "payment",
-      payment_method_types: ["card", "cashapp"],
+      payment_method_types: ["card"],
       success_url: `${origin}/booking-tracker?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/extensions`,
       metadata: {
-        hasProducts: products && products.length > 0 ? "true" : "false",
-        hasServices: services && services.length > 0 ? "true" : "false",
+        hasProducts: hasProducts ? "true" : "false",
+        hasServices: hasServices ? "true" : "false",
         serviceCount: services ? String(services.length) : "0",
         productCount: products ? String(products.length) : "0",
       },
-    });
+    };
+
+    // If cart includes services, use manual capture to hold funds
+    // Funds are only captured when the completion code is verified
+    if (hasServices) {
+      sessionParams.payment_intent_data = {
+        capture_method: "manual",
+      };
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams);
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -86,6 +86,24 @@ const BookingTrackerPage = () => {
     }
   }, []);
 
+  // Save the PaymentIntent ID to the booking after successful checkout
+  useEffect(() => {
+    const sessionId = searchParams.get("session_id");
+    if (!sessionId) return;
+
+    const savePaymentIntent = async () => {
+      try {
+        await supabase.functions.invoke("save-booking-payment", {
+          body: { sessionId },
+        });
+        console.log("Payment intent saved for session:", sessionId);
+      } catch (err) {
+        console.error("Failed to save payment intent:", err);
+      }
+    };
+    savePaymentIntent();
+  }, [searchParams]);
+
   // Fetch Google Maps API key
   useEffect(() => {
     const fetchKey = async () => {

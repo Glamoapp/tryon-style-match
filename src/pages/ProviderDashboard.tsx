@@ -26,6 +26,7 @@ type Booking = {
   customer_address: string | null;
   notes: string | null;
   customer_id: string;
+  payment_intent_id: string | null;
   customer: { full_name: string } | null;
   service: { service_name: string; duration_minutes: number } | null;
 };
