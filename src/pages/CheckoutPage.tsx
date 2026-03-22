@@ -85,6 +85,7 @@ const CheckoutPage = () => {
   const [deliveryType, setDeliveryType] = useState<"express" | "scheduled">("express");
   const [scheduledDate, setScheduledDate] = useState<Date | undefined>(undefined);
   const [checkingOut, setCheckingOut] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"card" | "apple_pay" | "cash_app">("card");
 
   const hasPhysicalProducts = products.length > 0;
   const hasServices = services.length > 0;
