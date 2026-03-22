@@ -61,7 +61,6 @@ const ProductsNearYou = () => {
       },
     });
   };
-  };
 
   if (loading) {
     return (
