@@ -548,6 +548,8 @@ const StylistDiscoveryPage = () => {
               card={card}
               isSelected={selectedStylist === card.id}
               onSelect={() => handleSelectStylist(card.id)}
+              isFavorite={isFavorite(card.id)}
+              onToggleFavorite={() => toggleFavorite(card.id)}
             />
           </Link>
         </div>
