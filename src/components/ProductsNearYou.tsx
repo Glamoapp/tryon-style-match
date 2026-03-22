@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Package, ShoppingBag, Loader2, ShoppingCart, Zap, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
