@@ -14,6 +14,7 @@ import Footer from "@/components/Footer";
 import { useProviders, ProviderListing } from "@/hooks/useProviders";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useFavorites } from "@/hooks/useFavorites";
 
 const serviceFilters = [
   "All",
