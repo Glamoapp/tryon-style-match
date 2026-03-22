@@ -199,9 +199,14 @@ const ExtensionsPage = () => {
                                   <span className="text-sm text-muted-foreground line-through">${Number(product.price).toFixed(2)}</span>
                                 )}
                               </div>
-                              <Button variant="hero" size="sm" onClick={() => setSelectedVendorProduct(product)}>
+                              <div className="flex gap-2">
+                                <Button variant="outline" size="sm" onClick={() => setSelectedVendorProduct(product)}>
+                                  <ShoppingCart className="w-4 h-4" /> Add
+                                </Button>
+                                <Button variant="hero" size="sm" onClick={() => setSelectedVendorProduct(product)}>
                                   <Zap className="w-4 h-4" /> Buy Now
                                 </Button>
+                              </div>
                             </div>
                           </div>
                         </motion.div>
