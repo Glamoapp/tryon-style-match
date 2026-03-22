@@ -30,6 +30,7 @@ interface VendorCheckoutItem {
   image?: string;
   vendor?: string;
   quantity?: number;
+  variantLabel?: string;
 }
 
 const CheckoutPage = () => {
