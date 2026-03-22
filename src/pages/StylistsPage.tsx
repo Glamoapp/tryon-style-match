@@ -1,12 +1,14 @@
 import { useState, useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Star, MapPin, Clock, Heart, ChevronRight, Search, ArrowLeft } from "lucide-react";
+import { Star, MapPin, Clock, ChevronRight, Search, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useProviders, ProviderListing } from "@/hooks/useProviders";
+import { useFavorites } from "@/hooks/useFavorites";
+import FavoriteButton from "@/components/FavoriteButton";
 
 const specialtyFilters = ["All", "Weave", "Braids", "Wigs", "K-Tips", "Makeup", "Natural Hair", "Frontals", "Locs"];
 
@@ -29,6 +31,7 @@ const StylistsPage = () => {
   const [searchParams] = useSearchParams();
   const initialSpecialty = searchParams.get("specialty") || "All";
   const { providers, loading } = useProviders();
+  const { isFavorite, toggleFavorite } = useFavorites();
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState(initialSpecialty);
   const [sortBy, setSortBy] = useState<"rating" | "price">("rating");
@@ -126,9 +129,11 @@ const StylistsPage = () => {
                     ) : (
                       <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground">No Photo</div>
                     )}
-                    <button className="absolute top-3 right-3 w-8 h-8 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center">
-                      <Heart className="w-4 h-4 text-primary" />
-                    </button>
+                    <FavoriteButton
+                      isFavorite={isFavorite(card.id)}
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(card.id); }}
+                      className="absolute top-3 right-3"
+                    />
                     {card.available && (
                       <div className="absolute top-3 left-3 bg-emerald-500/90 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1">
                         <div className="w-2 h-2 rounded-full bg-white animate-pulse" />

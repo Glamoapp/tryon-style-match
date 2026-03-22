@@ -1,11 +1,14 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { Star, MapPin, Heart, ChevronRight } from "lucide-react";
+import { Star, MapPin, ChevronRight } from "lucide-react";
 import { useProviders } from "@/hooks/useProviders";
+import { useFavorites } from "@/hooks/useFavorites";
+import FavoriteButton from "@/components/FavoriteButton";
 
 const StylistsSection = () => {
   const { providers, loading } = useProviders();
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   const topCards = providers.slice(0, 3).map((p) => ({
     id: p.id,
@@ -58,9 +61,11 @@ const StylistsSection = () => {
                   ) : (
                     <div className="w-full h-full bg-muted" />
                   )}
-                  <button className="absolute top-3 right-3 w-8 h-8 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center">
-                    <Heart className="w-4 h-4 text-primary" />
-                  </button>
+                  <FavoriteButton
+                    isFavorite={isFavorite(card.id)}
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(card.id); }}
+                    className="absolute top-3 right-3"
+                  />
                   {card.available && (
                     <div className="absolute top-3 left-3 bg-emerald-500/90 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1">
                       <div className="w-2 h-2 rounded-full bg-white animate-pulse" />

@@ -5,7 +5,8 @@ declare global {
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Star, MapPin, Heart, ChevronRight, Search, ArrowLeft, List, Map as MapIcon, SlidersHorizontal, ChevronUp } from "lucide-react";
+import { Star, MapPin, ChevronRight, Search, ArrowLeft, List, Map as MapIcon, SlidersHorizontal, ChevronUp } from "lucide-react";
+import FavoriteButton from "@/components/FavoriteButton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Navbar from "@/components/Navbar";
@@ -13,6 +14,7 @@ import Footer from "@/components/Footer";
 import { useProviders, ProviderListing } from "@/hooks/useProviders";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useFavorites } from "@/hooks/useFavorites";
 
 const serviceFilters = [
   "All",
@@ -304,10 +306,14 @@ const StylistListCard = ({
   card,
   isSelected,
   onSelect,
+  isFavorite,
+  onToggleFavorite,
 }: {
   card: StylistCard;
   isSelected: boolean;
   onSelect: () => void;
+  isFavorite: boolean;
+  onToggleFavorite: () => void;
 }) => (
   <motion.div
     layout
@@ -339,7 +345,11 @@ const StylistListCard = ({
           </div>
           <h3 className="font-display font-bold text-foreground text-sm truncate">{card.name}</h3>
         </div>
-        <Heart className="w-4 h-4 text-muted-foreground shrink-0" />
+        <FavoriteButton
+          isFavorite={isFavorite}
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggleFavorite(); }}
+          size="sm"
+        />
       </div>
 
       <div className="flex items-center gap-1 mt-1">
@@ -451,6 +461,7 @@ const StylistDiscoveryPage = () => {
   const navigate = useNavigate();
   const initialService = searchParams.get("service") || "All";
   const { providers, loading } = useProviders();
+  const { isFavorite, toggleFavorite } = useFavorites();
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState(initialService);
   const [selectedStylist, setSelectedStylist] = useState<string | null>(null);
@@ -537,6 +548,8 @@ const StylistDiscoveryPage = () => {
               card={card}
               isSelected={selectedStylist === card.id}
               onSelect={() => handleSelectStylist(card.id)}
+              isFavorite={isFavorite(card.id)}
+              onToggleFavorite={() => toggleFavorite(card.id)}
             />
           </Link>
         </div>
