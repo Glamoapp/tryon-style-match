@@ -162,7 +162,20 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      toast.error("Please sign in to complete your booking");
+      // Store booking details and proceed to checkout without blocking
+      // The checkout page will handle authentication if needed
+      const bookingDate = date ? format(date, "yyyy-MM-dd") : "";
+      const bookingTime = time ? toDbTime(time) : "";
+      
+      // Save form data to sessionStorage so it persists through auth
+      sessionStorage.setItem("pendingBooking", JSON.stringify({
+        name, email, phone, address, date: date?.toISOString(), time,
+        providerId, serviceId, styleName, stylistName, servicePrice, stylistPhone
+      }));
+      
+      toast.info("Create an account or sign in to confirm your booking", {
+        description: "Your booking details have been saved"
+      });
       navigate(`/auth?redirect=${encodeURIComponent(window.location.pathname)}`);
       return;
     }
