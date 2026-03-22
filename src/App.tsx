@@ -31,6 +31,7 @@ import VendorSignup from "./pages/VendorSignup.tsx";
 import VendorLogin from "./pages/VendorLogin.tsx";
 import VendorDashboard from "./pages/VendorDashboard.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import UnsubscribePage from "./pages/UnsubscribePage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +65,7 @@ const AppContent = () => {
         <Route path="/vendor/signup" element={<PageTransition><VendorSignup /></PageTransition>} />
         <Route path="/vendor/login" element={<PageTransition><VendorLogin /></PageTransition>} />
         <Route path="/vendor/dashboard" element={<PageTransition><VendorDashboard /></PageTransition>} />
+        <Route path="/unsubscribe" element={<PageTransition><UnsubscribePage /></PageTransition>} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { format } from "date-fns";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import {
   Package, Minus, Plus, ShoppingCart, Tag, Scissors, ArrowRight, ArrowLeft,
-  CalendarIcon, Clock, User, Mail, Phone, MapPin, Loader2, Star, CheckCircle,
+  CalendarIcon, Clock, User, Mail, Phone, MapPin, Loader2, Star, CheckCircle, ExternalLink,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCartStore, type VendorCartItem, type ServiceCartItem } from "@/stores/cartStore";
@@ -325,6 +325,7 @@ export const VendorProductDialog = ({ product, open, onOpenChange }: Props) => {
     }
 
     const servicePrice = selectedService?.discount_price ?? selectedService?.price ?? 0;
+    const completionCode = generateCompletionCode();
 
     const { data: createdBooking, error: bookingError } = await supabase
       .from("bookings")
@@ -336,7 +337,7 @@ export const VendorProductDialog = ({ product, open, onOpenChange }: Props) => {
         booking_time: bookingTime,
         total_price: servicePrice,
         customer_address: address,
-        completion_code: generateCompletionCode(),
+        completion_code: completionCode,
         status: "pending",
       })
       .select("id")
@@ -348,34 +349,107 @@ export const VendorProductDialog = ({ product, open, onOpenChange }: Props) => {
       return;
     }
 
-    // Notify
+    // Notify provider
     supabase.functions.invoke("notify-booking", {
       body: { booking_id: createdBooking.id },
     }).catch(console.error);
 
-    // Add vendor product to cart
-    addVendorItem(buildVendorCartItem());
+    // Calculate reward points based on total
+    const productTotal = effectivePrice * quantity;
+    const totalAmount = productTotal + servicePrice;
+    let rewardPoints = 10;
+    if (totalAmount > 2000) rewardPoints = 100;
+    else if (totalAmount > 1000) rewardPoints = 50;
+    else if (totalAmount > 500) rewardPoints = 20;
+    else if (totalAmount > 300) rewardPoints = 10;
 
-    // Add service to cart
-    const serviceItem: ServiceCartItem = {
-      id: createdBooking.id,
-      type: 'service',
-      serviceName: selectedService?.service_name || "Hair Service",
-      serviceId: selectedService?.id || "",
-      providerId: selectedStylist!.id,
-      providerName: selectedStylist!.full_name,
-      price: servicePrice,
-      date: format(date, "PPP"),
-      time,
-      customerName: name,
-      email,
-      phone,
-      address,
-    };
-    addServiceItem(serviceItem);
+    // Send booking confirmation email with receipt
+    supabase.functions.invoke("send-transactional-email", {
+      body: {
+        templateName: "booking-confirmation",
+        recipientEmail: email,
+        idempotencyKey: `booking-confirm-${createdBooking.id}`,
+        templateData: {
+          customerName: name,
+          serviceName: selectedService?.service_name || "Hair Service",
+          stylistName: selectedStylist!.full_name,
+          bookingDate: format(date, "EEE, MMM d"),
+          bookingTime: time,
+          servicePrice: servicePrice.toFixed(2),
+          productTitle: product.title,
+          productPrice: (effectivePrice * quantity).toFixed(2),
+          productQuantity: quantity,
+          totalAmount: totalAmount.toFixed(2),
+          completionCode,
+          rewardPoints,
+        },
+      },
+    }).catch(console.error);
 
     onOpenChange(false);
-    toast.success("Product and service added to cart!", { position: "top-center" });
+
+    // Navigate to unified checkout with both product + service
+    const checkoutProducts = [
+      {
+        title: product.title,
+        price: String(effectivePrice),
+        quantity,
+        imageUrl: product.image_urls?.[0] || null,
+      },
+      {
+        title: `${selectedService?.service_name || "Hair Service"} — ${selectedStylist!.full_name}`,
+        price: String(servicePrice),
+        quantity: 1,
+        imageUrl: null,
+      },
+    ];
+
+    try {
+      const { data, error } = await supabase.functions.invoke("unified-checkout", {
+        body: {
+          products: checkoutProducts,
+          services: [{
+            serviceName: selectedService?.service_name || "Hair Service",
+            providerName: selectedStylist!.full_name,
+            date: format(date, "PPP"),
+            time,
+            price: servicePrice,
+          }],
+          customerEmail: email,
+          customerName: name,
+        },
+      });
+
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      } else {
+        throw new Error("No checkout URL returned");
+      }
+    } catch (err) {
+      console.error("Checkout error:", err);
+      // Fallback: add to cart
+      addVendorItem(buildVendorCartItem());
+      const serviceItem: ServiceCartItem = {
+        id: createdBooking.id,
+        type: 'service',
+        serviceName: selectedService?.service_name || "Hair Service",
+        serviceId: selectedService?.id || "",
+        providerId: selectedStylist!.id,
+        providerName: selectedStylist!.full_name,
+        price: servicePrice,
+        date: format(date, "PPP"),
+        time,
+        customerName: name,
+        email,
+        phone,
+        address,
+      };
+      addServiceItem(serviceItem);
+      toast.info("Items added to cart. You can check out from the cart.", { position: "top-center" });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const stepTitle: Record<Step, string> = {
@@ -521,12 +595,17 @@ export const VendorProductDialog = ({ product, open, onOpenChange }: Props) => {
             ) : (
               <div className="space-y-2 max-h-[50vh] overflow-y-auto">
                 {stylists.map(stylist => (
-                  <button
+                  <div
                     key={stylist.id}
-                    onClick={() => handleSelectStylist(stylist)}
-                    className="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:border-primary/50 hover:bg-primary/5 transition-all text-left"
+                    className="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:border-primary/30 transition-all"
                   >
-                    <div className="w-12 h-12 rounded-full bg-muted overflow-hidden flex-shrink-0">
+                    <Link
+                      to={`/stylist/${stylist.id}`}
+                      target="_blank"
+                      onClick={(e) => e.stopPropagation()}
+                      className="w-12 h-12 rounded-full bg-muted overflow-hidden flex-shrink-0 ring-2 ring-primary/20 hover:ring-primary/60 transition-all relative group"
+                      title={`View ${stylist.full_name}'s profile`}
+                    >
                       {stylist.avatar_url ? (
                         <img src={stylist.avatar_url} alt={stylist.full_name} className="w-full h-full object-cover" />
                       ) : (
@@ -534,19 +613,27 @@ export const VendorProductDialog = ({ product, open, onOpenChange }: Props) => {
                           {stylist.full_name[0]}
                         </div>
                       )}
-                    </div>
-                    <div className="flex-1 min-w-0">
+                      <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity rounded-full flex items-center justify-center">
+                        <ExternalLink className="w-3.5 h-3.5 text-white" />
+                      </div>
+                    </Link>
+                    <button
+                      onClick={() => handleSelectStylist(stylist)}
+                      className="flex-1 min-w-0 text-left"
+                    >
                       <p className="font-body font-semibold text-foreground text-sm">{stylist.full_name}</p>
                       <p className="text-xs text-muted-foreground font-body">{stylist.service_category} • {stylist.city || "Mobile"}</p>
-                    </div>
+                    </button>
                     {stylist.avgRating > 0 && (
                       <div className="flex items-center gap-1 text-xs font-body">
                         <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
                         {stylist.avgRating.toFixed(1)}
                       </div>
                     )}
-                    <ArrowRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                  </button>
+                    <Button variant="ghost" size="sm" onClick={() => handleSelectStylist(stylist)}>
+                      Select <ArrowRight className="w-3 h-3 ml-1" />
+                    </Button>
+                  </div>
                 ))}
               </div>
             )}
@@ -707,7 +794,7 @@ export const VendorProductDialog = ({ product, open, onOpenChange }: Props) => {
                 disabled={!name.trim() || !email.trim() || !phone.trim() || !address.trim() || submitting}
                 onClick={handleSubmitBooking}
               >
-                {submitting ? <><Loader2 className="w-4 h-4 animate-spin" /> Adding...</> : <><CheckCircle className="w-4 h-4 mr-1" /> Add Both to Cart</>}
+                {submitting ? <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</> : <><CheckCircle className="w-4 h-4 mr-1" /> Checkout & Pay</>}
               </Button>
             </div>
           </div>
