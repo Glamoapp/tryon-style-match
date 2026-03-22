@@ -15,14 +15,14 @@ export type { CartItem, ShopifyProduct };
 
 // Service item that can be added to the unified cart
 export interface ServiceCartItem {
-  id: string; // unique key for the cart
+  id: string;
   type: 'service';
   serviceName: string;
   serviceId: string;
   providerId: string;
   providerName: string;
-  price: number; // in dollars
-  date: string; // formatted date string
+  price: number;
+  date: string;
   time: string;
   customerName: string;
   email: string;
@@ -30,9 +30,24 @@ export interface ServiceCartItem {
   address: string;
 }
 
+// Vendor product item for the unified cart
+export interface VendorCartItem {
+  id: string;
+  type: 'vendor_product';
+  productId: string;
+  variantId?: string;
+  title: string;
+  price: number;
+  quantity: number;
+  image?: string;
+  vendor?: string;
+  variantLabel?: string;
+}
+
 interface CartStore {
   items: CartItem[];
   serviceItems: ServiceCartItem[];
+  vendorItems: VendorCartItem[];
   cartId: string | null;
   checkoutUrl: string | null;
   isLoading: boolean;
@@ -41,6 +56,9 @@ interface CartStore {
   addItem: (item: Omit<CartItem, 'lineId'>) => Promise<void>;
   addServiceItem: (item: ServiceCartItem) => void;
   removeServiceItem: (id: string) => void;
+  addVendorItem: (item: VendorCartItem) => void;
+  updateVendorQuantity: (id: string, quantity: number) => void;
+  removeVendorItem: (id: string) => void;
   updateQuantity: (variantId: string, quantity: number) => Promise<void>;
   removeItem: (variantId: string) => Promise<void>;
   clearCart: () => void;
@@ -48,6 +66,7 @@ interface CartStore {
   getCheckoutUrl: () => string | null;
   hasProducts: () => boolean;
   hasServices: () => boolean;
+  hasVendorProducts: () => boolean;
   clearJustAdded: () => void;
 }
 
