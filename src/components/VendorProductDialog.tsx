@@ -11,7 +11,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import {
   Package, Minus, Plus, ShoppingCart, Tag, Scissors, ArrowRight, ArrowLeft,
-  CalendarIcon, Clock, User, Mail, Phone, MapPin, Loader2, Star, CheckCircle,
+  CalendarIcon, Clock, User, Mail, Phone, MapPin, Loader2, Star, CheckCircle, ExternalLink,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCartStore, type VendorCartItem, type ServiceCartItem } from "@/stores/cartStore";
