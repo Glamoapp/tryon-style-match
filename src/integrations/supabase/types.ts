@@ -706,6 +706,113 @@ export type Database = {
         }
         Relationships: []
       }
+      vendor_deals: {
+        Row: {
+          created_at: string
+          deal_title: string
+          discount_amount: number | null
+          discount_percent: number | null
+          id: string
+          is_active: boolean
+          product_id: string
+          valid_from: string | null
+          valid_until: string | null
+          vendor_id: string
+        }
+        Insert: {
+          created_at?: string
+          deal_title: string
+          discount_amount?: number | null
+          discount_percent?: number | null
+          id?: string
+          is_active?: boolean
+          product_id: string
+          valid_from?: string | null
+          valid_until?: string | null
+          vendor_id: string
+        }
+        Update: {
+          created_at?: string
+          deal_title?: string
+          discount_amount?: number | null
+          discount_percent?: number | null
+          id?: string
+          is_active?: boolean
+          product_id?: string
+          valid_from?: string | null
+          valid_until?: string | null
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendor_deals_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendor_deals_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vendor_products: {
+        Row: {
+          category: string | null
+          compare_at_price: number | null
+          created_at: string
+          description: string | null
+          id: string
+          image_urls: string[] | null
+          inventory_count: number
+          is_active: boolean
+          price: number
+          title: string
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          category?: string | null
+          compare_at_price?: number | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_urls?: string[] | null
+          inventory_count?: number
+          is_active?: boolean
+          price: number
+          title: string
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          category?: string | null
+          compare_at_price?: number | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_urls?: string[] | null
+          inventory_count?: number
+          is_active?: boolean
+          price?: number
+          title?: string
+          updated_at?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendor_products_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       visitor_logs: {
         Row: {
           city: string | null
