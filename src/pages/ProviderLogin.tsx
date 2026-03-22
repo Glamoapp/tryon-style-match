@@ -72,15 +72,15 @@ const ProviderLogin = () => {
 
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-md">
-          <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 transition-colors">
-            <ArrowLeft className="w-4 h-4" />
-            Back to home
-          </Link>
-
           <div className="flex items-center gap-3 mb-6 lg:hidden">
             <img src={logoImg} alt="NEXTLOOK" className="w-10 h-10 object-contain" />
             <span className="font-display text-2xl font-bold text-foreground">NEXTLOOK</span>
           </div>
+
+          <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 transition-colors">
+            <ArrowLeft className="w-4 h-4" />
+            Back to home
+          </Link>
 
           <div className="mb-8">
             <h2 className="font-display text-3xl font-bold text-foreground mb-2">Provider Login</h2>
