@@ -31,6 +31,7 @@ const ExtensionsPage = () => {
   const [loading, setLoading] = useState(true);
   const addItem = useCartStore((s) => s.addItem);
   const isCartLoading = useCartStore((s) => s.isLoading);
+  const [selectedVendorProduct, setSelectedVendorProduct] = useState<VendorProduct | null>(null);
 
   useEffect(() => {
     Promise.all([fetchShopifyProducts(), fetchVendorProducts()]).finally(() => setLoading(false));
