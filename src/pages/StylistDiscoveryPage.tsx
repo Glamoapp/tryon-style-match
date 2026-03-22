@@ -341,7 +341,11 @@ const StylistListCard = ({
           </div>
           <h3 className="font-display font-bold text-foreground text-sm truncate">{card.name}</h3>
         </div>
-        <Heart className="w-4 h-4 text-muted-foreground shrink-0" />
+        <FavoriteButton
+          isFavorite={isFavorite(card.id)}
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(card.id); }}
+          size="sm"
+        />
       </div>
 
       <div className="flex items-center gap-1 mt-1">
