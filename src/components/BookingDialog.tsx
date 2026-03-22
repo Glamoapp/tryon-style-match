@@ -283,7 +283,7 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
                   <Clock className="w-4 h-4 text-primary" /> Select Time
                 </label>
                 <div className="grid grid-cols-3 gap-2">
-                  {timeSlots.map((slot) => (
+                  {getAvailableSlots(date).map((slot) => (
                     <button
                       key={slot}
                       onClick={() => setTime(slot)}
