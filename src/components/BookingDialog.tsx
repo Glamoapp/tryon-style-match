@@ -153,7 +153,7 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
             );
             setVendorProducts(filtered.length > 0 ? filtered.slice(0, 4) : data.slice(0, 4));
           }
-        }).catch(() => {}),
+        }),
     ]).finally(() => setProductsLoading(false));
   }, [step, styleName]);
 
