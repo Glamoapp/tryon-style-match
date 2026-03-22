@@ -158,6 +158,17 @@ const ExtensionsPage = () => {
             </motion.div>
           </div>
 
+          {filterQuery && !loading && (
+            <div className="mb-6 flex items-center gap-2">
+              <span className="text-sm text-muted-foreground font-body">
+                Showing results for "<span className="font-semibold text-foreground">{filterQuery}</span>"
+              </span>
+              <Button variant="ghost" size="sm" onClick={() => setSearchParams({})}>
+                Clear filter
+              </Button>
+            </div>
+          )}
+
           {loading ? (
             <div className="flex items-center justify-center py-24">
               <Loader2 className="w-8 h-8 animate-spin text-primary" />
