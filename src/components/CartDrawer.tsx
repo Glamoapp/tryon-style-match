@@ -21,18 +21,21 @@ export const CartDrawer = () => {
   const [applyingDiscount, setApplyingDiscount] = useState(false);
 
   const {
-    items, serviceItems, isLoading, isSyncing, justAdded,
+    items, serviceItems, vendorItems, isLoading, isSyncing, justAdded,
     updateQuantity, removeItem, removeServiceItem,
-    syncCart, hasProducts, hasServices, clearJustAdded,
+    updateVendorQuantity, removeVendorItem,
+    syncCart, hasProducts, hasServices, hasVendorProducts, clearJustAdded,
   } = useCartStore();
 
   const totalProductItems = items.reduce((sum, item) => sum + item.quantity, 0);
+  const totalVendorItems = vendorItems.reduce((sum, item) => sum + item.quantity, 0);
   const totalServiceItems = serviceItems.length;
-  const totalItems = totalProductItems + totalServiceItems;
+  const totalItems = totalProductItems + totalVendorItems + totalServiceItems;
 
   const productTotal = items.reduce((sum, item) => sum + (parseFloat(item.price.amount) * item.quantity), 0);
+  const vendorTotal = vendorItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const serviceTotal = serviceItems.reduce((sum, svc) => sum + svc.price, 0);
-  const totalPrice = productTotal + serviceTotal;
+  const totalPrice = productTotal + vendorTotal + serviceTotal;
 
   // Auto-open cart when an item is added (Amazon-style)
   useEffect(() => {
