@@ -388,69 +388,34 @@ export const VendorProductDialog = ({ product, open, onOpenChange }: Props) => {
 
     onOpenChange(false);
 
-    // Navigate to unified checkout with both product + service
-    const checkoutProducts = [
-      {
-        title: product.title,
-        price: String(effectivePrice),
-        quantity,
-        imageUrl: product.image_urls?.[0] || null,
-      },
-      {
-        title: `${selectedService?.service_name || "Hair Service"} — ${selectedStylist!.full_name}`,
-        price: String(servicePrice),
-        quantity: 1,
-        imageUrl: null,
-      },
-    ];
-
-    try {
-      const { data, error } = await supabase.functions.invoke("unified-checkout", {
-        body: {
-          products: checkoutProducts,
-          services: [{
+    // Navigate to checkout page for review
+    navigate("/checkout", {
+      state: {
+        products: [
+          {
+            title: product.title,
+            price: String(effectivePrice),
+            quantity,
+            imageUrl: product.image_urls?.[0] || null,
+          },
+        ],
+        services: [
+          {
             serviceName: selectedService?.service_name || "Hair Service",
             providerName: selectedStylist!.full_name,
             date: format(date, "PPP"),
             time,
             price: servicePrice,
-          }],
-          customerEmail: email,
-          customerName: name,
-        },
-      });
-
-      if (error) throw error;
-      if (data?.url) {
-        window.open(data.url, "_blank");
-      } else {
-        throw new Error("No checkout URL returned");
-      }
-    } catch (err) {
-      console.error("Checkout error:", err);
-      // Fallback: add to cart
-      addVendorItem(buildVendorCartItem());
-      const serviceItem: ServiceCartItem = {
-        id: createdBooking.id,
-        type: 'service',
-        serviceName: selectedService?.service_name || "Hair Service",
-        serviceId: selectedService?.id || "",
-        providerId: selectedStylist!.id,
-        providerName: selectedStylist!.full_name,
-        price: servicePrice,
-        date: format(date, "PPP"),
-        time,
+          },
+        ],
         customerName: name,
-        email,
-        phone,
-        address,
-      };
-      addServiceItem(serviceItem);
-      toast.info("Items added to cart. You can check out from the cart.", { position: "top-center" });
-    } finally {
-      setSubmitting(false);
-    }
+        customerEmail: email,
+      },
+    });
+
+    setSubmitting(false);
   };
+
 
   const stepTitle: Record<Step, string> = {
     product: product.title,
