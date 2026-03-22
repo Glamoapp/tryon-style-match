@@ -325,6 +325,7 @@ export const VendorProductDialog = ({ product, open, onOpenChange }: Props) => {
     }
 
     const servicePrice = selectedService?.discount_price ?? selectedService?.price ?? 0;
+    const completionCode = generateCompletionCode();
 
     const { data: createdBooking, error: bookingError } = await supabase
       .from("bookings")
@@ -336,7 +337,7 @@ export const VendorProductDialog = ({ product, open, onOpenChange }: Props) => {
         booking_time: bookingTime,
         total_price: servicePrice,
         customer_address: address,
-        completion_code: generateCompletionCode(),
+        completion_code: completionCode,
         status: "pending",
       })
       .select("id")
@@ -348,34 +349,107 @@ export const VendorProductDialog = ({ product, open, onOpenChange }: Props) => {
       return;
     }
 
-    // Notify
+    // Notify provider
     supabase.functions.invoke("notify-booking", {
       body: { booking_id: createdBooking.id },
     }).catch(console.error);
 
-    // Add vendor product to cart
-    addVendorItem(buildVendorCartItem());
+    // Calculate reward points based on total
+    const productTotal = effectivePrice * quantity;
+    const totalAmount = productTotal + servicePrice;
+    let rewardPoints = 10;
+    if (totalAmount > 2000) rewardPoints = 100;
+    else if (totalAmount > 1000) rewardPoints = 50;
+    else if (totalAmount > 500) rewardPoints = 20;
+    else if (totalAmount > 300) rewardPoints = 10;
 
-    // Add service to cart
-    const serviceItem: ServiceCartItem = {
-      id: createdBooking.id,
-      type: 'service',
-      serviceName: selectedService?.service_name || "Hair Service",
-      serviceId: selectedService?.id || "",
-      providerId: selectedStylist!.id,
-      providerName: selectedStylist!.full_name,
-      price: servicePrice,
-      date: format(date, "PPP"),
-      time,
-      customerName: name,
-      email,
-      phone,
-      address,
-    };
-    addServiceItem(serviceItem);
+    // Send booking confirmation email with receipt
+    supabase.functions.invoke("send-transactional-email", {
+      body: {
+        templateName: "booking-confirmation",
+        recipientEmail: email,
+        idempotencyKey: `booking-confirm-${createdBooking.id}`,
+        templateData: {
+          customerName: name,
+          serviceName: selectedService?.service_name || "Hair Service",
+          stylistName: selectedStylist!.full_name,
+          bookingDate: format(date, "EEE, MMM d"),
+          bookingTime: time,
+          servicePrice: servicePrice.toFixed(2),
+          productTitle: product.title,
+          productPrice: (effectivePrice * quantity).toFixed(2),
+          productQuantity: quantity,
+          totalAmount: totalAmount.toFixed(2),
+          completionCode,
+          rewardPoints,
+        },
+      },
+    }).catch(console.error);
 
     onOpenChange(false);
-    toast.success("Product and service added to cart!", { position: "top-center" });
+
+    // Navigate to unified checkout with both product + service
+    const checkoutProducts = [
+      {
+        title: product.title,
+        price: String(effectivePrice),
+        quantity,
+        imageUrl: product.image_urls?.[0] || null,
+      },
+      {
+        title: `${selectedService?.service_name || "Hair Service"} — ${selectedStylist!.full_name}`,
+        price: String(servicePrice),
+        quantity: 1,
+        imageUrl: null,
+      },
+    ];
+
+    try {
+      const { data, error } = await supabase.functions.invoke("unified-checkout", {
+        body: {
+          products: checkoutProducts,
+          services: [{
+            serviceName: selectedService?.service_name || "Hair Service",
+            providerName: selectedStylist!.full_name,
+            date: format(date, "PPP"),
+            time,
+            price: servicePrice,
+          }],
+          customerEmail: email,
+          customerName: name,
+        },
+      });
+
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      } else {
+        throw new Error("No checkout URL returned");
+      }
+    } catch (err) {
+      console.error("Checkout error:", err);
+      // Fallback: add to cart
+      addVendorItem(buildVendorCartItem());
+      const serviceItem: ServiceCartItem = {
+        id: createdBooking.id,
+        type: 'service',
+        serviceName: selectedService?.service_name || "Hair Service",
+        serviceId: selectedService?.id || "",
+        providerId: selectedStylist!.id,
+        providerName: selectedStylist!.full_name,
+        price: servicePrice,
+        date: format(date, "PPP"),
+        time,
+        customerName: name,
+        email,
+        phone,
+        address,
+      };
+      addServiceItem(serviceItem);
+      toast.info("Items added to cart. You can check out from the cart.", { position: "top-center" });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const stepTitle: Record<Step, string> = {
