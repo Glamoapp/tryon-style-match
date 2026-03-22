@@ -1,0 +1,1 @@
+ALTER TABLE public.bookings ADD COLUMN payment_intent_id text;
