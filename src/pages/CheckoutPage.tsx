@@ -297,7 +297,48 @@ const CheckoutPage = () => {
                   )}
                 </motion.div>
               )}
-            </div>
+
+              {/* Payment Method */}
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-card rounded-2xl border border-border p-6">
+                <h2 className="font-display font-bold text-lg text-foreground mb-4 flex items-center gap-2">
+                  <CreditCard className="w-5 h-5 text-primary" /> Payment Method
+                </h2>
+                <div className="grid sm:grid-cols-3 gap-4">
+                  <button
+                    onClick={() => setPaymentMethod("card")}
+                    className={`p-4 rounded-xl border-2 text-center transition-all ${
+                      paymentMethod === "card"
+                        ? "border-primary bg-primary/5 shadow-soft"
+                        : "border-border hover:border-primary/30"
+                    }`}
+                  >
+                    <CreditCard className="w-6 h-6 mx-auto mb-2 text-primary" />
+                    <span className="font-display font-bold text-sm text-foreground">Debit / Credit Card</span>
+                  </button>
+                  <button
+                    onClick={() => setPaymentMethod("apple_pay")}
+                    className={`p-4 rounded-xl border-2 text-center transition-all ${
+                      paymentMethod === "apple_pay"
+                        ? "border-primary bg-primary/5 shadow-soft"
+                        : "border-border hover:border-primary/30"
+                    }`}
+                  >
+                    <Smartphone className="w-6 h-6 mx-auto mb-2 text-primary" />
+                    <span className="font-display font-bold text-sm text-foreground">Apple Pay</span>
+                  </button>
+                  <button
+                    onClick={() => setPaymentMethod("cash_app")}
+                    className={`p-4 rounded-xl border-2 text-center transition-all ${
+                      paymentMethod === "cash_app"
+                        ? "border-primary bg-primary/5 shadow-soft"
+                        : "border-border hover:border-primary/30"
+                    }`}
+                  >
+                    <DollarSign className="w-6 h-6 mx-auto mb-2 text-primary" />
+                    <span className="font-display font-bold text-sm text-foreground">Cash App</span>
+                  </button>
+                </div>
+              </motion.div>
 
             {/* Right: Order Summary */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="md:col-span-2">
