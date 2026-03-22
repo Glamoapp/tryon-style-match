@@ -26,6 +26,8 @@ type VendorProduct = {
 
 const ExtensionsPage = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const filterQuery = searchParams.get("q")?.toLowerCase() || "";
   const [shopifyProducts, setShopifyProducts] = useState<ShopifyProduct[]>([]);
   const [vendorProducts, setVendorProducts] = useState<VendorProduct[]>([]);
   const [loading, setLoading] = useState(true);
