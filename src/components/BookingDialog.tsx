@@ -169,6 +169,32 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
       supabase.functions.invoke("notify-booking", {
         body: { booking_id: createdId },
       }).catch((err) => console.error("Booking notification failed:", err));
+
+      // Check if this is the customer's first booking — send welcome email
+      supabase
+        .from("bookings")
+        .select("id")
+        .eq("customer_id", user.id)
+        .limit(2)
+        .then(({ data: allBookings }) => {
+          if (allBookings && allBookings.length === 1) {
+            supabase.functions.invoke("send-transactional-email", {
+              body: {
+                templateName: "first-booking-welcome",
+                recipientEmail: email,
+                idempotencyKey: `first-booking-welcome-${user.id}`,
+                templateData: {
+                  customerName: name,
+                  serviceName: styleName || "Hair Service",
+                  stylistName: stylistName || "Assigned Stylist",
+                  bookingDate: format(date, "EEE, MMM d"),
+                  bookingTime: time,
+                },
+              },
+            }).catch(console.error);
+          }
+        })
+        .catch(console.error);
     }
 
     // Add to unified cart
