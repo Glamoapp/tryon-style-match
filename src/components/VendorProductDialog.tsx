@@ -344,6 +344,7 @@ export const VendorProductDialog = ({ product, open, onOpenChange }: Props) => {
       .single();
 
     if (bookingError || !createdBooking) {
+      console.error("Booking insert error:", bookingError);
       toast.error("Couldn't create your booking. Please try again.");
       setSubmitting(false);
       return;
