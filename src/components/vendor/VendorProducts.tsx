@@ -5,9 +5,20 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2, Package, Loader2, ImagePlus } from "lucide-react";
+import { Plus, Pencil, Trash2, Package, Loader2, ImagePlus, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+
+type Variant = {
+  id?: string;
+  length: string;
+  size: string;
+  color: string;
+  price: string;
+  compare_at_price: string;
+  inventory_count: string;
+};
 
 type Product = {
   id: string;
@@ -21,13 +32,17 @@ type Product = {
   inventory_count: number;
 };
 
+const emptyVariant = (): Variant => ({ length: "", size: "", color: "", price: "", compare_at_price: "", inventory_count: "0" });
+
 export const VendorProducts = ({ vendorId, isApproved }: { vendorId: string; isApproved: boolean }) => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [productVariants, setProductVariants] = useState<Record<string, any[]>>({});
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [variants, setVariants] = useState<Variant[]>([]);
   const [form, setForm] = useState({
     title: "", description: "", price: "", compare_at_price: "", category: "Hair Extensions", inventory_count: "0", image_urls: [] as string[],
   });
@@ -38,7 +53,23 @@ export const VendorProducts = ({ vendorId, isApproved }: { vendorId: string; isA
       .select("*")
       .eq("vendor_id", vendorId)
       .order("created_at", { ascending: false });
-    setProducts((data as any) || []);
+    const prods = (data as any) || [];
+    setProducts(prods);
+
+    // Fetch variants for all products
+    if (prods.length > 0) {
+      const ids = prods.map((p: any) => p.id);
+      const { data: varData } = await supabase
+        .from("vendor_product_variants" as any)
+        .select("*")
+        .in("product_id", ids);
+      const grouped: Record<string, any[]> = {};
+      (varData || []).forEach((v: any) => {
+        if (!grouped[v.product_id]) grouped[v.product_id] = [];
+        grouped[v.product_id].push(v);
+      });
+      setProductVariants(grouped);
+    }
     setLoading(false);
   };
 
@@ -47,9 +78,10 @@ export const VendorProducts = ({ vendorId, isApproved }: { vendorId: string; isA
   const resetForm = () => {
     setForm({ title: "", description: "", price: "", compare_at_price: "", category: "Hair Extensions", inventory_count: "0", image_urls: [] });
     setEditingProduct(null);
+    setVariants([]);
   };
 
-  const openEdit = (p: Product) => {
+  const openEdit = async (p: Product) => {
     setEditingProduct(p);
     setForm({
       title: p.title,
@@ -60,6 +92,22 @@ export const VendorProducts = ({ vendorId, isApproved }: { vendorId: string; isA
       inventory_count: String(p.inventory_count),
       image_urls: p.image_urls || [],
     });
+    // Load existing variants
+    const { data } = await supabase
+      .from("vendor_product_variants" as any)
+      .select("*")
+      .eq("product_id", p.id);
+    setVariants(
+      (data || []).map((v: any) => ({
+        id: v.id,
+        length: v.length || "",
+        size: v.size || "",
+        color: v.color || "",
+        price: String(v.price),
+        compare_at_price: v.compare_at_price ? String(v.compare_at_price) : "",
+        inventory_count: String(v.inventory_count),
+      }))
+    );
     setDialogOpen(true);
   };
 
@@ -84,8 +132,18 @@ export const VendorProducts = ({ vendorId, isApproved }: { vendorId: string; isA
     setForm(prev => ({ ...prev, image_urls: prev.image_urls.filter((_, i) => i !== idx) }));
   };
 
+  const addVariant = () => setVariants(prev => [...prev, emptyVariant()]);
+
+  const updateVariant = (idx: number, field: keyof Variant, value: string) => {
+    setVariants(prev => prev.map((v, i) => i === idx ? { ...v, [field]: value } : v));
+  };
+
+  const removeVariant = (idx: number) => {
+    setVariants(prev => prev.filter((_, i) => i !== idx));
+  };
+
   const handleSave = async () => {
-    if (!form.title || !form.price) { toast.error("Title and price are required"); return; }
+    if (!form.title || !form.price) { toast.error("Title and base price are required"); return; }
     setSaving(true);
     const payload = {
       vendor_id: vendorId,
@@ -98,13 +156,39 @@ export const VendorProducts = ({ vendorId, isApproved }: { vendorId: string; isA
       image_urls: form.image_urls,
     };
 
+    let productId = editingProduct?.id;
+
     if (editingProduct) {
       const { error } = await supabase.from("vendor_products").update(payload).eq("id", editingProduct.id);
-      if (error) { toast.error(error.message); } else { toast.success("Product updated"); }
+      if (error) { toast.error(error.message); setSaving(false); return; }
     } else {
-      const { error } = await supabase.from("vendor_products").insert(payload);
-      if (error) { toast.error(error.message); } else { toast.success("Product added"); }
+      const { data, error } = await supabase.from("vendor_products").insert(payload).select("id").single();
+      if (error) { toast.error(error.message); setSaving(false); return; }
+      productId = data.id;
     }
+
+    // Save variants — delete old, insert new
+    if (productId) {
+      await supabase.from("vendor_product_variants" as any).delete().eq("product_id", productId);
+
+      const validVariants = variants.filter(v => v.price);
+      if (validVariants.length > 0) {
+        const varPayload = validVariants.map(v => ({
+          product_id: productId,
+          vendor_id: vendorId,
+          length: v.length || null,
+          size: v.size || null,
+          color: v.color || null,
+          price: parseFloat(v.price),
+          compare_at_price: v.compare_at_price ? parseFloat(v.compare_at_price) : null,
+          inventory_count: parseInt(v.inventory_count) || 0,
+        }));
+        const { error: varErr } = await supabase.from("vendor_product_variants" as any).insert(varPayload);
+        if (varErr) toast.error("Error saving variants: " + varErr.message);
+      }
+    }
+
+    toast.success(editingProduct ? "Product updated" : "Product added");
     setSaving(false);
     setDialogOpen(false);
     resetForm();
@@ -150,7 +234,7 @@ export const VendorProducts = ({ vendorId, isApproved }: { vendorId: string; isA
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label>Price ($) *</Label>
+                  <Label>Base Price ($) *</Label>
                   <Input type="number" step="0.01" value={form.price} onChange={(e) => setForm(p => ({ ...p, price: e.target.value }))} />
                 </div>
                 <div>
@@ -164,10 +248,11 @@ export const VendorProducts = ({ vendorId, isApproved }: { vendorId: string; isA
                   <Input value={form.category} onChange={(e) => setForm(p => ({ ...p, category: e.target.value }))} />
                 </div>
                 <div>
-                  <Label>Inventory</Label>
+                  <Label>Base Inventory</Label>
                   <Input type="number" value={form.inventory_count} onChange={(e) => setForm(p => ({ ...p, inventory_count: e.target.value }))} />
                 </div>
               </div>
+
               {/* Images */}
               <div>
                 <Label>Images</Label>
@@ -184,6 +269,58 @@ export const VendorProducts = ({ vendorId, isApproved }: { vendorId: string; isA
                   </label>
                 </div>
               </div>
+
+              {/* Variants */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label className="text-base font-semibold">Variants (Length / Size / Color)</Label>
+                  <Button type="button" variant="outline" size="sm" onClick={addVariant}>
+                    <Plus className="w-3.5 h-3.5 mr-1" /> Add Variant
+                  </Button>
+                </div>
+                {variants.length === 0 && (
+                  <p className="text-xs text-muted-foreground">No variants — the base price will be used. Add variants to offer different lengths, sizes, or colors at different prices.</p>
+                )}
+                {variants.map((v, idx) => (
+                  <div key={idx} className="p-3 rounded-lg border border-border bg-muted/30 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-medium text-muted-foreground">Variant {idx + 1}</span>
+                      <button onClick={() => removeVariant(idx)} className="text-destructive hover:text-destructive/80">
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <div>
+                        <Label className="text-xs">Length</Label>
+                        <Input placeholder='e.g. 18"' value={v.length} onChange={(e) => updateVariant(idx, "length", e.target.value)} className="h-8 text-sm" />
+                      </div>
+                      <div>
+                        <Label className="text-xs">Size</Label>
+                        <Input placeholder="e.g. 4x4" value={v.size} onChange={(e) => updateVariant(idx, "size", e.target.value)} className="h-8 text-sm" />
+                      </div>
+                      <div>
+                        <Label className="text-xs">Color</Label>
+                        <Input placeholder="e.g. #1B" value={v.color} onChange={(e) => updateVariant(idx, "color", e.target.value)} className="h-8 text-sm" />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <div>
+                        <Label className="text-xs">Price ($) *</Label>
+                        <Input type="number" step="0.01" value={v.price} onChange={(e) => updateVariant(idx, "price", e.target.value)} className="h-8 text-sm" />
+                      </div>
+                      <div>
+                        <Label className="text-xs">Compare At</Label>
+                        <Input type="number" step="0.01" value={v.compare_at_price} onChange={(e) => updateVariant(idx, "compare_at_price", e.target.value)} className="h-8 text-sm" />
+                      </div>
+                      <div>
+                        <Label className="text-xs">Stock</Label>
+                        <Input type="number" value={v.inventory_count} onChange={(e) => updateVariant(idx, "inventory_count", e.target.value)} className="h-8 text-sm" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
               <Button onClick={handleSave} className="w-full" disabled={saving}>
                 {saving ? "Saving..." : editingProduct ? "Update Product" : "Add Product"}
               </Button>
@@ -206,26 +343,43 @@ export const VendorProducts = ({ vendorId, isApproved }: { vendorId: string; isA
         </div>
       ) : (
         <div className="grid gap-4">
-          {products.map((p) => (
-            <div key={p.id} className="flex items-center gap-4 p-4 rounded-xl border border-border bg-card">
-              <div className="w-16 h-16 rounded-lg bg-muted overflow-hidden flex-shrink-0">
-                {p.image_urls?.[0] ? (
-                  <img src={p.image_urls[0]} alt={p.title} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center"><Package className="w-6 h-6 text-muted-foreground" /></div>
-                )}
+          {products.map((p) => {
+            const pVariants = productVariants[p.id] || [];
+            return (
+              <div key={p.id} className="flex items-center gap-4 p-4 rounded-xl border border-border bg-card">
+                <div className="w-16 h-16 rounded-lg bg-muted overflow-hidden flex-shrink-0">
+                  {p.image_urls?.[0] ? (
+                    <img src={p.image_urls[0]} alt={p.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center"><Package className="w-6 h-6 text-muted-foreground" /></div>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-foreground truncate">{p.title}</p>
+                  <p className="text-sm text-muted-foreground">
+                    ${Number(p.price).toFixed(2)} · {p.inventory_count} in stock
+                  </p>
+                  {pVariants.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {pVariants.slice(0, 4).map((v: any) => (
+                        <Badge key={v.id} variant="secondary" className="text-[10px] px-1.5 py-0">
+                          {[v.length, v.color, v.size].filter(Boolean).join(" / ")} — ${Number(v.price).toFixed(2)}
+                        </Badge>
+                      ))}
+                      {pVariants.length > 4 && (
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0">+{pVariants.length - 4} more</Badge>
+                      )}
+                    </div>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch checked={p.is_active} onCheckedChange={() => toggleActive(p)} />
+                  <Button variant="ghost" size="icon" onClick={() => openEdit(p)}><Pencil className="w-4 h-4" /></Button>
+                  <Button variant="ghost" size="icon" onClick={() => deleteProduct(p.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-foreground truncate">{p.title}</p>
-                <p className="text-sm text-muted-foreground">${Number(p.price).toFixed(2)} · {p.inventory_count} in stock</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch checked={p.is_active} onCheckedChange={() => toggleActive(p)} />
-                <Button variant="ghost" size="icon" onClick={() => openEdit(p)}><Pencil className="w-4 h-4" /></Button>
-                <Button variant="ghost" size="icon" onClick={() => deleteProduct(p.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
