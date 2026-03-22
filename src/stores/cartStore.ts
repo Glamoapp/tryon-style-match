@@ -15,14 +15,14 @@ export type { CartItem, ShopifyProduct };
 
 // Service item that can be added to the unified cart
 export interface ServiceCartItem {
-  id: string; // unique key for the cart
+  id: string;
   type: 'service';
   serviceName: string;
   serviceId: string;
   providerId: string;
   providerName: string;
-  price: number; // in dollars
-  date: string; // formatted date string
+  price: number;
+  date: string;
   time: string;
   customerName: string;
   email: string;
@@ -30,9 +30,24 @@ export interface ServiceCartItem {
   address: string;
 }
 
+// Vendor product item for the unified cart
+export interface VendorCartItem {
+  id: string;
+  type: 'vendor_product';
+  productId: string;
+  variantId?: string;
+  title: string;
+  price: number;
+  quantity: number;
+  image?: string;
+  vendor?: string;
+  variantLabel?: string;
+}
+
 interface CartStore {
   items: CartItem[];
   serviceItems: ServiceCartItem[];
+  vendorItems: VendorCartItem[];
   cartId: string | null;
   checkoutUrl: string | null;
   isLoading: boolean;
@@ -41,6 +56,9 @@ interface CartStore {
   addItem: (item: Omit<CartItem, 'lineId'>) => Promise<void>;
   addServiceItem: (item: ServiceCartItem) => void;
   removeServiceItem: (id: string) => void;
+  addVendorItem: (item: VendorCartItem) => void;
+  updateVendorQuantity: (id: string, quantity: number) => void;
+  removeVendorItem: (id: string) => void;
   updateQuantity: (variantId: string, quantity: number) => Promise<void>;
   removeItem: (variantId: string) => Promise<void>;
   clearCart: () => void;
@@ -48,6 +66,7 @@ interface CartStore {
   getCheckoutUrl: () => string | null;
   hasProducts: () => boolean;
   hasServices: () => boolean;
+  hasVendorProducts: () => boolean;
   clearJustAdded: () => void;
 }
 
@@ -56,6 +75,7 @@ export const useCartStore = create<CartStore>()(
     (set, get) => ({
       items: [],
       serviceItems: [],
+      vendorItems: [],
       cartId: null,
       checkoutUrl: null,
       isLoading: false,
@@ -113,6 +133,28 @@ export const useCartStore = create<CartStore>()(
         set({ serviceItems: get().serviceItems.filter(s => s.id !== id) });
       },
 
+      addVendorItem: (item) => {
+        const { vendorItems } = get();
+        const existing = vendorItems.find(v => v.id === item.id);
+        if (existing) {
+          set({ vendorItems: vendorItems.map(v => v.id === item.id ? { ...v, quantity: v.quantity + item.quantity } : v) });
+        } else {
+          set({ vendorItems: [...vendorItems, item] });
+        }
+      },
+
+      updateVendorQuantity: (id, quantity) => {
+        if (quantity <= 0) {
+          set({ vendorItems: get().vendorItems.filter(v => v.id !== id) });
+        } else {
+          set({ vendorItems: get().vendorItems.map(v => v.id === id ? { ...v, quantity } : v) });
+        }
+      },
+
+      removeVendorItem: (id) => {
+        set({ vendorItems: get().vendorItems.filter(v => v.id !== id) });
+      },
+
       updateQuantity: async (variantId, quantity) => {
         if (quantity <= 0) { await get().removeItem(variantId); return; }
         const { items, cartId, clearCart } = get();
@@ -153,11 +195,12 @@ export const useCartStore = create<CartStore>()(
         }
       },
 
-      clearCart: () => set({ items: [], serviceItems: [], cartId: null, checkoutUrl: null, justAdded: null }),
+      clearCart: () => set({ items: [], serviceItems: [], vendorItems: [], cartId: null, checkoutUrl: null, justAdded: null }),
       getCheckoutUrl: () => get().checkoutUrl,
 
       hasProducts: () => get().items.length > 0,
       hasServices: () => get().serviceItems.length > 0,
+      hasVendorProducts: () => get().vendorItems.length > 0,
       clearJustAdded: () => set({ justAdded: null }),
 
       syncCart: async () => {
@@ -195,6 +238,7 @@ export const useCartStore = create<CartStore>()(
       partialize: (state) => ({
         items: state.items,
         serviceItems: state.serviceItems,
+        vendorItems: state.vendorItems,
         cartId: state.cartId,
         checkoutUrl: state.checkoutUrl,
       }),

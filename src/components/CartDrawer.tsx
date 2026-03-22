@@ -21,18 +21,21 @@ export const CartDrawer = () => {
   const [applyingDiscount, setApplyingDiscount] = useState(false);
 
   const {
-    items, serviceItems, isLoading, isSyncing, justAdded,
+    items, serviceItems, vendorItems, isLoading, isSyncing, justAdded,
     updateQuantity, removeItem, removeServiceItem,
-    syncCart, hasProducts, hasServices, clearJustAdded,
+    updateVendorQuantity, removeVendorItem,
+    syncCart, hasProducts, hasServices, hasVendorProducts, clearJustAdded,
   } = useCartStore();
 
   const totalProductItems = items.reduce((sum, item) => sum + item.quantity, 0);
+  const totalVendorItems = vendorItems.reduce((sum, item) => sum + item.quantity, 0);
   const totalServiceItems = serviceItems.length;
-  const totalItems = totalProductItems + totalServiceItems;
+  const totalItems = totalProductItems + totalVendorItems + totalServiceItems;
 
   const productTotal = items.reduce((sum, item) => sum + (parseFloat(item.price.amount) * item.quantity), 0);
+  const vendorTotal = vendorItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const serviceTotal = serviceItems.reduce((sum, svc) => sum + svc.price, 0);
-  const totalPrice = productTotal + serviceTotal;
+  const totalPrice = productTotal + vendorTotal + serviceTotal;
 
   // Auto-open cart when an item is added (Amazon-style)
   useEffect(() => {
@@ -52,10 +55,10 @@ export const CartDrawer = () => {
   }, [isOpen, justAdded, clearJustAdded]);
 
   const handleCheckout = async () => {
-    const onlyProducts = hasProducts() && !hasServices();
-    const onlyServices = hasServices() && !hasProducts();
+    const onlyShopifyProducts = hasProducts() && !hasServices() && !hasVendorProducts();
+    const onlyServices = hasServices() && !hasProducts() && !hasVendorProducts();
 
-    if (onlyProducts || onlyServices) {
+    if (onlyShopifyProducts || onlyServices) {
       setShowCrossSell(true);
       return;
     }
@@ -68,12 +71,20 @@ export const CartDrawer = () => {
     setShowCrossSell(false);
 
     try {
-      const products = items.map(item => ({
-        title: item.product.node.title,
-        price: item.price.amount,
-        quantity: item.quantity,
-        imageUrl: item.product.node.images?.edges?.[0]?.node?.url || null,
-      }));
+      const products = [
+        ...items.map(item => ({
+          title: item.product.node.title,
+          price: item.price.amount,
+          quantity: item.quantity,
+          imageUrl: item.product.node.images?.edges?.[0]?.node?.url || null,
+        })),
+        ...vendorItems.map(item => ({
+          title: item.title,
+          price: String(item.price),
+          quantity: item.quantity,
+          imageUrl: item.image || null,
+        })),
+      ];
 
       const services = serviceItems.map(svc => ({
         serviceName: svc.serviceName,
@@ -113,14 +124,14 @@ export const CartDrawer = () => {
     setShowCrossSell(false);
     setIsOpen(false);
 
-    if (hasProducts() && !hasServices()) {
-      navigate("/stylists");
-    } else if (hasServices() && !hasProducts()) {
+    if ((hasProducts() || hasVendorProducts()) && !hasServices()) {
+      navigate("/discover");
+    } else if (hasServices() && !hasProducts() && !hasVendorProducts()) {
       navigate("/extensions");
     }
   };
 
-  const crossSellType = hasProducts() && !hasServices() ? "service" : "product";
+  const crossSellType = (hasProducts() || hasVendorProducts()) && !hasServices() ? "service" : "product";
 
   return (
     <>
@@ -215,6 +226,47 @@ export const CartDrawer = () => {
                             <Button variant="ghost" size="icon" className="h-6 w-6 flex-shrink-0" onClick={() => removeServiceItem(svc.id)}>
                               <Trash2 className="h-3 w-3" />
                             </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Vendor product items */}
+                    {vendorItems.length > 0 && (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-sm font-semibold text-foreground font-body">
+                          <Package className="w-4 h-4 text-primary" />
+                          Vendor Products
+                        </div>
+                        {vendorItems.map((item) => (
+                          <div key={item.id} className="flex gap-3 p-3 rounded-xl bg-secondary/30 border border-border/50">
+                            <div className="w-16 h-16 bg-muted rounded-lg overflow-hidden flex-shrink-0">
+                              {item.image ? (
+                                <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <Package className="w-6 h-6 text-muted-foreground" />
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-body font-semibold text-foreground text-sm leading-tight line-clamp-2">{item.title}</h4>
+                              {item.variantLabel && <p className="text-xs text-muted-foreground font-body mt-0.5">{item.variantLabel}</p>}
+                              {item.vendor && <p className="text-xs text-muted-foreground font-body">by {item.vendor}</p>}
+                              <p className="font-bold text-foreground font-body text-base mt-1">${(item.price * item.quantity).toFixed(2)}</p>
+                              <div className="flex items-center gap-2 mt-2">
+                                <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => updateVendorQuantity(item.id, item.quantity - 1)}>
+                                  <Minus className="h-3 w-3" />
+                                </Button>
+                                <span className="w-8 text-center text-sm font-semibold font-body">{item.quantity}</span>
+                                <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => updateVendorQuantity(item.id, item.quantity + 1)}>
+                                  <Plus className="h-3 w-3" />
+                                </Button>
+                                <Button variant="ghost" size="sm" className="ml-auto text-xs text-destructive hover:text-destructive h-7 px-2" onClick={() => removeVendorItem(item.id)}>
+                                  <Trash2 className="h-3 w-3 mr-1" /> Remove
+                                </Button>
+                              </div>
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -328,16 +380,26 @@ export const CartDrawer = () => {
 
                 {/* Totals & checkout */}
                 <div className="flex-shrink-0 space-y-4 pt-4 border-t border-border bg-background">
-                  {(hasProducts() && hasServices()) && (
+                  {(totalItems > 1) && (
                     <div className="space-y-1 text-sm font-body">
-                      <div className="flex justify-between text-muted-foreground">
-                        <span>Products</span>
-                        <span>${productTotal.toFixed(2)}</span>
-                      </div>
-                      <div className="flex justify-between text-muted-foreground">
-                        <span>Services</span>
-                        <span>${serviceTotal.toFixed(2)}</span>
-                      </div>
+                      {(productTotal > 0) && (
+                        <div className="flex justify-between text-muted-foreground">
+                          <span>Store Products</span>
+                          <span>${productTotal.toFixed(2)}</span>
+                        </div>
+                      )}
+                      {(vendorTotal > 0) && (
+                        <div className="flex justify-between text-muted-foreground">
+                          <span>Vendor Products</span>
+                          <span>${vendorTotal.toFixed(2)}</span>
+                        </div>
+                      )}
+                      {(serviceTotal > 0) && (
+                        <div className="flex justify-between text-muted-foreground">
+                          <span>Services</span>
+                          <span>${serviceTotal.toFixed(2)}</span>
+                        </div>
+                      )}
                     </div>
                   )}
                   {appliedDiscount && (
