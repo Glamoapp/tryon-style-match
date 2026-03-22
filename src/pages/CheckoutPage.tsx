@@ -23,10 +23,20 @@ interface CheckoutItem {
   selectedOptions: Array<{ name: string; value: string }>;
 }
 
+interface VendorCheckoutItem {
+  id: string;
+  title: string;
+  price: number;
+  image?: string;
+  vendor?: string;
+  quantity?: number;
+}
+
 const CheckoutPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const item = location.state?.item as CheckoutItem | undefined;
+  const vendorItem = location.state?.vendorItem as VendorCheckoutItem | undefined;
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -50,7 +60,9 @@ const CheckoutPage = () => {
     });
   }, []);
 
-  if (!item) {
+  const hasItem = !!(item || vendorItem);
+
+  if (!hasItem) {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
@@ -63,12 +75,17 @@ const CheckoutPage = () => {
     );
   }
 
-  const unitPrice = parseFloat(item.price.amount);
+  // Normalize values for both item types
+  const productTitle = item ? item.product.node.title : vendorItem!.title;
+  const unitPrice = item ? parseFloat(item.price.amount) : vendorItem!.price;
+  const quantity = item ? item.quantity : (vendorItem!.quantity || 1);
+  const imageUrl = item ? item.product.node.images?.edges?.[0]?.node?.url : vendorItem!.image;
+  const optionsText = item ? item.selectedOptions.map(o => o.value).join(" • ") : (vendorItem!.vendor ? `by ${vendorItem!.vendor}` : "");
+
   const expressFee = 9.99;
   const deliveryFee = deliveryType === "express" ? expressFee : 0;
-  const subtotal = unitPrice * item.quantity;
+  const subtotal = unitPrice * quantity;
   const total = subtotal + deliveryFee;
-  const image = item.product.node.images?.edges?.[0]?.node;
 
   const handlePlaceOrder = async () => {
     if (!fullName.trim() || !email.trim() || !address.trim() || !city.trim() || !state.trim() || !zip.trim()) {
@@ -90,10 +107,10 @@ const CheckoutPage = () => {
         body: {
           products: [
             {
-              title: item.product.node.title,
-              price: item.price.amount,
-              quantity: item.quantity,
-              imageUrl: image?.url || null,
+              title: productTitle,
+              price: String(unitPrice),
+              quantity: quantity,
+              imageUrl: imageUrl || null,
             },
             ...(deliveryFee > 0
               ? [{ title: "Express Delivery (20 min)", price: String(expressFee), quantity: 1, imageUrl: null }]
@@ -247,17 +264,17 @@ const CheckoutPage = () => {
 
                 <div className="flex gap-4 mb-4 pb-4 border-b border-border">
                   <div className="w-20 h-20 rounded-xl overflow-hidden bg-muted flex-shrink-0">
-                    {image ? (
-                      <img src={image.url} alt={item.product.node.title} className="w-full h-full object-cover" />
+                    {imageUrl ? (
+                      <img src={imageUrl} alt={productTitle} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center"><Package className="w-8 h-8 text-muted-foreground" /></div>
                     )}
                   </div>
                   <div className="min-w-0">
-                    <h3 className="font-body font-semibold text-foreground text-sm truncate">{item.product.node.title}</h3>
-                    <p className="text-xs text-muted-foreground font-body">{item.selectedOptions.map(o => o.value).join(" • ")}</p>
+                    <h3 className="font-body font-semibold text-foreground text-sm truncate">{productTitle}</h3>
+                    {optionsText && <p className="text-xs text-muted-foreground font-body">{optionsText}</p>}
                     <p className="text-sm font-bold text-foreground font-body mt-1">
-                      ${unitPrice.toFixed(2)} × {item.quantity}
+                      ${unitPrice.toFixed(2)} × {quantity}
                     </p>
                   </div>
                 </div>
