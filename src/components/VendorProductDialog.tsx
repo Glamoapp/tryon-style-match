@@ -359,6 +359,35 @@ export const VendorProductDialog = ({ product, open, onOpenChange }: Props) => {
       body: { booking_id: createdBooking.id },
     }).catch(console.error);
 
+    // Check if this is the customer's first booking — send welcome email
+    (async () => {
+      try {
+        const { data: allBookings } = await supabase
+          .from("bookings")
+          .select("id")
+          .eq("customer_id", user.id)
+          .limit(2);
+        if (allBookings && allBookings.length === 1) {
+          await supabase.functions.invoke("send-transactional-email", {
+            body: {
+              templateName: "first-booking-welcome",
+              recipientEmail: email,
+              idempotencyKey: `first-booking-welcome-${user.id}`,
+              templateData: {
+                customerName: name,
+                serviceName: selectedService?.service_name || "Hair Service",
+                stylistName: selectedStylist!.full_name,
+                bookingDate: format(date, "EEE, MMM d"),
+                bookingTime: time,
+              },
+            },
+          });
+        }
+      } catch (err) {
+        console.error("First booking welcome email failed:", err);
+      }
+    })();
+
     // Calculate reward points based on total
     const productTotal = effectivePrice * quantity;
     const totalAmount = productTotal + servicePrice;
