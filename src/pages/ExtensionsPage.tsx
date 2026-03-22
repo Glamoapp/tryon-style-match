@@ -118,7 +118,24 @@ const ExtensionsPage = () => {
     return p.price;
   };
 
-  const hasProducts = shopifyProducts.length > 0 || vendorProducts.length > 0;
+  // Filter products by query param (e.g. ?q=weave)
+  const filteredShopify = useMemo(() => {
+    if (!filterQuery) return shopifyProducts;
+    return shopifyProducts.filter(p => {
+      const text = `${p.node.title} ${p.node.description}`.toLowerCase();
+      return text.includes(filterQuery);
+    });
+  }, [shopifyProducts, filterQuery]);
+
+  const filteredVendor = useMemo(() => {
+    if (!filterQuery) return vendorProducts;
+    return vendorProducts.filter(p => {
+      const text = `${p.title} ${p.description || ""} ${p.category || ""}`.toLowerCase();
+      return text.includes(filterQuery);
+    });
+  }, [vendorProducts, filterQuery]);
+
+  const hasProducts = filteredShopify.length > 0 || filteredVendor.length > 0;
 
   return (
     <div className="min-h-screen bg-background">
