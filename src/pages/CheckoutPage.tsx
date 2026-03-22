@@ -377,15 +377,23 @@ const CheckoutPage = () => {
                       <Scissors className="w-3 h-3" /> Services
                     </p>
                     {services.map((s, i) => (
-                      <div key={i} className="pb-3 border-b border-border last:border-0">
-                        <h3 className="font-body font-semibold text-foreground text-sm">{s.serviceName}</h3>
-                        <p className="text-xs text-muted-foreground font-body flex items-center gap-1">
-                          <Star className="w-3 h-3" /> {s.providerName}
-                        </p>
-                        <p className="text-xs text-muted-foreground font-body flex items-center gap-1">
-                          <CalendarDays className="w-3 h-3" /> {s.date} at {s.time}
-                        </p>
-                        <p className="text-sm font-bold text-foreground font-body mt-1">${s.price.toFixed(2)}</p>
+                      <div key={i} className="flex gap-3 pb-3 border-b border-border last:border-0">
+                        <Avatar className="w-14 h-14 flex-shrink-0">
+                          <AvatarImage src={s.providerAvatarUrl || undefined} alt={s.providerName} />
+                          <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                            {s.providerName.split(" ").map(n => n[0]).join("").slice(0, 2)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0 flex-1">
+                          <h3 className="font-body font-semibold text-foreground text-sm">{s.serviceName}</h3>
+                          <p className="text-xs text-muted-foreground font-body flex items-center gap-1">
+                            <Star className="w-3 h-3" /> {s.providerName}
+                          </p>
+                          <p className="text-xs text-muted-foreground font-body flex items-center gap-1">
+                            <CalendarDays className="w-3 h-3" /> {s.date} at {s.time}
+                          </p>
+                          <p className="text-sm font-bold text-foreground font-body mt-1">${s.price.toFixed(2)}</p>
+                        </div>
                       </div>
                     ))}
                   </div>
