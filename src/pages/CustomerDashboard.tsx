@@ -111,8 +111,20 @@ const CustomerDashboard = () => {
     setLoading(false);
   };
 
+  const fetchReviewedProviders = async () => {
+    if (!userId) return;
+    const { data } = await supabase
+      .from("reviews")
+      .select("provider_id")
+      .eq("customer_id", userId);
+    if (data) {
+      setReviewedProviders(new Set(data.map((r) => r.provider_id)));
+    }
+  };
+
   useEffect(() => {
     fetchBookings();
+    fetchReviewedProviders();
   }, [userId]);
 
   // Realtime subscription for booking updates + notifications
