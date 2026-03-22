@@ -173,11 +173,11 @@ const ExtensionsPage = () => {
           ) : (
             <>
               {/* Vendor Products */}
-              {vendorProducts.length > 0 && (
+              {filteredVendor.length > 0 && (
                 <div className="mb-12">
                   <h2 className="font-display text-2xl font-bold text-foreground mb-6">From Our Vendors</h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {vendorProducts.map((product, index) => {
+                    {filteredVendor.map((product, index) => {
                       const effectivePrice = getEffectivePrice(product);
                       const hasDeal = product.deals && product.deals.length > 0;
                       return (
