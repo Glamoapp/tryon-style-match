@@ -306,10 +306,14 @@ const StylistListCard = ({
   card,
   isSelected,
   onSelect,
+  isFavorite,
+  onToggleFavorite,
 }: {
   card: StylistCard;
   isSelected: boolean;
   onSelect: () => void;
+  isFavorite: boolean;
+  onToggleFavorite: () => void;
 }) => (
   <motion.div
     layout
