@@ -18,7 +18,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
 // Initialize Stripe — publishable key is public by design
-const stripePromise = loadStripe("pk_live_51T2JfLQlVcGfb7Qc4Zzb7N3kZb8QgS5hnKV0GG8L8fhVxJ8vGMzVrLPWxcRqVp5kM9Rc7e0HHgL3f5sVJ4z6Kcg00hVWJKwj2");
+const stripePromise = loadStripe("pk_live_51T2JfLQlVcGfb7QcE0VcBubT0L3Ec5adnh0WCNK42XntTYktt5T1lQ9vfBNTXUfGr6pAgFrJHwcaIo4RaDkH2V8Q00jL1h0Ega");
 
 interface CheckoutProduct {
   title: string;
