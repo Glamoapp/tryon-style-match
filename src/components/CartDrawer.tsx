@@ -55,10 +55,10 @@ export const CartDrawer = () => {
   }, [isOpen, justAdded, clearJustAdded]);
 
   const handleCheckout = async () => {
-    const onlyProducts = hasProducts() && !hasServices();
-    const onlyServices = hasServices() && !hasProducts();
+    const onlyShopifyProducts = hasProducts() && !hasServices() && !hasVendorProducts();
+    const onlyServices = hasServices() && !hasProducts() && !hasVendorProducts();
 
-    if (onlyProducts || onlyServices) {
+    if (onlyShopifyProducts || onlyServices) {
       setShowCrossSell(true);
       return;
     }
