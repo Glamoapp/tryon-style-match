@@ -25,6 +25,7 @@ interface CheckoutProduct {
 interface CheckoutService {
   serviceName: string;
   providerName: string;
+  providerAvatarUrl?: string | null;
   date: string;
   time: string;
   price: number;

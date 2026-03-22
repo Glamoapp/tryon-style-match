@@ -169,6 +169,7 @@ export const BuyNowDialog = ({ product, open, onOpenChange }: Props) => {
           {
             serviceName: svc.service_name,
             providerName: selectedStylist.full_name,
+            providerAvatarUrl: selectedStylist.avatar_url,
             providerId: selectedStylist.id,
             serviceId: svc.id,
             date: format(date, "EEE, MMM d"),
