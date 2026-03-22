@@ -124,14 +124,14 @@ export const CartDrawer = () => {
     setShowCrossSell(false);
     setIsOpen(false);
 
-    if (hasProducts() && !hasServices()) {
-      navigate("/stylists");
-    } else if (hasServices() && !hasProducts()) {
+    if ((hasProducts() || hasVendorProducts()) && !hasServices()) {
+      navigate("/discover");
+    } else if (hasServices() && !hasProducts() && !hasVendorProducts()) {
       navigate("/extensions");
     }
   };
 
-  const crossSellType = hasProducts() && !hasServices() ? "service" : "product";
+  const crossSellType = (hasProducts() || hasVendorProducts()) && !hasServices() ? "service" : "product";
 
   return (
     <>
