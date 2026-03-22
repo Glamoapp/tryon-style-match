@@ -330,6 +330,7 @@ const StylistProfilePage = () => {
                           stylistPhone={provider.phone}
                           providerId={provider.id}
                           serviceId={service.id}
+                          providerAvatarUrl={provider.avatar_url}
                           trigger={
                             <Button variant="hero" size="sm">
                               Book <ChevronRight className="w-4 h-4" />
