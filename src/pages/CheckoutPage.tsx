@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Clock, CalendarDays, Zap, Truck, Loader2, MapPin, Package, Scissors, User, Star } from "lucide-react";
+import { ArrowLeft, Clock, CalendarDays, Zap, Truck, Loader2, MapPin, Package, Scissors, User, Star, CreditCard, Smartphone, DollarSign } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,6 +25,7 @@ interface CheckoutProduct {
 interface CheckoutService {
   serviceName: string;
   providerName: string;
+  providerAvatarUrl?: string | null;
   date: string;
   time: string;
   price: number;
@@ -83,6 +85,7 @@ const CheckoutPage = () => {
   const [deliveryType, setDeliveryType] = useState<"express" | "scheduled">("express");
   const [scheduledDate, setScheduledDate] = useState<Date | undefined>(undefined);
   const [checkingOut, setCheckingOut] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"card" | "apple_pay" | "cash_app">("card");
 
   const hasPhysicalProducts = products.length > 0;
   const hasServices = services.length > 0;
@@ -294,6 +297,48 @@ const CheckoutPage = () => {
                   )}
                 </motion.div>
               )}
+
+              {/* Payment Method */}
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-card rounded-2xl border border-border p-6">
+                <h2 className="font-display font-bold text-lg text-foreground mb-4 flex items-center gap-2">
+                  <CreditCard className="w-5 h-5 text-primary" /> Payment Method
+                </h2>
+                <div className="grid sm:grid-cols-3 gap-4">
+                  <button
+                    onClick={() => setPaymentMethod("card")}
+                    className={`p-4 rounded-xl border-2 text-center transition-all ${
+                      paymentMethod === "card"
+                        ? "border-primary bg-primary/5 shadow-soft"
+                        : "border-border hover:border-primary/30"
+                    }`}
+                  >
+                    <CreditCard className="w-6 h-6 mx-auto mb-2 text-primary" />
+                    <span className="font-display font-bold text-sm text-foreground">Debit / Credit Card</span>
+                  </button>
+                  <button
+                    onClick={() => setPaymentMethod("apple_pay")}
+                    className={`p-4 rounded-xl border-2 text-center transition-all ${
+                      paymentMethod === "apple_pay"
+                        ? "border-primary bg-primary/5 shadow-soft"
+                        : "border-border hover:border-primary/30"
+                    }`}
+                  >
+                    <Smartphone className="w-6 h-6 mx-auto mb-2 text-primary" />
+                    <span className="font-display font-bold text-sm text-foreground">Apple Pay</span>
+                  </button>
+                  <button
+                    onClick={() => setPaymentMethod("cash_app")}
+                    className={`p-4 rounded-xl border-2 text-center transition-all ${
+                      paymentMethod === "cash_app"
+                        ? "border-primary bg-primary/5 shadow-soft"
+                        : "border-border hover:border-primary/30"
+                    }`}
+                  >
+                    <DollarSign className="w-6 h-6 mx-auto mb-2 text-primary" />
+                    <span className="font-display font-bold text-sm text-foreground">Cash App</span>
+                  </button>
+                </div>
+              </motion.div>
             </div>
 
             {/* Right: Order Summary */}
@@ -333,15 +378,23 @@ const CheckoutPage = () => {
                       <Scissors className="w-3 h-3" /> Services
                     </p>
                     {services.map((s, i) => (
-                      <div key={i} className="pb-3 border-b border-border last:border-0">
-                        <h3 className="font-body font-semibold text-foreground text-sm">{s.serviceName}</h3>
-                        <p className="text-xs text-muted-foreground font-body flex items-center gap-1">
-                          <Star className="w-3 h-3" /> {s.providerName}
-                        </p>
-                        <p className="text-xs text-muted-foreground font-body flex items-center gap-1">
-                          <CalendarDays className="w-3 h-3" /> {s.date} at {s.time}
-                        </p>
-                        <p className="text-sm font-bold text-foreground font-body mt-1">${s.price.toFixed(2)}</p>
+                      <div key={i} className="flex gap-3 pb-3 border-b border-border last:border-0">
+                        <Avatar className="w-14 h-14 flex-shrink-0">
+                          <AvatarImage src={s.providerAvatarUrl || undefined} alt={s.providerName} />
+                          <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                            {s.providerName.split(" ").map(n => n[0]).join("").slice(0, 2)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0 flex-1">
+                          <h3 className="font-body font-semibold text-foreground text-sm">{s.serviceName}</h3>
+                          <p className="text-xs text-muted-foreground font-body flex items-center gap-1">
+                            <Star className="w-3 h-3" /> {s.providerName}
+                          </p>
+                          <p className="text-xs text-muted-foreground font-body flex items-center gap-1">
+                            <CalendarDays className="w-3 h-3" /> {s.date} at {s.time}
+                          </p>
+                          <p className="text-sm font-bold text-foreground font-body mt-1">${s.price.toFixed(2)}</p>
+                        </div>
                       </div>
                     ))}
                   </div>
