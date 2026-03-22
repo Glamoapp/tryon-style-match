@@ -360,14 +360,15 @@ export const VendorProductDialog = ({ product, open, onOpenChange }: Props) => {
     }).catch(console.error);
 
     // Check if this is the customer's first booking — send welcome email
-    supabase
-      .from("bookings")
-      .select("id")
-      .eq("customer_id", user.id)
-      .limit(2)
-      .then(({ data: allBookings }) => {
+    (async () => {
+      try {
+        const { data: allBookings } = await supabase
+          .from("bookings")
+          .select("id")
+          .eq("customer_id", user.id)
+          .limit(2);
         if (allBookings && allBookings.length === 1) {
-          supabase.functions.invoke("send-transactional-email", {
+          await supabase.functions.invoke("send-transactional-email", {
             body: {
               templateName: "first-booking-welcome",
               recipientEmail: email,
@@ -380,10 +381,12 @@ export const VendorProductDialog = ({ product, open, onOpenChange }: Props) => {
                 bookingTime: time,
               },
             },
-          }).catch(console.error);
+          });
         }
-      })
-      .catch(console.error);
+      } catch (err) {
+        console.error("First booking welcome email failed:", err);
+      }
+    })();
 
     // Calculate reward points based on total
     const productTotal = effectivePrice * quantity;
