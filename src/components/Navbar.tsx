@@ -17,6 +17,7 @@ const navLinks = [
   { label: "GlowUp Monday", href: "/glowup-monday", icon: Star },
   { label: "My Bookings", href: "/dashboard", icon: CalendarDays },
   { label: "For Providers", href: "/provider/login", icon: UserCog },
+  { label: "For Vendors", href: "/vendor/login", icon: Store },
 ];
 
 const Navbar = () => {
