@@ -31,6 +31,7 @@ const StylistsPage = () => {
   const [searchParams] = useSearchParams();
   const initialSpecialty = searchParams.get("specialty") || "All";
   const { providers, loading } = useProviders();
+  const { isFavorite, toggleFavorite } = useFavorites();
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState(initialSpecialty);
   const [sortBy, setSortBy] = useState<"rating" | "price">("rating");
