@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, ShoppingCart, Loader2, Package, Zap } from "lucide-react";
@@ -8,6 +8,13 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { storefrontApiRequest, type ShopifyProduct } from "@/lib/shopify";
 import { useCartStore } from "@/stores/cartStore";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const PRODUCT_BY_HANDLE_QUERY = `
   query GetProductByHandle($handle: String!) {
@@ -15,7 +22,7 @@ const PRODUCT_BY_HANDLE_QUERY = `
       id title description handle
       priceRange { minVariantPrice { amount currencyCode } }
       images(first: 5) { edges { node { url altText } } }
-      variants(first: 20) {
+      variants(first: 100) {
         edges { node { id title price { amount currencyCode } availableForSale selectedOptions { name value } } }
       }
       options { name values }
@@ -28,17 +35,27 @@ const ProductPage = () => {
   const { handle } = useParams();
   const [product, setProduct] = useState<ShopifyProduct | null>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedVariantIdx, setSelectedVariantIdx] = useState(0);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const addItem = useCartStore((s) => s.addItem);
   const isCartLoading = useCartStore((s) => s.isLoading);
 
   useEffect(() => {
-    async function fetch() {
+    async function fetchProduct() {
       try {
         const data = await storefrontApiRequest(PRODUCT_BY_HANDLE_QUERY, { handle });
         if (data?.data?.productByHandle) {
-          setProduct({ node: data.data.productByHandle });
+          const p: ShopifyProduct = { node: data.data.productByHandle };
+          setProduct(p);
+          // Initialize selected options from first variant
+          const firstVariant = p.node.variants.edges[0]?.node;
+          if (firstVariant?.selectedOptions) {
+            const defaults: Record<string, string> = {};
+            firstVariant.selectedOptions.forEach((opt) => {
+              defaults[opt.name] = opt.value;
+            });
+            setSelectedOptions(defaults);
+          }
         }
       } catch (err) {
         console.error(err);
@@ -46,8 +63,27 @@ const ProductPage = () => {
         setLoading(false);
       }
     }
-    fetch();
+    fetchProduct();
   }, [handle]);
+
+  // Find the variant matching all selected options
+  const selectedVariant = useMemo(() => {
+    if (!product) return null;
+    const variants = product.node.variants.edges;
+    const optionEntries = Object.entries(selectedOptions);
+    if (optionEntries.length === 0) return variants[0]?.node ?? null;
+
+    const match = variants.find((v) =>
+      optionEntries.every(([name, value]) =>
+        v.node.selectedOptions.some((so) => so.name === name && so.value === value)
+      )
+    );
+    return match?.node ?? null;
+  }, [product, selectedOptions]);
+
+  const handleOptionChange = (optionName: string, value: string) => {
+    setSelectedOptions((prev) => ({ ...prev, [optionName]: value }));
+  };
 
   if (loading) return (
     <div className="min-h-screen bg-background flex items-center justify-center">
@@ -67,11 +103,13 @@ const ProductPage = () => {
   );
 
   const images = product.node.images.edges;
-  const variants = product.node.variants.edges;
-  const selectedVariant = variants[selectedVariantIdx]?.node;
+  const options = product.node.options || [];
 
   const handleAddToCart = async () => {
-    if (!selectedVariant) return;
+    if (!selectedVariant) {
+      toast.error("Please select all options");
+      return;
+    }
     await addItem({
       product,
       variantId: selectedVariant.id,
@@ -81,6 +119,25 @@ const ProductPage = () => {
       selectedOptions: selectedVariant.selectedOptions || [],
     });
     toast.success(`${product.node.title} added to cart`, { position: "top-center" });
+  };
+
+  const handleBuyNow = () => {
+    if (!selectedVariant) {
+      toast.error("Please select all options");
+      return;
+    }
+    navigate("/checkout", {
+      state: {
+        item: {
+          product,
+          variantId: selectedVariant.id,
+          variantTitle: selectedVariant.title,
+          price: selectedVariant.price,
+          quantity: 1,
+          selectedOptions: selectedVariant.selectedOptions || [],
+        },
+      },
+    });
   };
 
   return (
@@ -118,50 +175,79 @@ const ProductPage = () => {
               <p className="text-2xl font-bold text-primary font-body mt-3">
                 ${parseFloat(selectedVariant?.price.amount || product.node.priceRange.minVariantPrice.amount).toFixed(2)}
               </p>
+              {selectedVariant && !selectedVariant.availableForSale && (
+                <p className="text-sm text-destructive font-body mt-1">Out of stock</p>
+              )}
               <p className="text-muted-foreground font-body mt-4 leading-relaxed">{product.node.description}</p>
 
-              {/* Variants */}
-              {variants.length > 1 && (
-                <div className="mt-6">
-                  <label className="text-sm font-semibold text-foreground font-body">Options</label>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {variants.map((v, i) => (
-                      <button
-                        key={v.node.id}
-                        onClick={() => setSelectedVariantIdx(i)}
-                        className={`px-4 py-2 rounded-xl text-sm font-body font-medium transition-all ${
-                          i === selectedVariantIdx
-                            ? 'bg-primary text-primary-foreground shadow-soft'
-                            : 'bg-secondary text-secondary-foreground hover:bg-primary/10'
-                        }`}
-                      >
-                        {v.node.title}
-                      </button>
-                    ))}
-                  </div>
+              {/* Option Selectors */}
+              {options.filter((o) => o.name !== "Title" || o.values.length > 1).map((option) => (
+                <div key={option.name} className="mt-6">
+                  <label className="text-sm font-semibold text-foreground font-body block mb-2">
+                    {option.name}
+                  </label>
+                  {option.values.length <= 6 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {option.values.map((value) => {
+                        const isSelected = selectedOptions[option.name] === value;
+                        return (
+                          <button
+                            key={value}
+                            onClick={() => handleOptionChange(option.name, value)}
+                            className={`px-4 py-2 rounded-xl text-sm font-body font-medium transition-all border ${
+                              isSelected
+                                ? 'bg-primary text-primary-foreground border-primary shadow-soft'
+                                : 'bg-card text-foreground border-border hover:border-primary/50'
+                            }`}
+                          >
+                            {value}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <Select
+                      value={selectedOptions[option.name] || ""}
+                      onValueChange={(val) => handleOptionChange(option.name, val)}
+                    >
+                      <SelectTrigger className="w-full max-w-xs">
+                        <SelectValue placeholder={`Select ${option.name}`} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {option.values.map((value) => (
+                          <SelectItem key={value} value={value}>{value}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
                 </div>
+              ))}
+
+              {/* Selected variant summary */}
+              {selectedVariant && selectedVariant.title !== "Default Title" && (
+                <p className="text-sm text-muted-foreground font-body mt-4">
+                  Selected: {selectedVariant.title}
+                </p>
               )}
 
               <div className="flex gap-3 mt-8">
-                <Button variant="outline" size="lg" className="flex-1" onClick={handleAddToCart} disabled={isCartLoading || !selectedVariant?.availableForSale}>
-                  {isCartLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><ShoppingCart className="w-5 h-5" /> Add to Cart</>}
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="flex-1"
+                  onClick={handleAddToCart}
+                  disabled={isCartLoading || !selectedVariant?.availableForSale}
+                >
+                  {isCartLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><ShoppingCart className="w-5 h-5 mr-2" /> Add to Cart</>}
                 </Button>
-                <Button variant="hero" size="lg" className="flex-1" onClick={() => {
-                  if (!selectedVariant) return;
-                  navigate("/checkout", {
-                    state: {
-                      item: {
-                        product,
-                        variantId: selectedVariant.id,
-                        variantTitle: selectedVariant.title,
-                        price: selectedVariant.price,
-                        quantity: 1,
-                        selectedOptions: selectedVariant.selectedOptions || [],
-                      },
-                    },
-                  });
-                }} disabled={!selectedVariant?.availableForSale}>
-                  <Zap className="w-5 h-5" /> Buy Now
+                <Button
+                  variant="default"
+                  size="lg"
+                  className="flex-1"
+                  onClick={handleBuyNow}
+                  disabled={!selectedVariant?.availableForSale}
+                >
+                  <Zap className="w-5 h-5 mr-2" /> Buy Now
                 </Button>
               </div>
             </div>
