@@ -21,7 +21,6 @@ serve(async (req) => {
 
     if (!email) throw new Error("Email is required");
 
-    // price is in cents, default to 5000 ($50) if not provided
     const amountInCents = price || 5000;
 
     // Check if customer exists
@@ -39,27 +38,10 @@ serve(async (req) => {
       customerId = customer.id;
     }
 
-    // Look up provider's Stripe Connect account for 80/20 split
-    let connectedAccountId: string | null = null;
-    if (providerId) {
-      try {
-        const accounts = await stripe.accounts.list({ limit: 100 });
-        const providerAccount = accounts.data.find(
-          (a: any) => a.metadata?.provider_id === providerId
-        );
-        if (providerAccount && providerAccount.charges_enabled) {
-          connectedAccountId = providerAccount.id;
-        }
-      } catch (e) {
-        console.log("Could not look up provider Stripe account:", e);
-      }
-    }
-
     const origin = req.headers.get("origin") || "https://tryon-style-match.lovable.app";
 
-    // Calculate 20% platform fee (80% goes to stylist)
-    const platformFee = Math.round(amountInCents * 0.20);
-
+    // Use manual capture — funds are HELD (authorized) but NOT charged yet.
+    // Capture happens when the customer provides the completion code.
     const sessionParams: any = {
       customer: customerId,
       line_items: [
@@ -76,7 +58,14 @@ serve(async (req) => {
         },
       ],
       mode: "payment",
-      payment_method_types: ["card", "cashapp"],
+      payment_method_types: ["card"],
+      payment_intent_data: {
+        capture_method: "manual",
+        metadata: {
+          bookingId,
+          provider_id: providerId || "",
+        },
+      },
       success_url: `${origin}/booking-tracker?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/#stylists`,
       metadata: {
@@ -91,16 +80,6 @@ serve(async (req) => {
         provider_id: providerId || "",
       },
     };
-
-    // If provider has a connected Stripe account, use payment_intent_data for automatic split
-    if (connectedAccountId) {
-      sessionParams.payment_intent_data = {
-        application_fee_amount: platformFee,
-        transfer_data: {
-          destination: connectedAccountId,
-        },
-      };
-    }
 
     const session = await stripe.checkout.sessions.create(sessionParams);
 
