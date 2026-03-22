@@ -216,6 +216,7 @@ export const useCartStore = create<CartStore>()(
       partialize: (state) => ({
         items: state.items,
         serviceItems: state.serviceItems,
+        vendorItems: state.vendorItems,
         cartId: state.cartId,
         checkoutUrl: state.checkoutUrl,
       }),
