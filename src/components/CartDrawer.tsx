@@ -380,16 +380,26 @@ export const CartDrawer = () => {
 
                 {/* Totals & checkout */}
                 <div className="flex-shrink-0 space-y-4 pt-4 border-t border-border bg-background">
-                  {(hasProducts() && hasServices()) && (
+                  {(totalItems > 1) && (
                     <div className="space-y-1 text-sm font-body">
-                      <div className="flex justify-between text-muted-foreground">
-                        <span>Products</span>
-                        <span>${productTotal.toFixed(2)}</span>
-                      </div>
-                      <div className="flex justify-between text-muted-foreground">
-                        <span>Services</span>
-                        <span>${serviceTotal.toFixed(2)}</span>
-                      </div>
+                      {(productTotal > 0) && (
+                        <div className="flex justify-between text-muted-foreground">
+                          <span>Store Products</span>
+                          <span>${productTotal.toFixed(2)}</span>
+                        </div>
+                      )}
+                      {(vendorTotal > 0) && (
+                        <div className="flex justify-between text-muted-foreground">
+                          <span>Vendor Products</span>
+                          <span>${vendorTotal.toFixed(2)}</span>
+                        </div>
+                      )}
+                      {(serviceTotal > 0) && (
+                        <div className="flex justify-between text-muted-foreground">
+                          <span>Services</span>
+                          <span>${serviceTotal.toFixed(2)}</span>
+                        </div>
+                      )}
                     </div>
                   )}
                   {appliedDiscount && (
