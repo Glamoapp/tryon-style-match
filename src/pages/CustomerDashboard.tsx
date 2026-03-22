@@ -340,6 +340,30 @@ const CustomerDashboard = () => {
               <p className="text-xs text-muted-foreground font-body mt-2">Give this code to your stylist when the service is done</p>
             </motion.div>
           )}
+
+          {/* Leave Review - show for completed bookings */}
+          {detail.status === "completed" && providerId && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35 }}
+              className="mt-6"
+            >
+              {reviewedProviders.has(providerId) ? (
+                <div className="bg-card rounded-2xl border border-border/50 p-5 text-center">
+                  <Star className="w-6 h-6 text-gold mx-auto mb-2" />
+                  <p className="font-display font-semibold text-foreground">Thanks for your review!</p>
+                  <p className="text-sm text-muted-foreground font-body mt-1">You already rated {providerName}</p>
+                </div>
+              ) : (
+                <LeaveReview
+                  providerId={providerId}
+                  providerName={providerName}
+                  onReviewSubmitted={() => fetchReviewedProviders()}
+                />
+              )}
+            </motion.div>
+          )}
         </div>
         <Footer />
       </div>
