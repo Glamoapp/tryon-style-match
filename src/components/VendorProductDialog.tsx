@@ -414,11 +414,8 @@ export const VendorProductDialog = ({ product, open, onOpenChange }: Props) => {
     });
 
     setSubmitting(false);
-    return; // skip the finally block's setSubmitting
-  } finally {
-      setSubmitting(false);
-    }
   };
+
 
   const stepTitle: Record<Step, string> = {
     product: product.title,
