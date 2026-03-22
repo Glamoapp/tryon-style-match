@@ -44,6 +44,25 @@ const ProductsNearYou = () => {
     toast.success(`${product.node.title} added to cart`, { position: "top-center" });
   };
 
+  const handleBuyNow = async (e: React.MouseEvent, product: ShopifyProduct) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const variant = product.node.variants.edges[0]?.node;
+    if (!variant) return;
+    const image = product.node.images.edges[0]?.node;
+    navigate("/checkout", {
+      state: {
+        products: [{
+          title: product.node.title,
+          price: variant.price.amount,
+          quantity: 1,
+          imageUrl: image?.url || null,
+        }],
+      },
+    });
+  };
+  };
+
   if (loading) {
     return (
       <section className="py-8 bg-background">
