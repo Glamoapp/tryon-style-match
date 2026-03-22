@@ -1,22 +1,19 @@
 project_id = "wmumnlhzjvscoyuqljyj"
 
-[functions.create-booking-payment]
-verify_jwt = false
-
-[functions.get-maps-key]
-verify_jwt = false
-
-[functions.update-stylist-location]
-verify_jwt = false
-
-[functions.process-email-queue]
-verify_jwt = true
-
-[functions.stripe-connect-onboard]
-verify_jwt = false
-
-[functions.stripe-connect-status]
-verify_jwt = false
-
-[functions.stripe-connect-dashboard]
-verify_jwt = false
+[functions]
+  [functions.auth-email-hook]
+    verify_jwt = false
+  [functions.create-booking-payment]
+    verify_jwt = false
+  [functions.get-maps-key]
+    verify_jwt = false
+  [functions.process-email-queue]
+    verify_jwt = true
+  [functions.stripe-connect-dashboard]
+    verify_jwt = false
+  [functions.stripe-connect-onboard]
+    verify_jwt = false
+  [functions.stripe-connect-status]
+    verify_jwt = false
+  [functions.update-stylist-location]
+    verify_jwt = false
