@@ -5,6 +5,7 @@ import {
   Calendar, Clock, MapPin, Phone, MessageCircle, CheckCircle2, Circle,
   ArrowLeft, User, History, ChevronRight, Video, Navigation, Star
 } from "lucide-react";
+import LeaveReview from "@/components/LeaveReview";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
