@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Package, ShoppingBag, Loader2, ShoppingCart, Zap, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ const ProductsNearYou = () => {
   const [loading, setLoading] = useState(true);
   const addItem = useCartStore((s) => s.addItem);
   const isCartLoading = useCartStore((s) => s.isLoading);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchProducts() {
@@ -41,6 +42,24 @@ const ProductsNearYou = () => {
       selectedOptions: variant.selectedOptions || [],
     });
     toast.success(`${product.node.title} added to cart`, { position: "top-center" });
+  };
+
+  const handleBuyNow = async (e: React.MouseEvent, product: ShopifyProduct) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const variant = product.node.variants.edges[0]?.node;
+    if (!variant) return;
+    const image = product.node.images.edges[0]?.node;
+    navigate("/checkout", {
+      state: {
+        products: [{
+          title: product.node.title,
+          price: variant.price.amount,
+          quantity: 1,
+          imageUrl: image?.url || null,
+        }],
+      },
+    });
   };
 
   if (loading) {
@@ -117,25 +136,35 @@ const ProductsNearYou = () => {
                     <h3 className="font-display font-semibold text-foreground text-sm line-clamp-2 group-hover:text-primary transition-colors">
                       {product.node.title}
                     </h3>
-                    <div className="flex items-center justify-between mt-2">
+                    <div className="flex items-center justify-between mt-2 gap-1">
                       <span className="text-base font-bold text-foreground font-body">
                         ${parseFloat(price.amount).toFixed(2)}
                       </span>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 px-2 text-xs"
-                        onClick={(e) => handleAddToCart(e, product)}
-                        disabled={isCartLoading}
-                      >
-                        {isCartLoading ? (
-                          <Loader2 className="w-3 h-3 animate-spin" />
-                        ) : (
-                          <>
-                            <ShoppingCart className="w-3 h-3 mr-1" /> Add
-                          </>
-                        )}
-                      </Button>
+                      <div className="flex gap-1">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 px-2 text-xs"
+                          onClick={(e) => handleAddToCart(e, product)}
+                          disabled={isCartLoading}
+                        >
+                          {isCartLoading ? (
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                          ) : (
+                            <>
+                              <ShoppingCart className="w-3 h-3 mr-1" /> Add
+                            </>
+                          )}
+                        </Button>
+                        <Button
+                          variant="default"
+                          size="sm"
+                          className="h-8 px-2 text-xs"
+                          onClick={(e) => handleBuyNow(e, product)}
+                        >
+                          <Zap className="w-3 h-3 mr-1" /> Buy
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </Link>
