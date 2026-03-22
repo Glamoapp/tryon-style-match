@@ -269,6 +269,11 @@ const ExtensionsPage = () => {
           )}
         </div>
       </div>
+      <VendorProductDialog
+        product={selectedVendorProduct}
+        open={!!selectedVendorProduct}
+        onOpenChange={(open) => { if (!open) setSelectedVendorProduct(null); }}
+      />
       <Footer />
     </div>
   );
