@@ -23,10 +23,20 @@ interface CheckoutItem {
   selectedOptions: Array<{ name: string; value: string }>;
 }
 
+interface VendorCheckoutItem {
+  id: string;
+  title: string;
+  price: number;
+  image?: string;
+  vendor?: string;
+  quantity?: number;
+}
+
 const CheckoutPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const item = location.state?.item as CheckoutItem | undefined;
+  const vendorItem = location.state?.vendorItem as VendorCheckoutItem | undefined;
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -50,7 +60,9 @@ const CheckoutPage = () => {
     });
   }, []);
 
-  if (!item) {
+  const hasItem = !!(item || vendorItem);
+
+  if (!hasItem) {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
@@ -63,12 +75,17 @@ const CheckoutPage = () => {
     );
   }
 
-  const unitPrice = parseFloat(item.price.amount);
+  // Normalize values for both item types
+  const productTitle = item ? item.product.node.title : vendorItem!.title;
+  const unitPrice = item ? parseFloat(item.price.amount) : vendorItem!.price;
+  const quantity = item ? item.quantity : (vendorItem!.quantity || 1);
+  const imageUrl = item ? item.product.node.images?.edges?.[0]?.node?.url : vendorItem!.image;
+  const optionsText = item ? item.selectedOptions.map(o => o.value).join(" • ") : (vendorItem!.vendor ? `by ${vendorItem!.vendor}` : "");
+
   const expressFee = 9.99;
   const deliveryFee = deliveryType === "express" ? expressFee : 0;
-  const subtotal = unitPrice * item.quantity;
+  const subtotal = unitPrice * quantity;
   const total = subtotal + deliveryFee;
-  const image = item.product.node.images?.edges?.[0]?.node;
 
   const handlePlaceOrder = async () => {
     if (!fullName.trim() || !email.trim() || !address.trim() || !city.trim() || !state.trim() || !zip.trim()) {
