@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { Star, MapPin, Heart, ChevronRight } from "lucide-react";
+import { Star, MapPin, ChevronRight } from "lucide-react";
 import { useProviders } from "@/hooks/useProviders";
+import { useFavorites } from "@/hooks/useFavorites";
+import FavoriteButton from "@/components/FavoriteButton";
 
 const StylistsSection = () => {
   const { providers, loading } = useProviders();
