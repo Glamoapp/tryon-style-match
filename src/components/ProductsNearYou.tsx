@@ -12,6 +12,7 @@ const ProductsNearYou = () => {
   const [loading, setLoading] = useState(true);
   const addItem = useCartStore((s) => s.addItem);
   const isCartLoading = useCartStore((s) => s.isLoading);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchProducts() {
