@@ -231,6 +231,47 @@ export const CartDrawer = () => {
                       </div>
                     )}
 
+                    {/* Vendor product items */}
+                    {vendorItems.length > 0 && (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-sm font-semibold text-foreground font-body">
+                          <Package className="w-4 h-4 text-primary" />
+                          Vendor Products
+                        </div>
+                        {vendorItems.map((item) => (
+                          <div key={item.id} className="flex gap-3 p-3 rounded-xl bg-secondary/30 border border-border/50">
+                            <div className="w-16 h-16 bg-muted rounded-lg overflow-hidden flex-shrink-0">
+                              {item.image ? (
+                                <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <Package className="w-6 h-6 text-muted-foreground" />
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-body font-semibold text-foreground text-sm leading-tight line-clamp-2">{item.title}</h4>
+                              {item.variantLabel && <p className="text-xs text-muted-foreground font-body mt-0.5">{item.variantLabel}</p>}
+                              {item.vendor && <p className="text-xs text-muted-foreground font-body">by {item.vendor}</p>}
+                              <p className="font-bold text-foreground font-body text-base mt-1">${(item.price * item.quantity).toFixed(2)}</p>
+                              <div className="flex items-center gap-2 mt-2">
+                                <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => updateVendorQuantity(item.id, item.quantity - 1)}>
+                                  <Minus className="h-3 w-3" />
+                                </Button>
+                                <span className="w-8 text-center text-sm font-semibold font-body">{item.quantity}</span>
+                                <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => updateVendorQuantity(item.id, item.quantity + 1)}>
+                                  <Plus className="h-3 w-3" />
+                                </Button>
+                                <Button variant="ghost" size="sm" className="ml-auto text-xs text-destructive hover:text-destructive h-7 px-2" onClick={() => removeVendorItem(item.id)}>
+                                  <Trash2 className="h-3 w-3 mr-1" /> Remove
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
                     {/* Product items */}
                     {items.length > 0 && (
                       <div className="space-y-2">
