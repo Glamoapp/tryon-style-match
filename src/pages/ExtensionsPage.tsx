@@ -9,6 +9,7 @@ import Footer from "@/components/Footer";
 import { storefrontApiRequest, STOREFRONT_PRODUCTS_QUERY, type ShopifyProduct } from "@/lib/shopify";
 import { useCartStore } from "@/stores/cartStore";
 import { supabase } from "@/integrations/supabase/client";
+import { VendorProductDialog } from "@/components/VendorProductDialog";
 
 type VendorProduct = {
   id: string;
