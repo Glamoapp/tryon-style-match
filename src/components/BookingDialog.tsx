@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
-import { CalendarIcon, Clock, ChevronRight, User, Mail, Phone, MapPin, Loader2, ShoppingCart } from "lucide-react";
+import { CalendarIcon, Clock, ChevronRight, User, Mail, Phone, MapPin, Loader2, ShoppingBag, Package, Scissors, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useCartStore, type ServiceCartItem } from "@/stores/cartStore";
@@ -30,6 +30,7 @@ interface BookingDialogProps {
   stylistPhone?: string | null;
   providerId?: string;
   serviceId?: string;
+  providerAvatarUrl?: string | null;
 }
 
 const toDbTime = (slot: string) => {
@@ -45,14 +46,27 @@ const toDbTime = (slot: string) => {
 
 const generateCompletionCode = () => `${Math.floor(100000 + Math.random() * 900000)}`;
 
-const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistPhone, providerId, serviceId }: BookingDialogProps) => {
+/** Map service names to product search queries for the extensions page */
+const getProductQueryForService = (serviceName: string): string => {
+  const lower = serviceName.toLowerCase();
+  if (lower.includes("sew") || lower.includes("weave") || lower.includes("install")) return "weave";
+  if (lower.includes("braid") || lower.includes("cornrow") || lower.includes("twist")) return "braid";
+  if (lower.includes("wig")) return "wig";
+  if (lower.includes("loc") || lower.includes("dread")) return "loc";
+  if (lower.includes("clip")) return "clip";
+  if (lower.includes("frontal") || lower.includes("closure")) return "frontal";
+  return "extensions";
+};
+
+const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistPhone, providerId, serviceId, providerAvatarUrl }: BookingDialogProps) => {
   const navigate = useNavigate();
   const addServiceItem = useCartStore((s) => s.addServiceItem);
-  const [step, setStep] = useState<1 | 2>(1);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [date, setDate] = useState<Date>();
   const [time, setTime] = useState<string>();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [bookingId, setBookingId] = useState<string | null>(null);
 
   // Contact info
   const [name, setName] = useState("");
@@ -69,9 +83,10 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
     setPhone("");
     setAddress("");
     setLoading(false);
+    setBookingId(null);
   };
 
-  const handleAddToCart = async () => {
+  const handleNext = async () => {
     if (!date || !time || !name || !email || !phone || !address) return;
 
     const { data: { user } } = await supabase.auth.getUser();
@@ -83,13 +98,12 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
 
     setLoading(true);
 
-    let bookingId = `BK-${Date.now().toString(36).toUpperCase()}`;
+    let createdId = `BK-${Date.now().toString(36).toUpperCase()}`;
 
     if (providerId && serviceId) {
       const bookingDate = format(date, "yyyy-MM-dd");
       const bookingTime = toDbTime(time);
 
-      // Check for existing booking in this time slot
       const { data: existing } = await supabase
         .from("bookings")
         .select("id")
@@ -123,22 +137,26 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
         .single();
 
       if (bookingError || !createdBooking) {
-        toast.error("Couldn't create your booking. Please try again.");
+        if ((bookingError as any)?.code === "23505") {
+          toast.error("That time slot is already booked. Please choose a different time.");
+          setStep(1);
+        } else {
+          toast.error("Couldn't create your booking. Please try again.");
+        }
         setLoading(false);
         return;
       }
 
-      bookingId = createdBooking.id;
+      createdId = createdBooking.id;
 
-      // Trigger admin SMS + email notification
       supabase.functions.invoke("notify-booking", {
-        body: { booking_id: bookingId },
+        body: { booking_id: createdId },
       }).catch((err) => console.error("Booking notification failed:", err));
     }
 
     // Add to unified cart
     const serviceItem: ServiceCartItem = {
-      id: bookingId,
+      id: createdId,
       type: 'service',
       serviceName: styleName || "Hair Service",
       serviceId: serviceId || "",
@@ -157,7 +175,7 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
 
     // Save booking data for tracker page
     localStorage.setItem("currentBooking", JSON.stringify({
-      id: bookingId,
+      id: createdId,
       date: format(date, "PPP"),
       time,
       stylistName: stylistName || "Assigned Stylist",
@@ -169,23 +187,31 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
       address,
     }));
 
-    setOpen(false);
-    resetForm();
-    toast.success(
-      "Service added to cart! Would you like to shop for hair products too?",
-      {
-        position: "top-center",
-        duration: 6000,
-        action: {
-          label: "Shop Products",
-          onClick: () => navigate("/extensions"),
-        },
-      }
-    );
+    setBookingId(createdId);
+    setLoading(false);
+    setStep(3); // Go to upsell step
   };
 
+  const handleSkipToCheckout = () => {
+    setOpen(false);
+    resetForm();
+    navigate("/checkout", {
+      state: {
+        fromCart: true,
+      },
+    });
+  };
+
+  const handleShopProducts = () => {
+    setOpen(false);
+    resetForm();
+    const query = getProductQueryForService(styleName || "");
+    navigate(`/extensions?q=${encodeURIComponent(query)}`);
+  };
+
+  const totalSteps = 3;
   const canProceedStep1 = date && time;
-  const canConfirm = canProceedStep1 && name.trim() && email.trim() && phone.trim() && address.trim();
+  const canProceedStep2 = canProceedStep1 && name.trim() && email.trim() && phone.trim() && address.trim();
 
   return (
     <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) resetForm(); }}>
@@ -195,8 +221,9 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
           <DialogTitle className="font-display text-2xl text-foreground">
             {step === 1 && "Select Date & Time"}
             {step === 2 && "Your Information"}
+            {step === 3 && "Add Hair Extensions?"}
           </DialogTitle>
-          {(stylistName || styleName) && (
+          {(stylistName || styleName) && step < 3 && (
             <p className="text-sm text-muted-foreground font-body">
               {styleName && <span className="text-primary font-semibold">{styleName}</span>}
               {styleName && stylistName && " with "}
@@ -205,7 +232,7 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
             </p>
           )}
           <div className="flex items-center gap-2 pt-2">
-            {[1, 2].map((s) => (
+            {[1, 2, 3].map((s) => (
               <div key={s} className="flex items-center gap-2">
                 <div className={cn(
                   "w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold font-body transition-colors",
@@ -213,7 +240,7 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
                 )}>
                   {s}
                 </div>
-                {s < 2 && <div className={cn("w-8 h-0.5", step > s ? "bg-primary" : "bg-border")} />}
+                {s < totalSteps && <div className={cn("w-8 h-0.5", step > s ? "bg-primary" : "bg-border")} />}
               </div>
             ))}
           </div>
@@ -299,15 +326,55 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
 
               <div className="flex gap-3">
                 <Button variant="outline" className="flex-1" onClick={() => setStep(1)}>Back</Button>
-                <Button variant="hero" className="flex-1" disabled={!canConfirm || loading} onClick={handleAddToCart}>
+                <Button variant="hero" className="flex-1" disabled={!canProceedStep2 || loading} onClick={handleNext}>
                   {loading ? (
-                    <><Loader2 className="w-4 h-4 animate-spin" /> Adding...</>
+                    <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</>
                   ) : (
-                    <><ShoppingCart className="w-4 h-4 mr-1" /> Add to Cart</>
+                    <>Next <ChevronRight className="w-4 h-4" /></>
                   )}
                 </Button>
               </div>
             </>
+          )}
+
+          {step === 3 && (
+            <div className="space-y-4">
+              <div className="bg-primary/5 rounded-2xl p-5 text-center space-y-3">
+                <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+                  <Scissors className="w-7 h-7 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-display font-bold text-foreground text-lg">Booking Confirmed!</h3>
+                  <p className="text-sm text-muted-foreground font-body mt-1">
+                    <span className="text-primary font-semibold">{styleName}</span> with <span className="font-semibold">{stylistName}</span>
+                  </p>
+                </div>
+              </div>
+
+              <p className="text-center text-sm text-muted-foreground font-body">
+                Would you like to purchase hair extensions for your{" "}
+                <span className="font-semibold text-foreground">{styleName?.toLowerCase()}</span> service?
+              </p>
+
+              <div className="grid gap-3">
+                <Button
+                  variant="hero"
+                  className="w-full"
+                  onClick={handleShopProducts}
+                >
+                  <Package className="w-4 h-4 mr-2" />
+                  Shop {getProductQueryForService(styleName || "").charAt(0).toUpperCase() + getProductQueryForService(styleName || "").slice(1)} Products
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleSkipToCheckout}
+                >
+                  No Thanks — Go to Checkout <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </div>
+            </div>
           )}
         </div>
       </DialogContent>

@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect, useMemo } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ShoppingCart, Loader2, ArrowLeft, Package, Zap, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,8 @@ type VendorProduct = {
 
 const ExtensionsPage = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const filterQuery = searchParams.get("q")?.toLowerCase() || "";
   const [shopifyProducts, setShopifyProducts] = useState<ShopifyProduct[]>([]);
   const [vendorProducts, setVendorProducts] = useState<VendorProduct[]>([]);
   const [loading, setLoading] = useState(true);
@@ -116,7 +118,24 @@ const ExtensionsPage = () => {
     return p.price;
   };
 
-  const hasProducts = shopifyProducts.length > 0 || vendorProducts.length > 0;
+  // Filter products by query param (e.g. ?q=weave)
+  const filteredShopify = useMemo(() => {
+    if (!filterQuery) return shopifyProducts;
+    return shopifyProducts.filter(p => {
+      const text = `${p.node.title} ${p.node.description}`.toLowerCase();
+      return text.includes(filterQuery);
+    });
+  }, [shopifyProducts, filterQuery]);
+
+  const filteredVendor = useMemo(() => {
+    if (!filterQuery) return vendorProducts;
+    return vendorProducts.filter(p => {
+      const text = `${p.title} ${p.description || ""} ${p.category || ""}`.toLowerCase();
+      return text.includes(filterQuery);
+    });
+  }, [vendorProducts, filterQuery]);
+
+  const hasProducts = filteredShopify.length > 0 || filteredVendor.length > 0;
 
   return (
     <div className="min-h-screen bg-background">
@@ -139,6 +158,17 @@ const ExtensionsPage = () => {
             </motion.div>
           </div>
 
+          {filterQuery && !loading && (
+            <div className="mb-6 flex items-center gap-2">
+              <span className="text-sm text-muted-foreground font-body">
+                Showing results for "<span className="font-semibold text-foreground">{filterQuery}</span>"
+              </span>
+              <Button variant="ghost" size="sm" onClick={() => setSearchParams({})}>
+                Clear filter
+              </Button>
+            </div>
+          )}
+
           {loading ? (
             <div className="flex items-center justify-center py-24">
               <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -154,11 +184,11 @@ const ExtensionsPage = () => {
           ) : (
             <>
               {/* Vendor Products */}
-              {vendorProducts.length > 0 && (
+              {filteredVendor.length > 0 && (
                 <div className="mb-12">
                   <h2 className="font-display text-2xl font-bold text-foreground mb-6">From Our Vendors</h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {vendorProducts.map((product, index) => {
+                    {filteredVendor.map((product, index) => {
                       const effectivePrice = getEffectivePrice(product);
                       const hasDeal = product.deals && product.deals.length > 0;
                       return (
@@ -217,11 +247,11 @@ const ExtensionsPage = () => {
               )}
 
               {/* Shopify Products */}
-              {shopifyProducts.length > 0 && (
+              {filteredShopify.length > 0 && (
                 <div>
-                  {vendorProducts.length > 0 && <h2 className="font-display text-2xl font-bold text-foreground mb-6">From Our Store</h2>}
+                  {filteredVendor.length > 0 && <h2 className="font-display text-2xl font-bold text-foreground mb-6">From Our Store</h2>}
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {shopifyProducts.map((product, index) => {
+                    {filteredShopify.map((product, index) => {
                       const image = product.node.images.edges[0]?.node;
                       const price = product.node.priceRange.minVariantPrice;
                       return (
