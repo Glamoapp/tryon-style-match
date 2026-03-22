@@ -8,6 +8,7 @@ import FavoriteButton from "@/components/FavoriteButton";
 
 const StylistsSection = () => {
   const { providers, loading } = useProviders();
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   const topCards = providers.slice(0, 3).map((p) => ({
     id: p.id,
