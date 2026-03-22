@@ -5,7 +5,8 @@ declare global {
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Star, MapPin, Heart, ChevronRight, Search, ArrowLeft, List, Map as MapIcon, SlidersHorizontal, ChevronUp } from "lucide-react";
+import { Star, MapPin, ChevronRight, Search, ArrowLeft, List, Map as MapIcon, SlidersHorizontal, ChevronUp } from "lucide-react";
+import FavoriteButton from "@/components/FavoriteButton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Navbar from "@/components/Navbar";
