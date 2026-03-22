@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Clock, CalendarDays, Zap, Truck, Loader2, MapPin, Package, Scissors, User, Star, CreditCard, Smartphone, DollarSign } from "lucide-react";
+import { ArrowLeft, Clock, CalendarDays, Zap, Truck, Loader2, MapPin, Package, Scissors, User, Star, CreditCard, Smartphone, DollarSign, CheckCircle, Lock } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,11 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { useCartStore } from "@/stores/cartStore";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
+
+// Initialize Stripe — publishable key is public by design
+const stripePromise = loadStripe("pk_live_51T2JfLQlVcGfb7Qc4Zzb7N3kZb8QgS5hnKV0GG8L8fhVxJ8vGMzVrLPWxcRqVp5kM9Rc7e0HHgL3f5sVJ4z6Kcg00hVWJKwj2");
 
 interface CheckoutProduct {
   title: string;
@@ -31,11 +36,80 @@ interface CheckoutService {
   price: number;
 }
 
+/** Inner payment form rendered inside <Elements> */
+const PaymentForm = ({ total, onSuccess, checkingOut, setCheckingOut }: {
+  total: number;
+  onSuccess: () => void;
+  checkingOut: boolean;
+  setCheckingOut: (v: boolean) => void;
+}) => {
+  const stripe = useStripe();
+  const elements = useElements();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!stripe || !elements) return;
+
+    setCheckingOut(true);
+    try {
+      const { error } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/booking-tracker`,
+        },
+      });
+
+      if (error) {
+        if (error.type === "card_error" || error.type === "validation_error") {
+          toast.error(error.message || "Payment failed");
+        } else {
+          toast.error("An unexpected error occurred.");
+        }
+      } else {
+        onSuccess();
+      }
+    } catch (err) {
+      console.error("Payment error:", err);
+      toast.error("Payment failed. Please try again.");
+    } finally {
+      setCheckingOut(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <PaymentElement
+        options={{
+          layout: "tabs",
+        }}
+      />
+      <Button
+        type="submit"
+        variant="hero"
+        size="lg"
+        className="w-full"
+        disabled={!stripe || !elements || checkingOut}
+      >
+        {checkingOut ? (
+          <Loader2 className="w-4 h-4 animate-spin" />
+        ) : (
+          <>
+            <Lock className="w-4 h-4 mr-2" />
+            Pay ${total.toFixed(2)}
+          </>
+        )}
+      </Button>
+      <p className="text-xs text-center text-muted-foreground font-body flex items-center justify-center gap-1">
+        <Lock className="w-3 h-3" /> Secured by Stripe
+      </p>
+    </form>
+  );
+};
+
 const CheckoutPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Data can come from location.state or from the cart store
   const stateProducts = location.state?.products as CheckoutProduct[] | undefined;
   const stateServices = location.state?.services as CheckoutService[] | undefined;
   const fromCart = location.state?.fromCart as boolean | undefined;
@@ -46,7 +120,6 @@ const CheckoutPage = () => {
     updateQuantity, updateVendorQuantity,
   } = useCartStore();
 
-  // Build unified product/service lists
   const products: CheckoutProduct[] = fromCart
     ? [
         ...items.map(item => ({
@@ -85,7 +158,9 @@ const CheckoutPage = () => {
   const [deliveryType, setDeliveryType] = useState<"express" | "scheduled">("express");
   const [scheduledDate, setScheduledDate] = useState<Date | undefined>(undefined);
   const [checkingOut, setCheckingOut] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<"card" | "apple_pay" | "cash_app">("card");
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [paymentReady, setPaymentReady] = useState(false);
+  const [loadingPayment, setLoadingPayment] = useState(false);
 
   const hasPhysicalProducts = products.length > 0;
   const hasServices = services.length > 0;
@@ -121,7 +196,8 @@ const CheckoutPage = () => {
   const subtotal = productSubtotal + serviceSubtotal;
   const total = subtotal + deliveryFee;
 
-  const handlePlaceOrder = async () => {
+  /** Create PaymentIntent and get client secret */
+  const initializePayment = async () => {
     if (!fullName.trim() || !email.trim()) {
       toast.error("Please fill in your name and email");
       return;
@@ -135,7 +211,7 @@ const CheckoutPage = () => {
       return;
     }
 
-    setCheckingOut(true);
+    setLoadingPayment(true);
     try {
       const allProducts = [
         ...products,
@@ -144,28 +220,41 @@ const CheckoutPage = () => {
           : []),
       ];
 
-      const { data, error } = await supabase.functions.invoke("unified-checkout", {
+      const { data, error } = await supabase.functions.invoke("create-payment-intent", {
         body: {
           products: allProducts.length > 0 ? allProducts : undefined,
           services: services.length > 0 ? services : undefined,
           customerEmail: email,
           customerName: fullName,
-          shippingAddress: hasPhysicalProducts ? `${address}, ${city}, ${state} ${zip}` : undefined,
         },
       });
 
       if (error) throw error;
-      if (data?.url) {
-        window.open(data.url, "_blank");
+      if (data?.clientSecret) {
+        setClientSecret(data.clientSecret);
+        setPaymentReady(true);
       } else {
-        throw new Error("No checkout URL returned");
+        throw new Error("No client secret returned");
       }
     } catch (err) {
-      console.error("Checkout error:", err);
-      toast.error("Checkout failed. Please try again.");
+      console.error("Payment init error:", err);
+      toast.error("Couldn't initialize payment. Please try again.");
     } finally {
-      setCheckingOut(false);
+      setLoadingPayment(false);
     }
+  };
+
+  const handlePaymentSuccess = () => {
+    toast.success("Payment successful!");
+    navigate("/booking-tracker");
+  };
+
+  const stripeAppearance = {
+    theme: "stripe" as const,
+    variables: {
+      colorPrimary: "#e11d48",
+      borderRadius: "12px",
+    },
   };
 
   return (
@@ -191,16 +280,16 @@ const CheckoutPage = () => {
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="fullName" className="font-body text-sm">Full Name *</Label>
-                      <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Your full name" className="mt-1" />
+                      <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Your full name" className="mt-1" disabled={paymentReady} />
                     </div>
                     <div>
                       <Label htmlFor="email" className="font-body text-sm">Email *</Label>
-                      <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@email.com" className="mt-1" />
+                      <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@email.com" className="mt-1" disabled={paymentReady} />
                     </div>
                   </div>
                   <div>
                     <Label htmlFor="phone" className="font-body text-sm">Phone</Label>
-                    <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="(555) 123-4567" className="mt-1" />
+                    <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="(555) 123-4567" className="mt-1" disabled={paymentReady} />
                   </div>
                 </div>
               </motion.div>
@@ -214,20 +303,20 @@ const CheckoutPage = () => {
                   <div className="grid gap-4">
                     <div>
                       <Label htmlFor="address" className="font-body text-sm">Street Address *</Label>
-                      <Input id="address" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="123 Main St, Apt 4" className="mt-1" />
+                      <Input id="address" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="123 Main St, Apt 4" className="mt-1" disabled={paymentReady} />
                     </div>
                     <div className="grid grid-cols-3 gap-4">
                       <div>
                         <Label htmlFor="city" className="font-body text-sm">City *</Label>
-                        <Input id="city" value={city} onChange={(e) => setCity(e.target.value)} placeholder="City" className="mt-1" />
+                        <Input id="city" value={city} onChange={(e) => setCity(e.target.value)} placeholder="City" className="mt-1" disabled={paymentReady} />
                       </div>
                       <div>
                         <Label htmlFor="state" className="font-body text-sm">State *</Label>
-                        <Input id="state" value={state} onChange={(e) => setState(e.target.value)} placeholder="State" className="mt-1" />
+                        <Input id="state" value={state} onChange={(e) => setState(e.target.value)} placeholder="State" className="mt-1" disabled={paymentReady} />
                       </div>
                       <div>
                         <Label htmlFor="zip" className="font-body text-sm">ZIP *</Label>
-                        <Input id="zip" value={zip} onChange={(e) => setZip(e.target.value)} placeholder="12345" className="mt-1" />
+                        <Input id="zip" value={zip} onChange={(e) => setZip(e.target.value)} placeholder="12345" className="mt-1" disabled={paymentReady} />
                       </div>
                     </div>
                   </div>
@@ -242,12 +331,12 @@ const CheckoutPage = () => {
                   </h2>
                   <div className="grid sm:grid-cols-2 gap-4">
                     <button
-                      onClick={() => setDeliveryType("express")}
+                      onClick={() => !paymentReady && setDeliveryType("express")}
                       className={`p-4 rounded-xl border-2 text-left transition-all ${
                         deliveryType === "express"
                           ? "border-primary bg-primary/5 shadow-soft"
                           : "border-border hover:border-primary/30"
-                      }`}
+                      } ${paymentReady ? "opacity-60 cursor-not-allowed" : ""}`}
                     >
                       <div className="flex items-center gap-2 mb-2">
                         <Zap className="w-5 h-5 text-primary" />
@@ -258,12 +347,12 @@ const CheckoutPage = () => {
                     </button>
 
                     <button
-                      onClick={() => setDeliveryType("scheduled")}
+                      onClick={() => !paymentReady && setDeliveryType("scheduled")}
                       className={`p-4 rounded-xl border-2 text-left transition-all ${
                         deliveryType === "scheduled"
                           ? "border-primary bg-primary/5 shadow-soft"
                           : "border-border hover:border-primary/30"
-                      }`}
+                      } ${paymentReady ? "opacity-60 cursor-not-allowed" : ""}`}
                     >
                       <div className="flex items-center gap-2 mb-2">
                         <CalendarDays className="w-5 h-5 text-primary" />
@@ -279,7 +368,7 @@ const CheckoutPage = () => {
                       <Label className="font-body text-sm mb-1 block">Select Delivery Date</Label>
                       <Popover>
                         <PopoverTrigger asChild>
-                          <Button variant="outline" className="w-full justify-start text-left font-body">
+                          <Button variant="outline" className="w-full justify-start text-left font-body" disabled={paymentReady}>
                             <CalendarDays className="w-4 h-4 mr-2" />
                             {scheduledDate ? format(scheduledDate, "PPP") : "Pick a date"}
                           </Button>
@@ -298,46 +387,46 @@ const CheckoutPage = () => {
                 </motion.div>
               )}
 
-              {/* Payment Method */}
+              {/* Payment Section */}
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-card rounded-2xl border border-border p-6">
                 <h2 className="font-display font-bold text-lg text-foreground mb-4 flex items-center gap-2">
-                  <CreditCard className="w-5 h-5 text-primary" /> Payment Method
+                  <CreditCard className="w-5 h-5 text-primary" /> Payment
                 </h2>
-                <div className="grid sm:grid-cols-3 gap-4">
-                  <button
-                    onClick={() => setPaymentMethod("card")}
-                    className={`p-4 rounded-xl border-2 text-center transition-all ${
-                      paymentMethod === "card"
-                        ? "border-primary bg-primary/5 shadow-soft"
-                        : "border-border hover:border-primary/30"
-                    }`}
-                  >
-                    <CreditCard className="w-6 h-6 mx-auto mb-2 text-primary" />
-                    <span className="font-display font-bold text-sm text-foreground">Debit / Credit Card</span>
-                  </button>
-                  <button
-                    onClick={() => setPaymentMethod("apple_pay")}
-                    className={`p-4 rounded-xl border-2 text-center transition-all ${
-                      paymentMethod === "apple_pay"
-                        ? "border-primary bg-primary/5 shadow-soft"
-                        : "border-border hover:border-primary/30"
-                    }`}
-                  >
-                    <Smartphone className="w-6 h-6 mx-auto mb-2 text-primary" />
-                    <span className="font-display font-bold text-sm text-foreground">Apple Pay</span>
-                  </button>
-                  <button
-                    onClick={() => setPaymentMethod("cash_app")}
-                    className={`p-4 rounded-xl border-2 text-center transition-all ${
-                      paymentMethod === "cash_app"
-                        ? "border-primary bg-primary/5 shadow-soft"
-                        : "border-border hover:border-primary/30"
-                    }`}
-                  >
-                    <DollarSign className="w-6 h-6 mx-auto mb-2 text-primary" />
-                    <span className="font-display font-bold text-sm text-foreground">Cash App</span>
-                  </button>
-                </div>
+
+                {!paymentReady ? (
+                  <div className="space-y-4">
+                    <p className="text-sm text-muted-foreground font-body">
+                      Fill in your details above, then click below to enter your payment information.
+                    </p>
+                    <div className="flex flex-wrap gap-3 items-center text-xs text-muted-foreground font-body">
+                      <span className="flex items-center gap-1"><CreditCard className="w-3.5 h-3.5" /> Card</span>
+                      <span className="flex items-center gap-1"><Smartphone className="w-3.5 h-3.5" /> Apple Pay</span>
+                      <span className="flex items-center gap-1"><DollarSign className="w-3.5 h-3.5" /> Cash App</span>
+                    </div>
+                    <Button
+                      variant="hero"
+                      size="lg"
+                      className="w-full"
+                      onClick={initializePayment}
+                      disabled={loadingPayment}
+                    >
+                      {loadingPayment ? (
+                        <><Loader2 className="w-4 h-4 animate-spin" /> Loading payment...</>
+                      ) : (
+                        <>Continue to Payment — ${total.toFixed(2)}</>
+                      )}
+                    </Button>
+                  </div>
+                ) : clientSecret ? (
+                  <Elements stripe={stripePromise} options={{ clientSecret, appearance: stripeAppearance }}>
+                    <PaymentForm
+                      total={total}
+                      onSuccess={handlePaymentSuccess}
+                      checkingOut={checkingOut}
+                      setCheckingOut={setCheckingOut}
+                    />
+                  </Elements>
+                ) : null}
               </motion.div>
             </div>
 
@@ -436,16 +525,6 @@ const CheckoutPage = () => {
                     <span className="text-xs text-muted-foreground font-body">Estimated arrival in ~20 minutes</span>
                   </div>
                 )}
-
-                <Button
-                  variant="hero"
-                  size="lg"
-                  className="w-full"
-                  onClick={handlePlaceOrder}
-                  disabled={checkingOut}
-                >
-                  {checkingOut ? <Loader2 className="w-4 h-4 animate-spin" /> : `Pay $${total.toFixed(2)}`}
-                </Button>
               </div>
             </motion.div>
           </div>
