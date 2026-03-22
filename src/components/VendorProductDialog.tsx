@@ -521,12 +521,17 @@ export const VendorProductDialog = ({ product, open, onOpenChange }: Props) => {
             ) : (
               <div className="space-y-2 max-h-[50vh] overflow-y-auto">
                 {stylists.map(stylist => (
-                  <button
+                  <div
                     key={stylist.id}
-                    onClick={() => handleSelectStylist(stylist)}
-                    className="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:border-primary/50 hover:bg-primary/5 transition-all text-left"
+                    className="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:border-primary/30 transition-all"
                   >
-                    <div className="w-12 h-12 rounded-full bg-muted overflow-hidden flex-shrink-0">
+                    <Link
+                      to={`/stylist/${stylist.id}`}
+                      target="_blank"
+                      onClick={(e) => e.stopPropagation()}
+                      className="w-12 h-12 rounded-full bg-muted overflow-hidden flex-shrink-0 ring-2 ring-primary/20 hover:ring-primary/60 transition-all relative group"
+                      title={`View ${stylist.full_name}'s profile`}
+                    >
                       {stylist.avatar_url ? (
                         <img src={stylist.avatar_url} alt={stylist.full_name} className="w-full h-full object-cover" />
                       ) : (
@@ -534,19 +539,27 @@ export const VendorProductDialog = ({ product, open, onOpenChange }: Props) => {
                           {stylist.full_name[0]}
                         </div>
                       )}
-                    </div>
-                    <div className="flex-1 min-w-0">
+                      <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity rounded-full flex items-center justify-center">
+                        <ExternalLink className="w-3.5 h-3.5 text-white" />
+                      </div>
+                    </Link>
+                    <button
+                      onClick={() => handleSelectStylist(stylist)}
+                      className="flex-1 min-w-0 text-left"
+                    >
                       <p className="font-body font-semibold text-foreground text-sm">{stylist.full_name}</p>
                       <p className="text-xs text-muted-foreground font-body">{stylist.service_category} • {stylist.city || "Mobile"}</p>
-                    </div>
+                    </button>
                     {stylist.avgRating > 0 && (
                       <div className="flex items-center gap-1 text-xs font-body">
                         <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
                         {stylist.avgRating.toFixed(1)}
                       </div>
                     )}
-                    <ArrowRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                  </button>
+                    <Button variant="ghost" size="sm" onClick={() => handleSelectStylist(stylist)}>
+                      Select <ArrowRight className="w-3 h-3 ml-1" />
+                    </Button>
+                  </div>
                 ))}
               </div>
             )}
