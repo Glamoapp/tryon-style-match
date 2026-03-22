@@ -794,7 +794,7 @@ export const VendorProductDialog = ({ product, open, onOpenChange }: Props) => {
                 disabled={!name.trim() || !email.trim() || !phone.trim() || !address.trim() || submitting}
                 onClick={handleSubmitBooking}
               >
-                {submitting ? <><Loader2 className="w-4 h-4 animate-spin" /> Adding...</> : <><CheckCircle className="w-4 h-4 mr-1" /> Add Both to Cart</>}
+                {submitting ? <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</> : <><CheckCircle className="w-4 h-4 mr-1" /> Checkout & Pay</>}
               </Button>
             </div>
           </div>
