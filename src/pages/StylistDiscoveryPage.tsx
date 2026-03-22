@@ -457,6 +457,7 @@ const StylistDiscoveryPage = () => {
   const navigate = useNavigate();
   const initialService = searchParams.get("service") || "All";
   const { providers, loading } = useProviders();
+  const { isFavorite, toggleFavorite } = useFavorites();
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState(initialService);
   const [selectedStylist, setSelectedStylist] = useState<string | null>(null);
