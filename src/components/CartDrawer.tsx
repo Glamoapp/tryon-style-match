@@ -71,12 +71,20 @@ export const CartDrawer = () => {
     setShowCrossSell(false);
 
     try {
-      const products = items.map(item => ({
-        title: item.product.node.title,
-        price: item.price.amount,
-        quantity: item.quantity,
-        imageUrl: item.product.node.images?.edges?.[0]?.node?.url || null,
-      }));
+      const products = [
+        ...items.map(item => ({
+          title: item.product.node.title,
+          price: item.price.amount,
+          quantity: item.quantity,
+          imageUrl: item.product.node.images?.edges?.[0]?.node?.url || null,
+        })),
+        ...vendorItems.map(item => ({
+          title: item.title,
+          price: String(item.price),
+          quantity: item.quantity,
+          imageUrl: item.image || null,
+        })),
+      ];
 
       const services = serviceItems.map(svc => ({
         serviceName: svc.serviceName,
