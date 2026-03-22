@@ -74,6 +74,7 @@ const CustomerDashboard = () => {
   const [bookings, setBookings] = useState<BookingWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedBooking, setSelectedBooking] = useState<string | null>(null);
+  const [reviewedProviders, setReviewedProviders] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const checkAuth = async () => {
