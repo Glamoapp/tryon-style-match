@@ -760,6 +760,63 @@ export type Database = {
           },
         ]
       }
+      vendor_product_variants: {
+        Row: {
+          color: string | null
+          compare_at_price: number | null
+          created_at: string
+          id: string
+          inventory_count: number
+          is_active: boolean
+          length: string | null
+          price: number
+          product_id: string
+          size: string | null
+          vendor_id: string
+        }
+        Insert: {
+          color?: string | null
+          compare_at_price?: number | null
+          created_at?: string
+          id?: string
+          inventory_count?: number
+          is_active?: boolean
+          length?: string | null
+          price: number
+          product_id: string
+          size?: string | null
+          vendor_id: string
+        }
+        Update: {
+          color?: string | null
+          compare_at_price?: number | null
+          created_at?: string
+          id?: string
+          inventory_count?: number
+          is_active?: boolean
+          length?: string | null
+          price?: number
+          product_id?: string
+          size?: string | null
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendor_product_variants_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendor_product_variants_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vendor_products: {
         Row: {
           category: string | null
