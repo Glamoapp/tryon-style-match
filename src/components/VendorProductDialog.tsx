@@ -345,7 +345,11 @@ export const VendorProductDialog = ({ product, open, onOpenChange }: Props) => {
 
     if (bookingError || !createdBooking) {
       console.error("Booking insert error:", bookingError);
-      toast.error("Couldn't create your booking. Please try again.");
+      if (bookingError?.code === "23505") {
+        toast.error("That time slot is already booked. Please choose a different time.");
+      } else {
+        toast.error("Couldn't create your booking. Please try again.");
+      }
       setSubmitting(false);
       return;
     }
