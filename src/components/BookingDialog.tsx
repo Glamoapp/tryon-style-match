@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
-import { CalendarIcon, Clock, ChevronRight, User, Mail, Phone, MapPin, Loader2, ShoppingBag, Package, Scissors, ArrowRight } from "lucide-react";
+import { CalendarIcon, Clock, ChevronRight, User, Mail, Phone, MapPin, Loader2, ShoppingBag, Package, Scissors, ArrowRight, Plus, Check, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { useCartStore, type ServiceCartItem } from "@/stores/cartStore";
+import { useCartStore, type ServiceCartItem, type VendorCartItem } from "@/stores/cartStore";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import {
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { storefrontApiRequest, STOREFRONT_PRODUCTS_QUERY, type ShopifyProduct } from "@/lib/shopify";
 
 const ALL_TIME_SLOTS = [
   "9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM",
@@ -75,9 +76,21 @@ const getProductQueryForService = (serviceName: string): string => {
   return "extensions";
 };
 
+type VendorProduct = {
+  id: string;
+  title: string;
+  description: string | null;
+  price: number;
+  image_urls: string[];
+  vendor_id: string;
+  vendor?: { full_name: string };
+};
+
 const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistPhone, providerId, serviceId, providerAvatarUrl }: BookingDialogProps) => {
   const navigate = useNavigate();
   const addServiceItem = useCartStore((s) => s.addServiceItem);
+  const addItem = useCartStore((s) => s.addItem);
+  const addVendorItem = useCartStore((s) => s.addVendorItem);
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [date, setDate] = useState<Date>();
   const [time, setTime] = useState<string>();
@@ -91,6 +104,12 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
 
+  // Step 3 — inline products
+  const [productsLoading, setProductsLoading] = useState(false);
+  const [shopifyProducts, setShopifyProducts] = useState<ShopifyProduct[]>([]);
+  const [vendorProducts, setVendorProducts] = useState<VendorProduct[]>([]);
+  const [addedProductIds, setAddedProductIds] = useState<Set<string>>(new Set());
+
   const resetForm = () => {
     setStep(1);
     setDate(undefined);
@@ -101,7 +120,42 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
     setAddress("");
     setLoading(false);
     setBookingId(null);
+    setShopifyProducts([]);
+    setVendorProducts([]);
+    setAddedProductIds(new Set());
   };
+
+  // Fetch products when step 3 is reached
+  useEffect(() => {
+    if (step !== 3) return;
+    const query = getProductQueryForService(styleName || "");
+    setProductsLoading(true);
+
+    Promise.all([
+      storefrontApiRequest(STOREFRONT_PRODUCTS_QUERY, { first: 20, query }).then((data) => {
+        const all = data?.data?.products?.edges || [];
+        // Filter by query keyword
+        const filtered = all.filter((p: ShopifyProduct) =>
+          `${p.node.title} ${p.node.description}`.toLowerCase().includes(query)
+        );
+        setShopifyProducts(filtered.length > 0 ? filtered.slice(0, 6) : all.slice(0, 6));
+      }).catch(() => {}),
+      supabase
+        .from("vendor_products")
+        .select("*, vendor:profiles!vendor_products_vendor_id_fkey(full_name)")
+        .eq("is_active", true)
+        .order("created_at", { ascending: false })
+        .limit(6)
+        .then(({ data }) => {
+          if (data) {
+            const filtered = data.filter((p: any) =>
+              `${p.title} ${p.description || ""} ${p.category || ""}`.toLowerCase().includes(query)
+            );
+            setVendorProducts(filtered.length > 0 ? filtered.slice(0, 4) : data.slice(0, 4));
+          }
+        }).catch(() => {}),
+    ]).finally(() => setProductsLoading(false));
+  }, [step, styleName]);
 
   const handleNext = async () => {
     if (!date || !time || !name || !email || !phone || !address) return;
@@ -238,31 +292,55 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
     setStep(3); // Go to upsell step
   };
 
-  const handleSkipToCheckout = () => {
+  const handleGoToCheckout = () => {
     setOpen(false);
     resetForm();
     navigate("/checkout", {
-      state: {
-        fromCart: true,
-      },
+      state: { fromCart: true },
     });
   };
 
-  const handleShopProducts = () => {
-    setOpen(false);
-    resetForm();
-    const query = getProductQueryForService(styleName || "");
-    navigate(`/extensions?q=${encodeURIComponent(query)}`);
+  const handleAddShopifyProduct = async (product: ShopifyProduct) => {
+    const variant = product.node.variants.edges[0]?.node;
+    if (!variant) return;
+    await addItem({
+      product,
+      variantId: variant.id,
+      variantTitle: variant.title,
+      price: variant.price,
+      quantity: 1,
+      selectedOptions: variant.selectedOptions || [],
+    });
+    setAddedProductIds((prev) => new Set(prev).add(product.node.id));
+    toast.success(`${product.node.title} added!`, { position: "top-center" });
+  };
+
+  const handleAddVendorProduct = (product: VendorProduct) => {
+    const item: VendorCartItem = {
+      id: product.id,
+      type: 'vendor_product',
+      productId: product.id,
+      title: product.title,
+      price: product.price,
+      quantity: 1,
+      image: product.image_urls?.[0],
+      vendor: product.vendor?.full_name,
+    };
+    addVendorItem(item);
+    setAddedProductIds((prev) => new Set(prev).add(product.id));
+    toast.success(`${product.title} added!`, { position: "top-center" });
   };
 
   const totalSteps = 3;
   const canProceedStep1 = date && time;
   const canProceedStep2 = canProceedStep1 && name.trim() && email.trim() && phone.trim() && address.trim();
 
+  const totalAddedProducts = addedProductIds.size;
+
   return (
     <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) resetForm(); }}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="sm:max-w-md bg-card border-border max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-lg bg-card border-border max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-display text-2xl text-foreground">
             {step === 1 && "Select Date & Time"}
@@ -385,40 +463,127 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
 
           {step === 3 && (
             <div className="space-y-4">
-              <div className="bg-primary/5 rounded-2xl p-5 text-center space-y-3">
-                <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-                  <Scissors className="w-7 h-7 text-primary" />
+              {/* Booking confirmed banner */}
+              <div className="bg-primary/5 rounded-2xl p-4 text-center space-y-2">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+                  <Scissors className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-display font-bold text-foreground text-lg">Booking Confirmed!</h3>
-                  <p className="text-sm text-muted-foreground font-body mt-1">
-                    <span className="text-primary font-semibold">{styleName}</span> with <span className="font-semibold">{stylistName}</span>
+                  <h3 className="font-display font-bold text-foreground text-base">Booking Confirmed!</h3>
+                  <p className="text-xs text-muted-foreground font-body mt-0.5">
+                    <span className="text-primary font-semibold">{styleName}</span> with <span className="font-semibold">{stylistName}</span> — ${servicePrice?.toFixed(2)}
                   </p>
                 </div>
               </div>
 
-              <p className="text-center text-sm text-muted-foreground font-body">
-                Would you like to purchase hair extensions for your{" "}
-                <span className="font-semibold text-foreground">{styleName?.toLowerCase()}</span> service?
+              <p className="text-sm text-muted-foreground font-body text-center">
+                Add hair products for your appointment — everything ships together.
               </p>
 
-              <div className="grid gap-3">
+              {/* Inline product grid */}
+              {productsLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                </div>
+              ) : (shopifyProducts.length === 0 && vendorProducts.length === 0) ? (
+                <div className="text-center py-6">
+                  <Package className="w-10 h-10 text-muted-foreground mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground font-body">No matching products found</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-3 max-h-[40vh] overflow-y-auto pr-1">
+                  {/* Shopify products */}
+                  {shopifyProducts.map((product) => {
+                    const variant = product.node.variants.edges[0]?.node;
+                    const imgUrl = product.node.images?.edges?.[0]?.node?.url;
+                    const isAdded = addedProductIds.has(product.node.id);
+                    return (
+                      <div key={product.node.id} className="bg-secondary/50 rounded-xl overflow-hidden border border-border">
+                        {imgUrl && (
+                          <div className="aspect-square bg-muted">
+                            <img src={imgUrl} alt={product.node.title} className="w-full h-full object-cover" />
+                          </div>
+                        )}
+                        <div className="p-2.5 space-y-1.5">
+                          <h4 className="text-xs font-semibold text-foreground font-body line-clamp-2 leading-tight">{product.node.title}</h4>
+                          <p className="text-xs font-bold text-primary font-body">
+                            ${parseFloat(variant?.price.amount || "0").toFixed(2)}
+                          </p>
+                          <Button
+                            size="sm"
+                            variant={isAdded ? "outline" : "hero"}
+                            className="w-full h-7 text-xs"
+                            disabled={isAdded}
+                            onClick={() => handleAddShopifyProduct(product)}
+                          >
+                            {isAdded ? (
+                              <><Check className="w-3 h-3 mr-1" /> Added</>
+                            ) : (
+                              <><Plus className="w-3 h-3 mr-1" /> Add</>
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                  {/* Vendor products */}
+                  {vendorProducts.map((product) => {
+                    const imgUrl = product.image_urls?.[0];
+                    const isAdded = addedProductIds.has(product.id);
+                    return (
+                      <div key={product.id} className="bg-secondary/50 rounded-xl overflow-hidden border border-border">
+                        {imgUrl && (
+                          <div className="aspect-square bg-muted">
+                            <img src={imgUrl} alt={product.title} className="w-full h-full object-cover" />
+                          </div>
+                        )}
+                        <div className="p-2.5 space-y-1.5">
+                          <h4 className="text-xs font-semibold text-foreground font-body line-clamp-2 leading-tight">{product.title}</h4>
+                          <p className="text-xs font-bold text-primary font-body">${product.price.toFixed(2)}</p>
+                          <Button
+                            size="sm"
+                            variant={isAdded ? "outline" : "hero"}
+                            className="w-full h-7 text-xs"
+                            disabled={isAdded}
+                            onClick={() => handleAddVendorProduct(product)}
+                          >
+                            {isAdded ? (
+                              <><Check className="w-3 h-3 mr-1" /> Added</>
+                            ) : (
+                              <><Plus className="w-3 h-3 mr-1" /> Add</>
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Checkout button */}
+              <div className="grid gap-2 pt-2">
                 <Button
                   variant="hero"
                   className="w-full"
-                  onClick={handleShopProducts}
+                  onClick={handleGoToCheckout}
                 >
-                  <Package className="w-4 h-4 mr-2" />
-                  Shop {getProductQueryForService(styleName || "").charAt(0).toUpperCase() + getProductQueryForService(styleName || "").slice(1)} Products
+                  <ShoppingCart className="w-4 h-4 mr-2" />
+                  {totalAddedProducts > 0
+                    ? `Checkout — Service + ${totalAddedProducts} Product${totalAddedProducts > 1 ? "s" : ""}`
+                    : "Go to Checkout"}
                 </Button>
 
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={handleSkipToCheckout}
-                >
-                  No Thanks — Go to Checkout <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
+                {totalAddedProducts === 0 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-muted-foreground"
+                    onClick={handleGoToCheckout}
+                  >
+                    Skip — Just the service <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                  </Button>
+                )}
               </div>
             </div>
           )}
