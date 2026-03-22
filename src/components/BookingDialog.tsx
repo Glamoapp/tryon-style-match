@@ -381,7 +381,12 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
                   mode="single"
                   selected={date}
                   onSelect={setDate}
-                  disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0))}
+                  disabled={(d) => {
+                    const today = new Date(new Date().setHours(0, 0, 0, 0));
+                    const maxDate = new Date(today);
+                    maxDate.setMonth(maxDate.getMonth() + 6);
+                    return d < today || d > maxDate;
+                  }}
                   className="rounded-xl border border-border pointer-events-auto mx-auto"
                 />
               </div>
