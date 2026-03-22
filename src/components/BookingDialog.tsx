@@ -17,10 +17,27 @@ import {
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
-const timeSlots = [
+const ALL_TIME_SLOTS = [
   "9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM",
   "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM", "5:00 PM",
 ];
+
+const getAvailableSlots = (selectedDate: Date | undefined) => {
+  if (!selectedDate) return ALL_TIME_SLOTS;
+  const now = new Date();
+  const isToday = selectedDate.toDateString() === now.toDateString();
+  if (!isToday) return ALL_TIME_SLOTS;
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+  return ALL_TIME_SLOTS.filter((slot) => {
+    const [time, period] = slot.split(" ");
+    const [rawHour, minute] = time.split(":").map(Number);
+    let hour = rawHour;
+    if (period === "PM" && hour !== 12) hour += 12;
+    if (period === "AM" && hour === 12) hour = 0;
+    return hour > currentHour || (hour === currentHour && minute > currentMinute);
+  });
+};
 
 interface BookingDialogProps {
   trigger: React.ReactNode;
@@ -266,7 +283,7 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
                   <Clock className="w-4 h-4 text-primary" /> Select Time
                 </label>
                 <div className="grid grid-cols-3 gap-2">
-                  {timeSlots.map((slot) => (
+                  {getAvailableSlots(date).map((slot) => (
                     <button
                       key={slot}
                       onClick={() => setTime(slot)}
