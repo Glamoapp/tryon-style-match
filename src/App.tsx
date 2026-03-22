@@ -27,6 +27,9 @@ import CustomerDashboard from "./pages/CustomerDashboard.tsx";
 import GlowUpMondayPage from "./pages/GlowUpMondayPage.tsx";
 import HandbookPage from "./pages/HandbookPage.tsx";
 import TermsPage from "./pages/TermsPage.tsx";
+import VendorSignup from "./pages/VendorSignup.tsx";
+import VendorLogin from "./pages/VendorLogin.tsx";
+import VendorDashboard from "./pages/VendorDashboard.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
