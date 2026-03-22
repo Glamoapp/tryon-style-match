@@ -107,10 +107,10 @@ const CheckoutPage = () => {
         body: {
           products: [
             {
-              title: item.product.node.title,
-              price: item.price.amount,
-              quantity: item.quantity,
-              imageUrl: image?.url || null,
+              title: productTitle,
+              price: String(unitPrice),
+              quantity: quantity,
+              imageUrl: imageUrl || null,
             },
             ...(deliveryFee > 0
               ? [{ title: "Express Delivery (20 min)", price: String(expressFee), quantity: 1, imageUrl: null }]
