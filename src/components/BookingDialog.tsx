@@ -160,34 +160,18 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
   const handleNext = async () => {
     if (!date || !time || !name || !email || !phone || !address) return;
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      // Store booking details and proceed to checkout without blocking
-      // The checkout page will handle authentication if needed
-      const bookingDate = date ? format(date, "yyyy-MM-dd") : "";
-      const bookingTime = time ? toDbTime(time) : "";
-      
-      // Save form data to sessionStorage so it persists through auth
-      sessionStorage.setItem("pendingBooking", JSON.stringify({
-        name, email, phone, address, date: date?.toISOString(), time,
-        providerId, serviceId, styleName, stylistName, servicePrice, stylistPhone
-      }));
-      
-      toast.info("Create an account or sign in to confirm your booking", {
-        description: "Your booking details have been saved"
-      });
-      navigate(`/auth?redirect=${encodeURIComponent(window.location.pathname)}`);
-      return;
-    }
-
     setLoading(true);
+
+    const bookingDate = format(date, "yyyy-MM-dd");
+    const bookingTime = toDbTime(time);
+
+    // Check if user is logged in
+    const { data: { user } } = await supabase.auth.getUser();
 
     let createdId = `BK-${Date.now().toString(36).toUpperCase()}`;
 
-    if (providerId && serviceId) {
-      const bookingDate = format(date, "yyyy-MM-dd");
-      const bookingTime = toDbTime(time);
-
+    if (user && providerId && serviceId) {
+      // Logged-in flow: create booking directly
       const { data: existing } = await supabase
         .from("bookings")
         .select("id")
@@ -237,7 +221,7 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
         body: { booking_id: createdId },
       }).catch((err) => console.error("Booking notification failed:", err));
 
-      // Check if this is the customer's first booking — send welcome email
+      // Check if first booking for welcome email
       (async () => {
         try {
           const { data: allBookings } = await supabase
@@ -265,6 +249,31 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
           console.error("First booking welcome email failed:", err);
         }
       })();
+    } else if (!user && providerId && serviceId) {
+      // Guest flow: auto-create account + booking via edge function
+      const { data, error } = await supabase.functions.invoke("create-guest-booking", {
+        body: {
+          name, email, phone, address,
+          bookingDate,
+          bookingTime,
+          providerId,
+          serviceId,
+          servicePrice: servicePrice ?? 0,
+        },
+      });
+
+      if (error || !data?.bookingId) {
+        if (data?.error === "slot_taken") {
+          toast.error("This time slot is already booked. Please choose a different time.");
+          setStep(1);
+        } else {
+          toast.error("Couldn't create your booking. Please try again.");
+        }
+        setLoading(false);
+        return;
+      }
+
+      createdId = data.bookingId;
     }
 
     // Add to unified cart
