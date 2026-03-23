@@ -28,7 +28,7 @@ const CustomerAuth = () => {
     try {
       if (mode === "signup") {
         if (!fullName.trim()) { toast.error("Please enter your name"); setLoading(false); return; }
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -37,6 +37,19 @@ const CustomerAuth = () => {
           },
         });
         if (error) throw error;
+
+        // Send welcome email (fire-and-forget)
+        if (data?.user) {
+          supabase.functions.invoke("send-transactional-email", {
+            body: {
+              templateName: "signup-welcome",
+              recipientEmail: email,
+              idempotencyKey: `signup-welcome-${data.user.id}`,
+              templateData: { name: fullName },
+            },
+          }).catch((err) => console.error("Welcome email failed:", err));
+        }
+
         toast.success("Account created! Please check your email to verify.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
