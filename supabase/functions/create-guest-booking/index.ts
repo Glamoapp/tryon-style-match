@@ -53,9 +53,13 @@ Deno.serve(async (req) => {
     }
 
     // Try to find existing user by email
-    const { data: { users } } = await supabaseAdmin.auth.admin.listUsers();
+    const { data: { users } } = await supabaseAdmin.auth.admin.listUsers({
+      filter: `email.eq.${email}`,
+      page: 1,
+      perPage: 1,
+    });
     let userId: string | null = null;
-    const existingUser = users?.find((u) => u.email === email);
+    const existingUser = users?.[0];
 
     if (existingUser) {
       userId = existingUser.id;
