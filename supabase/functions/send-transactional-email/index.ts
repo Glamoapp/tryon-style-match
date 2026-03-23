@@ -4,9 +4,9 @@ import { createClient } from 'npm:@supabase/supabase-js@2'
 import { TEMPLATES } from '../_shared/transactional-email-templates/registry.ts'
 
 // Configuration baked in at scaffold time
-const SITE_NAME = "tryon-style-match"
-const SENDER_DOMAIN = "notify.notify.nextlookbeauty.com"
-const FROM_DOMAIN = "notify.notify.nextlookbeauty.com"
+const SITE_NAME = "NextLook Beauty"
+const SENDER_DOMAIN = "notify.nextlookbeauty.com"
+const FROM_DOMAIN = "notify.nextlookbeauty.com"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
