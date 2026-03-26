@@ -4,7 +4,7 @@ import { Play, Pause, Volume2, VolumeX, ChevronDown, Sparkles, MapPin, Calendar,
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
+import Footer from "@/components/Footer";
 
 import scene1 from "@/assets/videos/scene1-future.mp4.asset.json";
 import scene2 from "@/assets/videos/scene2-delivery.mp4.asset.json";

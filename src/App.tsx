@@ -32,6 +32,7 @@ import VendorLogin from "./pages/VendorLogin.tsx";
 import VendorDashboard from "./pages/VendorDashboard.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import UnsubscribePage from "./pages/UnsubscribePage.tsx";
+import AboutPage from "./pages/AboutPage.tsx";
 
 const queryClient = new QueryClient();
 
