@@ -22,8 +22,10 @@ const Footer = () => {
               links: ["Weave Installations", "Braids", "K-Tips", "Wigs", "Makeup", "Barber"],
             },
             {
-              title: "Company",
-              links: ["About Us", "Careers", "Blog", "Press"],
+              links: [
+                { label: "About Us", href: "/about" },
+                "Careers", "Blog", "Press"
+              ],
             },
             {
               title: "Support",
