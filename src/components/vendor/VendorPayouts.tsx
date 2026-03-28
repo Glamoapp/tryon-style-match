@@ -16,7 +16,7 @@ export const VendorPayouts = ({ vendorId }: { vendorId: string }) => {
   const checkStatus = async () => {
     try {
       const { data, error } = await supabase.functions.invoke("stripe-connect-status", {
-        body: { account_id: vendorId },
+        body: { provider_id: vendorId },
       });
       if (error) throw error;
       setConnectStatus(data?.status || "not_started");
@@ -31,7 +31,7 @@ export const VendorPayouts = ({ vendorId }: { vendorId: string }) => {
     setOnboarding(true);
     try {
       const { data, error } = await supabase.functions.invoke("stripe-connect-onboard", {
-        body: { account_id: vendorId, return_url: window.location.href, refresh_url: window.location.href },
+        body: { provider_id: vendorId, return_url: window.location.href, refresh_url: window.location.href },
       });
       if (error) throw error;
       if (data?.url) window.open(data.url, "_blank");
@@ -45,7 +45,7 @@ export const VendorPayouts = ({ vendorId }: { vendorId: string }) => {
   const openDashboard = async () => {
     try {
       const { data, error } = await supabase.functions.invoke("stripe-connect-dashboard", {
-        body: { account_id: vendorId },
+        body: { provider_id: vendorId },
       });
       if (error) throw error;
       if (data?.url) window.open(data.url, "_blank");
