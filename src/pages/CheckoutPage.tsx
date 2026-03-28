@@ -202,6 +202,11 @@ const CheckoutPage = () => {
       toast.error("Please fill in your name and email");
       return;
     }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
     if (hasPhysicalProducts && (!address.trim() || !city.trim() || !state.trim() || !zip.trim())) {
       toast.error("Please fill in your delivery address");
       return;
