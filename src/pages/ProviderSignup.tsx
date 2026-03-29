@@ -3,33 +3,19 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Scissors, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-
-const SERVICE_CATEGORIES = [
-  "Hair Styling",
-  "Braids & Locs",
-  "Wigs & Extensions",
-  "Makeup",
-  "Nails",
-  "Skincare & Facials",
-  "Barbering",
-];
 
 const ProviderSignup = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({
-    fullName: "",
     email: "",
     phone: "",
     password: "",
-    city: "",
-    serviceCategories: [] as string[],
   });
 
   const handleChange = (field: string, value: string) => {
@@ -38,12 +24,17 @@ const ProviderSignup = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.fullName || !form.email || !form.password || !form.city || form.serviceCategories.length === 0) {
-      toast.error("Please fill in all required fields and select at least one category");
+    if (!form.email || !form.password) {
+      toast.error("Please fill in email and password");
       return;
     }
     if (form.password.length < 6) {
       toast.error("Password must be at least 6 characters");
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email.trim())) {
+      toast.error("Please enter a valid email address");
       return;
     }
 
@@ -54,11 +45,9 @@ const ProviderSignup = () => {
         password: form.password,
         options: {
           data: {
-            full_name: form.fullName,
+            full_name: "",
             phone: form.phone,
-            city: form.city,
             role: "provider",
-            service_category: form.serviceCategories.join(", "),
           },
           emailRedirectTo: window.location.origin + "/provider/onboarding",
         },
@@ -77,7 +66,7 @@ const ProviderSignup = () => {
 
   return (
     <div className="min-h-screen bg-background flex">
-      {/* Left panel - branding */}
+      {/* Left panel */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-hero items-center justify-center p-12">
         <div className="max-w-md text-center">
           <Scissors className="w-16 h-16 text-primary mx-auto mb-6" />
@@ -87,10 +76,18 @@ const ProviderSignup = () => {
           <p className="text-primary-foreground/70 text-lg">
             Grow your beauty business. Set your schedule, list your services, and connect with clients in your area.
           </p>
+          <div className="mt-8 space-y-3 text-left">
+            {["Create your account", "Build your profile & storefront", "Set your schedule", "Submit for approval & start booking"].map((step, i) => (
+              <div key={i} className="flex items-center gap-3 text-primary-foreground/80">
+                <div className="w-7 h-7 rounded-full bg-primary-foreground/20 flex items-center justify-center text-xs font-bold">{i + 1}</div>
+                <span className="text-sm">{step}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Right panel - form */}
+      {/* Right panel */}
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-md">
           <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 transition-colors">
@@ -104,16 +101,11 @@ const ProviderSignup = () => {
           </div>
 
           <div className="mb-8">
-            <h2 className="font-display text-3xl font-bold text-foreground mb-2">Create Provider Account</h2>
-            <p className="text-muted-foreground">Start accepting bookings from customers near you</p>
+            <h2 className="font-display text-3xl font-bold text-foreground mb-2">Create Your Account</h2>
+            <p className="text-muted-foreground">Step 1 of the onboarding process — let's get started</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="fullName">Full Name *</Label>
-              <Input id="fullName" placeholder="Your full name" value={form.fullName} onChange={(e) => handleChange("fullName", e.target.value)} />
-            </div>
-
             <div>
               <Label htmlFor="email">Email *</Label>
               <Input id="email" type="email" placeholder="you@example.com" value={form.email} onChange={(e) => handleChange("email", e.target.value)} />
@@ -131,35 +123,6 @@ const ProviderSignup = () => {
                 <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowPassword(!showPassword)}>
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="city">City *</Label>
-              <Input id="city" placeholder="Your city" value={form.city} onChange={(e) => handleChange("city", e.target.value)} />
-            </div>
-
-            <div>
-              <Label>Service Categories * <span className="text-muted-foreground font-normal">(select all that apply)</span></Label>
-              <div className="grid grid-cols-2 gap-3 mt-2">
-                {SERVICE_CATEGORIES.map((cat) => (
-                  <label key={cat} className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
-                    form.serviceCategories.includes(cat) ? "border-primary/50 bg-primary/5" : "border-border bg-card hover:border-primary/30"
-                  }`}>
-                    <Checkbox
-                      checked={form.serviceCategories.includes(cat)}
-                      onCheckedChange={(checked) => {
-                        setForm((prev) => ({
-                          ...prev,
-                          serviceCategories: checked
-                            ? [...prev.serviceCategories, cat]
-                            : prev.serviceCategories.filter((c) => c !== cat),
-                        }));
-                      }}
-                    />
-                    <span className="text-sm font-medium">{cat}</span>
-                  </label>
-                ))}
               </div>
             </div>
 
