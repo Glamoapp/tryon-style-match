@@ -164,7 +164,7 @@ const ProviderOnboarding = () => {
   }, [step, latitude, longitude]);
 
   const useCurrentLocation = () => {
-    if (!navigator.geolocation) { toast.error("Geolocation not supported"); return; }
+    if (!navigator.geolocation) { toast.error("Geolocation not supported. Please type your address instead."); return; }
     setLocatingGps(true);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
@@ -174,8 +174,28 @@ const ProviderOnboarding = () => {
         setLocatingGps(false);
         toast.success("Location detected!");
       },
-      () => { setLocatingGps(false); toast.error("Could not get location."); },
-      { enableHighAccuracy: true, timeout: 10000 }
+      async (err) => {
+        setLocatingGps(false);
+        // Try IP-based fallback
+        try {
+          const ipRes = await fetch("https://ipapi.co/json/");
+          if (ipRes.ok) {
+            const ipData = await ipRes.json();
+            if (ipData.latitude && ipData.longitude) {
+              setLatitude(ipData.latitude);
+              setLongitude(ipData.longitude);
+              setLocationAddress(ipData.city ? `${ipData.city}, ${ipData.region}` : "Approximate location");
+              toast.success("Approximate location detected. You can refine it by typing your address.");
+              return;
+            }
+          }
+        } catch {}
+        const msg = err.code === 1
+          ? "Location permission denied. Please type your address below instead."
+          : "Could not detect location. Please type your address below instead.";
+        toast.error(msg);
+      },
+      { enableHighAccuracy: false, timeout: 15000, maximumAge: 300000 }
     );
   };
 
