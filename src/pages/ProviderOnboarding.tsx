@@ -84,6 +84,7 @@ const ProviderOnboarding = () => {
   });
 
   // Step 4: Schedule
+  const [is247, setIs247] = useState(false);
   const [schedule, setSchedule] = useState<ScheduleDay[]>(
     DAYS.map((_, i) => ({
       dayOfWeek: i,
