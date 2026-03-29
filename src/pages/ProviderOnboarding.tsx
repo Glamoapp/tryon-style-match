@@ -17,6 +17,16 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
+const TIME_OPTIONS = Array.from({ length: 48 }, (_, i) => {
+  const h = Math.floor(i / 2);
+  const m = i % 2 === 0 ? "00" : "30";
+  const value = `${String(h).padStart(2, "0")}:${m}`;
+  const period = h < 12 ? "AM" : "PM";
+  const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+  const label = `${h12}:${m} ${period}`;
+  return { value, label };
+});
+
 const PREDEFINED_SERVICES = [
   "Hair Styling",
   "Braids & Locs",
