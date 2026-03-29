@@ -408,10 +408,10 @@ const ProviderOnboarding = () => {
   const goBack = () => { if (step > 1 && step <= 5) setStep(step - 1); };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       {/* Header */}
       <div className="border-b border-border bg-card/50 sticky top-0 z-10 backdrop-blur-sm">
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="container mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Scissors className="w-6 h-6 text-primary" />
             <span className="font-display text-xl font-bold">NEXTLOOK</span>
