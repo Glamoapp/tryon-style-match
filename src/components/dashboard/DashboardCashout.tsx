@@ -99,8 +99,10 @@ export const DashboardCashout = ({ userId }: { userId: string }) => {
         },
       });
 
+      console.log("Stripe onboard response:", { data, error });
+
       if (error) {
-        throw new Error(error.message);
+        throw new Error(typeof error === "object" && "message" in error ? (error as any).message : "Failed to start Stripe setup");
       }
 
       if (data?.code === "platform_profile_incomplete" || data?.blocked) {
