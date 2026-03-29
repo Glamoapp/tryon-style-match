@@ -51,7 +51,16 @@ export const DashboardCashout = ({ userId }: { userId: string }) => {
         body: { provider_id: userId },
       });
 
+      console.log("Stripe status response:", { data, error });
+
       if (error || !data) {
+        console.warn("Stripe status check failed:", error);
+        setStatus("not_connected");
+        return;
+      }
+
+      if (data.error) {
+        console.warn("Stripe status error:", data.error);
         setStatus("not_connected");
         return;
       }
@@ -62,7 +71,8 @@ export const DashboardCashout = ({ userId }: { userId: string }) => {
       }
 
       setStatus(data.status || "not_connected");
-    } catch {
+    } catch (err) {
+      console.error("Stripe status exception:", err);
       setStatus("not_connected");
     }
   };
@@ -89,8 +99,10 @@ export const DashboardCashout = ({ userId }: { userId: string }) => {
         },
       });
 
+      console.log("Stripe onboard response:", { data, error });
+
       if (error) {
-        throw new Error(error.message);
+        throw new Error(typeof error === "object" && "message" in error ? (error as any).message : "Failed to start Stripe setup");
       }
 
       if (data?.code === "platform_profile_incomplete" || data?.blocked) {
@@ -123,8 +135,10 @@ export const DashboardCashout = ({ userId }: { userId: string }) => {
         body: { provider_id: userId },
       });
 
+      console.log("Stripe dashboard response:", { data, error });
+
       if (error) {
-        throw new Error(error.message);
+        throw new Error(typeof error === "object" && "message" in error ? (error as any).message : "Failed to open payout dashboard");
       }
 
       if (data?.code === "platform_profile_incomplete" || data?.blocked) {
