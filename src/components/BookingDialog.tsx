@@ -225,23 +225,26 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
             return;
           }
           createdId = data.bookingId;
-          // Skip the rest of the logged-in flow
           const serviceItem: ServiceCartItem = {
             type: "service" as const,
             id: createdId,
             serviceName: styleName || "Service",
-            stylistName: stylistName || "Stylist",
+            serviceId: serviceId || "",
+            providerId: providerId || "",
+            providerName: stylistName || "Stylist",
             price: servicePrice ?? 0,
             date: format(date, "PPP"),
             time,
-            providerId: providerId || "",
-            serviceId: serviceId || "",
+            customerName: name,
+            email,
+            phone,
+            address,
           };
           addServiceItem(serviceItem);
           localStorage.setItem("currentBooking", JSON.stringify({
             id: createdId, date: format(date, "PPP"), time,
-            stylist: stylistName || "Stylist", service: styleName || "Service",
-            price: servicePrice ?? 0, status: "pending",
+            stylistName: stylistName || "Stylist", styleName: styleName || "Service",
+            customerName: name, email, phone, address,
           }));
           setBookingId(createdId);
           setLoading(false);

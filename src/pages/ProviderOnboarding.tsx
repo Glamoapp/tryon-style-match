@@ -151,13 +151,13 @@ const ProviderOnboarding = () => {
         disableDefaultUI: true, zoomControl: true, gestureHandling: "cooperative",
       });
       miniMapRef.current = map;
-      const marker = new w.google.maps.marker.AdvancedMarkerElement({
-        map, position: { lat: latitude, lng: longitude }, gmpDraggable: true,
+      const marker = new w.google.maps.Marker({
+        map, position: { lat: latitude, lng: longitude }, draggable: true,
       });
       miniMarkerRef.current = marker;
       marker.addListener("dragend", () => {
-        const pos = marker.position;
-        if (pos) { setLatitude(pos.lat); setLongitude(pos.lng); }
+        const pos = marker.getPosition();
+        if (pos) { setLatitude(pos.lat()); setLongitude(pos.lng()); }
       });
     };
     initMiniMap();
