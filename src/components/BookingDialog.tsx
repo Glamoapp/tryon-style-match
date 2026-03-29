@@ -165,7 +165,8 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
     const bookingDate = format(date, "yyyy-MM-dd");
     const bookingTime = toDbTime(time);
 
-    // Check if user is logged in
+    // Refresh session to ensure valid token, then check if user is logged in
+    await supabase.auth.refreshSession();
     const { data: { user } } = await supabase.auth.getUser();
 
     let createdId = `BK-${Date.now().toString(36).toUpperCase()}`;
@@ -208,6 +209,45 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
         if ((bookingError as any)?.code === "23505") {
           toast.error("That time slot is already booked. Please choose a different time.");
           setStep(1);
+        } else if ((bookingError as any)?.code === "42501" || bookingError?.message?.includes("row-level security")) {
+          // RLS violation — session likely expired, fall through to guest flow
+          console.warn("RLS violation on booking insert, falling back to guest flow");
+          const { data, error } = await supabase.functions.invoke("create-guest-booking", {
+            body: {
+              name, email, phone, address,
+              bookingDate, bookingTime,
+              providerId, serviceId, servicePrice,
+            },
+          });
+          if (error || !data?.bookingId) {
+            toast.error("Couldn't create your booking. Please try again.");
+            setLoading(false);
+            return;
+          }
+          createdId = data.bookingId;
+          // Skip the rest of the logged-in flow
+          const serviceItem: ServiceCartItem = {
+            type: "service" as const,
+            id: createdId,
+            serviceName: styleName || "Service",
+            stylistName: stylistName || "Stylist",
+            price: servicePrice ?? 0,
+            date: format(date, "PPP"),
+            time,
+            providerId: providerId || "",
+            serviceId: serviceId || "",
+          };
+          addServiceItem(serviceItem);
+          localStorage.setItem("currentBooking", JSON.stringify({
+            id: createdId, date: format(date, "PPP"), time,
+            stylist: stylistName || "Stylist", service: styleName || "Service",
+            price: servicePrice ?? 0, status: "pending",
+          }));
+          setBookingId(createdId);
+          setLoading(false);
+          setStep(3);
+          toast.success("Appointment booked!");
+          return;
         } else {
           toast.error("Couldn't create your booking. Please try again.");
         }
