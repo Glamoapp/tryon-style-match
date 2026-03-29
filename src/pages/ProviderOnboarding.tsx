@@ -17,6 +17,16 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
+const TIME_OPTIONS = Array.from({ length: 48 }, (_, i) => {
+  const h = Math.floor(i / 2);
+  const m = i % 2 === 0 ? "00" : "30";
+  const value = `${String(h).padStart(2, "0")}:${m}`;
+  const period = h < 12 ? "AM" : "PM";
+  const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+  const label = `${h12}:${m} ${period}`;
+  return { value, label };
+});
+
 const PREDEFINED_SERVICES = [
   "Hair Styling",
   "Braids & Locs",
@@ -84,6 +94,7 @@ const ProviderOnboarding = () => {
   });
 
   // Step 4: Schedule
+  const [is247, setIs247] = useState(false);
   const [schedule, setSchedule] = useState<ScheduleDay[]>(
     DAYS.map((_, i) => ({
       dayOfWeek: i,
@@ -683,23 +694,53 @@ const ProviderOnboarding = () => {
               <h2 className="font-display text-2xl font-bold mb-1">Set Your Availability</h2>
               <p className="text-muted-foreground mb-6">Choose which days and hours you're available. You can update this anytime.</p>
 
-              <div className="space-y-3">
-                {DAYS.map((day, i) => (
-                  <div key={day} className={`flex flex-wrap items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg border transition-colors ${
-                    schedule[i].isAvailable ? "border-primary/30 bg-primary/5" : "border-border bg-card"
-                  }`}>
-                    <Switch checked={schedule[i].isAvailable} onCheckedChange={() => toggleDay(i)} />
-                    <span className="font-medium w-20 sm:w-24 text-sm">{day}</span>
-                    {schedule[i].isAvailable && (
-                      <div className="flex items-center gap-2 w-full sm:w-auto sm:ml-auto">
-                        <Input type="time" value={schedule[i].startTime} onChange={(e) => updateScheduleTime(i, "startTime", e.target.value)} className="w-full sm:w-32 text-sm" />
-                        <span className="text-muted-foreground text-xs shrink-0">to</span>
-                        <Input type="time" value={schedule[i].endTime} onChange={(e) => updateScheduleTime(i, "endTime", e.target.value)} className="w-full sm:w-32 text-sm" />
-                      </div>
-                    )}
-                  </div>
-                ))}
+              {/* 24/7 Toggle */}
+              <div className="flex items-center gap-3 p-4 rounded-lg border border-primary/30 bg-primary/5 mb-4">
+                <Switch checked={is247} onCheckedChange={(checked) => {
+                  setIs247(checked);
+                  if (checked) {
+                    setSchedule(DAYS.map((_, i) => ({ dayOfWeek: i, isAvailable: true, startTime: "00:00", endTime: "23:59" })));
+                  } else {
+                    setSchedule(DAYS.map((_, i) => ({ dayOfWeek: i, isAvailable: i >= 1 && i <= 5, startTime: "09:00", endTime: "17:00" })));
+                  }
+                }} />
+                <div>
+                  <span className="font-medium text-sm">Available 24/7</span>
+                  <p className="text-xs text-muted-foreground">Turn this on if you're available every day, all day</p>
+                </div>
               </div>
+
+              {!is247 && (
+                <div className="space-y-3">
+                  {DAYS.map((day, i) => (
+                    <div key={day} className={`flex flex-wrap items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg border transition-colors ${
+                      schedule[i].isAvailable ? "border-primary/30 bg-primary/5" : "border-border bg-card"
+                    }`}>
+                      <Switch checked={schedule[i].isAvailable} onCheckedChange={() => toggleDay(i)} />
+                      <span className="font-medium w-20 sm:w-24 text-sm">{day}</span>
+                      {schedule[i].isAvailable && (
+                        <div className="flex items-center gap-2 w-full sm:w-auto sm:ml-auto">
+                          <select
+                            value={schedule[i].startTime}
+                            onChange={(e) => updateScheduleTime(i, "startTime", e.target.value)}
+                            className="flex-1 sm:w-32 h-10 rounded-md border border-input bg-background px-3 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring"
+                          >
+                            {TIME_OPTIONS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+                          </select>
+                          <span className="text-muted-foreground text-xs shrink-0">to</span>
+                          <select
+                            value={schedule[i].endTime}
+                            onChange={(e) => updateScheduleTime(i, "endTime", e.target.value)}
+                            className="flex-1 sm:w-32 h-10 rounded-md border border-input bg-background px-3 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring"
+                          >
+                            {TIME_OPTIONS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+                          </select>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
 
               <div className="flex gap-3 mt-8">
                 <Button onClick={goBack} variant="outline" size="lg" className="flex-1 gap-2">
