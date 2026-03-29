@@ -235,7 +235,8 @@ const ProviderOnboarding = () => {
     if (!fullName.trim()) { toast.error("Please enter your full name"); return; }
     if (!city.trim()) { toast.error("Please enter your city"); return; }
     setLoading(true);
-      try {
+    await supabase.auth.refreshSession();
+    try {
         let avatarUrl = avatarPreview;
         if (avatarFile) {
           await supabase.auth.refreshSession();
