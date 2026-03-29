@@ -634,8 +634,29 @@ const ProviderOnboarding = () => {
                     <Input type="number" placeholder="120" min="1" value={currentService.price} onChange={(e) => setCurrentService((p) => ({ ...p, price: e.target.value }))} />
                   </div>
                   <div>
-                    <Label>Duration (min) *</Label>
-                    <Input type="number" placeholder="120" min="15" step="15" value={currentService.duration} onChange={(e) => setCurrentService((p) => ({ ...p, duration: e.target.value }))} />
+                    <Label>Duration *</Label>
+                    <div className="flex items-center gap-2">
+                      <Input type="number" placeholder="1" min="0" max="12" value={Math.floor(parseInt(currentService.duration || "0") / 60) || ""} onChange={(e) => {
+                        const hrs = parseInt(e.target.value || "0") * 60;
+                        const mins = parseInt(currentService.duration || "0") % 60;
+                        setCurrentService((p) => ({ ...p, duration: String(hrs + mins) }));
+                      }} className="w-20" />
+                      <span className="text-sm text-muted-foreground shrink-0">hrs</span>
+                      <select
+                        value={parseInt(currentService.duration || "0") % 60}
+                        onChange={(e) => {
+                          const hrs = Math.floor(parseInt(currentService.duration || "0") / 60) * 60;
+                          setCurrentService((p) => ({ ...p, duration: String(hrs + parseInt(e.target.value)) }));
+                        }}
+                        className="h-10 w-20 rounded-md border border-input bg-background px-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring"
+                      >
+                        <option value="0">0</option>
+                        <option value="15">15</option>
+                        <option value="30">30</option>
+                        <option value="45">45</option>
+                      </select>
+                      <span className="text-sm text-muted-foreground shrink-0">min</span>
+                    </div>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
