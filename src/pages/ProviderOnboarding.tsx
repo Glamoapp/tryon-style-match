@@ -408,10 +408,10 @@ const ProviderOnboarding = () => {
   const goBack = () => { if (step > 1 && step <= 5) setStep(step - 1); };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       {/* Header */}
       <div className="border-b border-border bg-card/50 sticky top-0 z-10 backdrop-blur-sm">
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="container mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Scissors className="w-6 h-6 text-primary" />
             <span className="font-display text-xl font-bold">NEXTLOOK</span>
@@ -685,16 +685,16 @@ const ProviderOnboarding = () => {
 
               <div className="space-y-3">
                 {DAYS.map((day, i) => (
-                  <div key={day} className={`flex items-center gap-4 p-4 rounded-lg border transition-colors ${
+                  <div key={day} className={`flex flex-wrap items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg border transition-colors ${
                     schedule[i].isAvailable ? "border-primary/30 bg-primary/5" : "border-border bg-card"
                   }`}>
                     <Switch checked={schedule[i].isAvailable} onCheckedChange={() => toggleDay(i)} />
-                    <span className="font-medium w-24 text-sm sm:text-base">{day}</span>
+                    <span className="font-medium w-20 sm:w-24 text-sm">{day}</span>
                     {schedule[i].isAvailable && (
-                      <div className="flex items-center gap-2 ml-auto">
-                        <Input type="time" value={schedule[i].startTime} onChange={(e) => updateScheduleTime(i, "startTime", e.target.value)} className="w-28 sm:w-32 text-sm" />
-                        <span className="text-muted-foreground text-xs">to</span>
-                        <Input type="time" value={schedule[i].endTime} onChange={(e) => updateScheduleTime(i, "endTime", e.target.value)} className="w-28 sm:w-32 text-sm" />
+                      <div className="flex items-center gap-2 w-full sm:w-auto sm:ml-auto">
+                        <Input type="time" value={schedule[i].startTime} onChange={(e) => updateScheduleTime(i, "startTime", e.target.value)} className="w-full sm:w-32 text-sm" />
+                        <span className="text-muted-foreground text-xs shrink-0">to</span>
+                        <Input type="time" value={schedule[i].endTime} onChange={(e) => updateScheduleTime(i, "endTime", e.target.value)} className="w-full sm:w-32 text-sm" />
                       </div>
                     )}
                   </div>
