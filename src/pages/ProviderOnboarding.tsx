@@ -143,7 +143,7 @@ const ProviderOnboarding = () => {
       }
       if (miniMapRef.current) {
         miniMapRef.current.setCenter({ lat: latitude, lng: longitude });
-        if (miniMarkerRef.current) miniMarkerRef.current.position = { lat: latitude, lng: longitude };
+        if (miniMarkerRef.current) miniMarkerRef.current.setPosition({ lat: latitude, lng: longitude });
         return;
       }
       const map = new w.google.maps.Map(mapPreviewRef.current, {
