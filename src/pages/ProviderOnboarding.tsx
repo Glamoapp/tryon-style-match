@@ -605,7 +605,7 @@ const ProviderOnboarding = () => {
                         <div>
                           <p className="font-medium text-sm">{s.name}</p>
                           <p className="text-xs text-muted-foreground">
-                            ${s.price} · {s.duration} min · {s.photos.length} photo{s.photos.length !== 1 ? "s" : ""}
+                            ${s.price} · {Math.floor(parseInt(s.duration) / 60) > 0 ? `${Math.floor(parseInt(s.duration) / 60)}h ` : ""}{parseInt(s.duration) % 60 > 0 ? `${parseInt(s.duration) % 60}m` : Math.floor(parseInt(s.duration) / 60) > 0 ? "" : "0m"} · {s.photos.length} photo{s.photos.length !== 1 ? "s" : ""}
                             {s.discountBadge && <span className="ml-1 text-primary">• {s.discountBadge}</span>}
                           </p>
                         </div>
@@ -825,7 +825,7 @@ const ProviderOnboarding = () => {
                     {services.map((s, i) => (
                       <div key={i} className="flex items-center justify-between text-sm">
                         <span className="font-medium">{s.name}</span>
-                        <span className="text-muted-foreground">${s.price} · {s.duration} min</span>
+                        <span className="text-muted-foreground">${s.price} · {Math.floor(parseInt(s.duration) / 60) > 0 ? `${Math.floor(parseInt(s.duration) / 60)}h ` : ""}{parseInt(s.duration) % 60 > 0 ? `${parseInt(s.duration) % 60}m` : ""}</span>
                       </div>
                     ))}
                   </div>
