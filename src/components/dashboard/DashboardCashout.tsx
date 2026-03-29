@@ -135,8 +135,10 @@ export const DashboardCashout = ({ userId }: { userId: string }) => {
         body: { provider_id: userId },
       });
 
+      console.log("Stripe dashboard response:", { data, error });
+
       if (error) {
-        throw new Error(error.message);
+        throw new Error(typeof error === "object" && "message" in error ? (error as any).message : "Failed to open payout dashboard");
       }
 
       if (data?.code === "platform_profile_incomplete" || data?.blocked) {
