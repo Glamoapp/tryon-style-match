@@ -143,7 +143,7 @@ const ProviderOnboarding = () => {
       }
       if (miniMapRef.current) {
         miniMapRef.current.setCenter({ lat: latitude, lng: longitude });
-        if (miniMarkerRef.current) miniMarkerRef.current.position = { lat: latitude, lng: longitude };
+        if (miniMarkerRef.current) miniMarkerRef.current.setPosition({ lat: latitude, lng: longitude });
         return;
       }
       const map = new w.google.maps.Map(mapPreviewRef.current, {
@@ -151,13 +151,13 @@ const ProviderOnboarding = () => {
         disableDefaultUI: true, zoomControl: true, gestureHandling: "cooperative",
       });
       miniMapRef.current = map;
-      const marker = new w.google.maps.marker.AdvancedMarkerElement({
-        map, position: { lat: latitude, lng: longitude }, gmpDraggable: true,
+      const marker = new w.google.maps.Marker({
+        map, position: { lat: latitude, lng: longitude }, draggable: true,
       });
       miniMarkerRef.current = marker;
       marker.addListener("dragend", () => {
-        const pos = marker.position;
-        if (pos) { setLatitude(pos.lat); setLongitude(pos.lng); }
+        const pos = marker.getPosition();
+        if (pos) { setLatitude(pos.lat()); setLongitude(pos.lng()); }
       });
     };
     initMiniMap();
