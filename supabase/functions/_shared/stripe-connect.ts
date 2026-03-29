@@ -33,13 +33,13 @@ export const authenticateRequest = async (req: Request) => {
     { global: { headers: { Authorization: authHeader } } },
   );
 
-  const { data, error } = await supabase.auth.getClaims(token);
+  const { data, error } = await supabase.auth.getUser(token);
 
-  if (error || !data?.claims?.sub) {
+  if (error || !data?.user?.id) {
     throw new Error("Unauthorized");
   }
 
-  return data.claims.sub as string;
+  return data.user.id as string;
 };
 
 export const getConnectPlatformError = (message: string) => {
