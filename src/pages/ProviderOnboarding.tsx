@@ -235,16 +235,18 @@ const ProviderOnboarding = () => {
     if (!fullName.trim()) { toast.error("Please enter your full name"); return; }
     if (!city.trim()) { toast.error("Please enter your city"); return; }
     setLoading(true);
-    try {
-      let avatarUrl = avatarPreview;
-      if (avatarFile) {
-        const ext = avatarFile.name.split(".").pop();
-        const path = `${userId}/avatar.${ext}`;
-        const { error: upErr } = await supabase.storage.from("service-photos").upload(path, avatarFile, { upsert: true });
-        if (upErr) throw upErr;
-        const { data: urlData } = supabase.storage.from("service-photos").getPublicUrl(path);
-        avatarUrl = urlData.publicUrl;
-      }
+      try {
+        let avatarUrl = avatarPreview;
+        if (avatarFile) {
+          await supabase.auth.refreshSession();
+
+          const ext = avatarFile.name.split(".").pop() || "jpg";
+          const path = `${userId}/avatar-${Date.now()}.${ext}`;
+          const { error: upErr } = await supabase.storage.from("service-photos").upload(path, avatarFile);
+          if (upErr) throw upErr;
+          const { data: urlData } = supabase.storage.from("service-photos").getPublicUrl(path);
+          avatarUrl = urlData.publicUrl;
+        }
       const updates: any = { full_name: fullName, bio, city, avatar_url: avatarUrl };
       if (latitude && longitude) { updates.latitude = latitude; updates.longitude = longitude; }
       const { error } = await supabase.from("profiles").update(updates).eq("id", userId);
