@@ -51,7 +51,16 @@ export const DashboardCashout = ({ userId }: { userId: string }) => {
         body: { provider_id: userId },
       });
 
+      console.log("Stripe status response:", { data, error });
+
       if (error || !data) {
+        console.warn("Stripe status check failed:", error);
+        setStatus("not_connected");
+        return;
+      }
+
+      if (data.error) {
+        console.warn("Stripe status error:", data.error);
         setStatus("not_connected");
         return;
       }
@@ -62,7 +71,8 @@ export const DashboardCashout = ({ userId }: { userId: string }) => {
       }
 
       setStatus(data.status || "not_connected");
-    } catch {
+    } catch (err) {
+      console.error("Stripe status exception:", err);
       setStatus("not_connected");
     }
   };
