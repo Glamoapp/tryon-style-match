@@ -77,6 +77,9 @@ export const DashboardCalendar = ({ userId }: { userId: string }) => {
       };
     });
     setSchedule(scheduleMap);
+    // Detect 24/7
+    const all247 = scheduleMap.every((d) => d.isAvailable && d.startTime === "00:00" && d.endTime === "23:30");
+    setIs247(all247);
   };
 
   const fetchBookings = async () => {
@@ -250,18 +253,22 @@ export const DashboardCalendar = ({ userId }: { userId: string }) => {
 
             <div className="pt-4 border-t border-border">
               <h4 className="text-sm font-medium text-muted-foreground mb-2">Weekly Hours</h4>
-              <div className="space-y-1">
-                {schedule
-                  .filter((d) => d.isAvailable)
-                  .map((d) => (
-                    <div key={d.dayOfWeek} className="flex justify-between text-sm">
-                      <span>{DAYS[d.dayOfWeek]}</span>
-                      <span className="text-muted-foreground">
-                        {d.startTime} - {d.endTime}
-                      </span>
-                    </div>
-                  ))}
-              </div>
+              {is247 ? (
+                <Badge variant="default" className="bg-primary">Available 24/7</Badge>
+              ) : (
+                <div className="space-y-1">
+                  {schedule
+                    .filter((d) => d.isAvailable)
+                    .map((d) => (
+                      <div key={d.dayOfWeek} className="flex justify-between text-sm">
+                        <span>{DAYS[d.dayOfWeek]}</span>
+                        <span className="text-muted-foreground">
+                          {formatTime12(d.startTime)} - {formatTime12(d.endTime)}
+                        </span>
+                      </div>
+                    ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
