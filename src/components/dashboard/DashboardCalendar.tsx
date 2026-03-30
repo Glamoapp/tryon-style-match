@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Calendar as CalendarIcon, Clock, Plus, X, Save } from "lucide-react";
@@ -54,6 +53,7 @@ export const DashboardCalendar = ({ userId }: { userId: string }) => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [blockedDates, setBlockedDates] = useState<BlockedDate[]>([]);
   const [editingSchedule, setEditingSchedule] = useState(false);
+  const [is247, setIs247] = useState(false);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -131,10 +131,30 @@ export const DashboardCalendar = ({ userId }: { userId: string }) => {
       {editingSchedule ? (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
           <p className="text-sm text-muted-foreground">Set your weekly availability</p>
-          {DAYS.map((day, i) => (
+
+          {/* 24/7 Toggle */}
+          <div className="flex items-center justify-between p-4 rounded-lg border border-primary/30 bg-primary/5">
+            <div>
+              <p className="font-medium">Available 24/7</p>
+              <p className="text-xs text-muted-foreground">Mark yourself available every day, all day</p>
+            </div>
+            <Switch
+              checked={is247}
+              onCheckedChange={(checked) => {
+                setIs247(checked);
+                if (checked) {
+                  setSchedule((prev) =>
+                    prev.map((d) => ({ ...d, isAvailable: true, startTime: "00:00", endTime: "23:30" }))
+                  );
+                }
+              }}
+            />
+          </div>
+
+          {!is247 && DAYS.map((day, i) => (
             <div
               key={day}
-              className={`flex items-center gap-4 p-4 rounded-lg border transition-colors ${
+              className={`flex flex-wrap items-center gap-3 p-4 rounded-lg border transition-colors ${
                 schedule[i]?.isAvailable ? "border-primary/30 bg-primary/5" : "border-border bg-card"
               }`}
             >
@@ -149,27 +169,41 @@ export const DashboardCalendar = ({ userId }: { userId: string }) => {
               <span className="font-medium w-28">{day}</span>
               {schedule[i]?.isAvailable && (
                 <div className="flex items-center gap-2 ml-auto">
-                  <Input
-                    type="time"
+                  <Select
                     value={schedule[i].startTime}
-                    onChange={(e) =>
+                    onValueChange={(val) =>
                       setSchedule((prev) =>
-                        prev.map((d, idx) => (idx === i ? { ...d, startTime: e.target.value } : d))
+                        prev.map((d, idx) => (idx === i ? { ...d, startTime: val } : d))
                       )
                     }
-                    className="w-32"
-                  />
+                  >
+                    <SelectTrigger className="w-[120px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {TIME_OPTIONS.map((t) => (
+                        <SelectItem key={t} value={t}>{formatTime12(t)}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <span className="text-muted-foreground">to</span>
-                  <Input
-                    type="time"
+                  <Select
                     value={schedule[i].endTime}
-                    onChange={(e) =>
+                    onValueChange={(val) =>
                       setSchedule((prev) =>
-                        prev.map((d, idx) => (idx === i ? { ...d, endTime: e.target.value } : d))
+                        prev.map((d, idx) => (idx === i ? { ...d, endTime: val } : d))
                       )
                     }
-                    className="w-32"
-                  />
+                  >
+                    <SelectTrigger className="w-[120px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {TIME_OPTIONS.map((t) => (
+                        <SelectItem key={t} value={t}>{formatTime12(t)}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               )}
             </div>
