@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Calendar as CalendarIcon, Clock, Plus, X, Save } from "lucide-react";
@@ -11,6 +10,20 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+const TIME_OPTIONS: string[] = [];
+for (let h = 0; h < 24; h++) {
+  for (let m = 0; m < 60; m += 30) {
+    TIME_OPTIONS.push(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
+  }
+}
+
+const formatTime12 = (t: string) => {
+  const [h, m] = t.split(":").map(Number);
+  const ampm = h >= 12 ? "PM" : "AM";
+  const hr = h === 0 ? 12 : h > 12 ? h - 12 : h;
+  return `${hr}:${String(m).padStart(2, "0")} ${ampm}`;
+};
 
 type ScheduleDay = {
   dayOfWeek: number;
@@ -40,6 +53,7 @@ export const DashboardCalendar = ({ userId }: { userId: string }) => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [blockedDates, setBlockedDates] = useState<BlockedDate[]>([]);
   const [editingSchedule, setEditingSchedule] = useState(false);
+  const [is247, setIs247] = useState(false);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -63,6 +77,9 @@ export const DashboardCalendar = ({ userId }: { userId: string }) => {
       };
     });
     setSchedule(scheduleMap);
+    // Detect 24/7
+    const all247 = scheduleMap.every((d) => d.isAvailable && d.startTime === "00:00" && d.endTime === "23:30");
+    setIs247(all247);
   };
 
   const fetchBookings = async () => {
@@ -117,10 +134,30 @@ export const DashboardCalendar = ({ userId }: { userId: string }) => {
       {editingSchedule ? (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
           <p className="text-sm text-muted-foreground">Set your weekly availability</p>
-          {DAYS.map((day, i) => (
+
+          {/* 24/7 Toggle */}
+          <div className="flex items-center justify-between p-4 rounded-lg border border-primary/30 bg-primary/5">
+            <div>
+              <p className="font-medium">Available 24/7</p>
+              <p className="text-xs text-muted-foreground">Mark yourself available every day, all day</p>
+            </div>
+            <Switch
+              checked={is247}
+              onCheckedChange={(checked) => {
+                setIs247(checked);
+                if (checked) {
+                  setSchedule((prev) =>
+                    prev.map((d) => ({ ...d, isAvailable: true, startTime: "00:00", endTime: "23:30" }))
+                  );
+                }
+              }}
+            />
+          </div>
+
+          {!is247 && DAYS.map((day, i) => (
             <div
               key={day}
-              className={`flex items-center gap-4 p-4 rounded-lg border transition-colors ${
+              className={`flex flex-wrap items-center gap-3 p-4 rounded-lg border transition-colors ${
                 schedule[i]?.isAvailable ? "border-primary/30 bg-primary/5" : "border-border bg-card"
               }`}
             >
@@ -135,27 +172,41 @@ export const DashboardCalendar = ({ userId }: { userId: string }) => {
               <span className="font-medium w-28">{day}</span>
               {schedule[i]?.isAvailable && (
                 <div className="flex items-center gap-2 ml-auto">
-                  <Input
-                    type="time"
+                  <Select
                     value={schedule[i].startTime}
-                    onChange={(e) =>
+                    onValueChange={(val) =>
                       setSchedule((prev) =>
-                        prev.map((d, idx) => (idx === i ? { ...d, startTime: e.target.value } : d))
+                        prev.map((d, idx) => (idx === i ? { ...d, startTime: val } : d))
                       )
                     }
-                    className="w-32"
-                  />
+                  >
+                    <SelectTrigger className="w-[120px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {TIME_OPTIONS.map((t) => (
+                        <SelectItem key={t} value={t}>{formatTime12(t)}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <span className="text-muted-foreground">to</span>
-                  <Input
-                    type="time"
+                  <Select
                     value={schedule[i].endTime}
-                    onChange={(e) =>
+                    onValueChange={(val) =>
                       setSchedule((prev) =>
-                        prev.map((d, idx) => (idx === i ? { ...d, endTime: e.target.value } : d))
+                        prev.map((d, idx) => (idx === i ? { ...d, endTime: val } : d))
                       )
                     }
-                    className="w-32"
-                  />
+                  >
+                    <SelectTrigger className="w-[120px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {TIME_OPTIONS.map((t) => (
+                        <SelectItem key={t} value={t}>{formatTime12(t)}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               )}
             </div>
@@ -202,18 +253,22 @@ export const DashboardCalendar = ({ userId }: { userId: string }) => {
 
             <div className="pt-4 border-t border-border">
               <h4 className="text-sm font-medium text-muted-foreground mb-2">Weekly Hours</h4>
-              <div className="space-y-1">
-                {schedule
-                  .filter((d) => d.isAvailable)
-                  .map((d) => (
-                    <div key={d.dayOfWeek} className="flex justify-between text-sm">
-                      <span>{DAYS[d.dayOfWeek]}</span>
-                      <span className="text-muted-foreground">
-                        {d.startTime} - {d.endTime}
-                      </span>
-                    </div>
-                  ))}
-              </div>
+              {is247 ? (
+                <Badge variant="default" className="bg-primary">Available 24/7</Badge>
+              ) : (
+                <div className="space-y-1">
+                  {schedule
+                    .filter((d) => d.isAvailable)
+                    .map((d) => (
+                      <div key={d.dayOfWeek} className="flex justify-between text-sm">
+                        <span>{DAYS[d.dayOfWeek]}</span>
+                        <span className="text-muted-foreground">
+                          {formatTime12(d.startTime)} - {formatTime12(d.endTime)}
+                        </span>
+                      </div>
+                    ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
