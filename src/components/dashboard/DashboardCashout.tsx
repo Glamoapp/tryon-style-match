@@ -22,6 +22,10 @@ export const DashboardCashout = ({ userId }: { userId: string }) => {
   const [loading, setLoading] = useState(false);
   const [earnings, setEarnings] = useState({ total: 0, pending: 0, available: 0 });
 
+  const redirectToStripe = (url: string) => {
+    window.location.assign(url);
+  };
+
   useEffect(() => {
     void fetchEarnings();
     void checkStripeStatus();
@@ -81,6 +85,10 @@ export const DashboardCashout = ({ userId }: { userId: string }) => {
     setLoading(true);
 
     try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("email")
@@ -94,7 +102,7 @@ export const DashboardCashout = ({ userId }: { userId: string }) => {
       const { data, error } = await supabase.functions.invoke<StripeFunctionResponse>("stripe-connect-onboard", {
         body: {
           provider_id: userId,
-          email: profile?.email,
+          email: profile?.email ?? user?.email,
           return_url: window.location.href,
         },
       });
@@ -114,7 +122,7 @@ export const DashboardCashout = ({ userId }: { userId: string }) => {
       }
 
       if (data?.url) {
-        window.open(data.url, "_blank", "noopener,noreferrer");
+        redirectToStripe(data.url);
         return;
       }
 
@@ -150,7 +158,7 @@ export const DashboardCashout = ({ userId }: { userId: string }) => {
       }
 
       if (data?.url) {
-        window.open(data.url, "_blank", "noopener,noreferrer");
+        redirectToStripe(data.url);
         return;
       }
 
