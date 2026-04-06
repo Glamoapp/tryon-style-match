@@ -108,10 +108,15 @@ const ProviderLogin = () => {
             </Button>
 
 
-            <p className="text-center text-sm text-muted-foreground">
-              Don't have an account?{" "}
-              <Link to="/provider/signup" className="text-primary hover:underline font-medium">Sign up</Link>
-            </p>
+            <div className="text-center space-y-2">
+              <Link to="/reset-password" className="text-sm text-primary hover:underline font-medium block">
+                Forgot your password?
+              </Link>
+              <p className="text-sm text-muted-foreground">
+                Don't have an account?{" "}
+                <Link to="/provider/signup" className="text-primary hover:underline font-medium">Sign up</Link>
+              </p>
+            </div>
           </form>
         </div>
       </div>
