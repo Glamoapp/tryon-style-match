@@ -31,7 +31,7 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders })
   }
 
-  // Validate caller JWT — allow service_role or authenticated user
+  // Validate caller — allow service_role key, anon key, or authenticated user JWT
   const authHeader = req.headers.get('Authorization')
   if (!authHeader?.startsWith('Bearer ')) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
@@ -42,10 +42,12 @@ Deno.serve(async (req) => {
   const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
   const token = authHeader.replace('Bearer ', '')
 
-  // Allow service_role key directly (for server-to-server calls)
+  // Allow service_role key or anon key for internal/server calls
   const isServiceRole = token === supabaseServiceKey
+  const isAnonKey = token === supabaseAnonKey
 
-  if (!isServiceRole) {
+  if (!isServiceRole && !isAnonKey) {
+    // Validate as user JWT
     const authClient = createClient(supabaseUrl!, supabaseAnonKey!, { global: { headers: { Authorization: authHeader } } })
     const { data: claimsData, error: claimsError } = await authClient.auth.getClaims(token)
     if (claimsError || !claimsData?.claims) {
