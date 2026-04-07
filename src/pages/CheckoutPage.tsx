@@ -159,6 +159,7 @@ const CheckoutPage = () => {
   const [scheduledDate, setScheduledDate] = useState<Date | undefined>(undefined);
   const [checkingOut, setCheckingOut] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
   const [paymentReady, setPaymentReady] = useState(false);
   const [loadingPayment, setLoadingPayment] = useState(false);
 
