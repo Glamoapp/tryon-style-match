@@ -53,7 +53,7 @@ Deno.serve(async (req) => {
     }
   }
 
-  const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+  // supabaseServiceKey already declared above
 
   if (!supabaseUrl || !supabaseServiceKey) {
     console.error('Missing required environment variables')
