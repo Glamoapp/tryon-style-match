@@ -40,8 +40,7 @@ serve(async (req) => {
 
     const origin = req.headers.get("origin") || "https://tryon-style-match.lovable.app";
 
-    // Use manual capture — funds are HELD (authorized) but NOT charged yet.
-    // Capture happens when the customer provides the completion code.
+    // Charge the customer upfront — funds are captured immediately.
     const sessionParams: any = {
       customer: customerId,
       line_items: [
@@ -60,7 +59,6 @@ serve(async (req) => {
       mode: "payment",
       payment_method_types: ["card"],
       payment_intent_data: {
-        capture_method: "manual",
         metadata: {
           bookingId,
           provider_id: providerId || "",

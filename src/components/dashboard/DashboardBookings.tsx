@@ -192,10 +192,10 @@ export const DashboardBookings = ({
             )}
 
             {/* Payment status indicator */}
-            {booking.payment_intent_id && booking.status === "confirmed" && (
-              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3 bg-secondary/50 rounded-lg px-3 py-2">
-                <DollarSign className="w-3.5 h-3.5 text-gold" />
-                <span>Funds on hold — Enter completion code to charge</span>
+            {booking.payment_intent_id && booking.status !== "completed" && (
+              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3 bg-green-50 rounded-lg px-3 py-2">
+                <DollarSign className="w-3.5 h-3.5 text-green-600" />
+                <span>Customer paid upfront — ${Number(booking.total_price).toFixed(0)}</span>
               </div>
             )}
 
@@ -211,28 +211,28 @@ export const DashboardBookings = ({
               </div>
             )}
 
-            {/* Confirmed: Enter completion code to capture payment */}
+            {/* Confirmed: Complete service to trigger payout */}
             {booking.status === "confirmed" && (
               <div className="pt-2 border-t border-border/50">
                 <Button
                   size="sm"
-                  variant="gold"
-                  onClick={() => handleVerifyCode(booking.id)}
-                  disabled={loadingAction === booking.id + "-capture"}
+                  variant="hero"
+                  onClick={() => handleCompleteService(booking.id)}
+                  disabled={loadingAction === booking.id + "-complete"}
                 >
-                  {loadingAction === booking.id + "-capture" ? (
-                    <><Loader2 className="w-3.5 h-3.5 animate-spin mr-1" /> Capturing Payment...</>
+                  {loadingAction === booking.id + "-complete" ? (
+                    <><Loader2 className="w-3.5 h-3.5 animate-spin mr-1" /> Processing Payout...</>
                   ) : (
-                    "Enter Completion Code"
+                    "Mark Service Completed"
                   )}
                 </Button>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Ask the customer for their 6-digit code to charge their card
+                  Click when the service is done — your 80% payout will be transferred
                 </p>
               </div>
             )}
 
-            {/* Payment Captured: Complete service to transfer to stylist */}
+            {/* Payment Captured (legacy) — also allow completing */}
             {booking.status === "payment_captured" && (
               <div className="pt-2 border-t border-border/50 space-y-2">
                 <div className="flex items-center gap-2 text-sm text-green-600">
