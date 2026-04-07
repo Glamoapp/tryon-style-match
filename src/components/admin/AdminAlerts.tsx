@@ -8,6 +8,7 @@ interface AlertItem {
   type: string;
   title: string;
   message: string;
+  customerEmail: string | null;
   created_at: string;
   is_read: boolean;
   completion_code: string | null;
