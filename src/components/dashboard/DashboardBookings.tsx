@@ -79,16 +79,42 @@ export const DashboardBookings = ({
         user_id: booking.customer_id,
         title: "Booking Confirmed! 🎉",
         message: `${providerName} has confirmed your ${serviceName} appointment on ${booking.booking_date} at ${booking.booking_time}. See you soon!`,
-        type: "booking_confirmed",
+        type: "booking",
         related_booking_id: booking.id,
       });
-      toast.success("Booking confirmed — customer has been notified");
+
+      // Send confirmation email to customer
+      const { data: customerProfile } = await supabase
+        .from("profiles")
+        .select("email, full_name")
+        .eq("id", booking.customer_id)
+        .single();
+
+      if (customerProfile?.email) {
+        await supabase.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "booking-confirmed",
+            recipientEmail: customerProfile.email,
+            idempotencyKey: `booking-confirmed-${booking.id}`,
+            templateData: {
+              customerName: customerProfile.full_name,
+              serviceName,
+              stylistName: providerName,
+              bookingDate: booking.booking_date,
+              bookingTime: booking.booking_time,
+              totalPrice: Number(booking.total_price).toFixed(2),
+            },
+          },
+        });
+      }
+
+      toast.success("Booking confirmed — customer has been notified via email");
     } else {
       await supabase.from("notifications").insert({
         user_id: booking.customer_id,
         title: "Booking Declined",
         message: `${providerName} was unable to accept your ${serviceName} request for ${booking.booking_date} at ${booking.booking_time}. Please try booking another stylist.`,
-        type: "booking_rejected",
+        type: "booking",
         related_booking_id: booking.id,
       });
       toast.success("Booking declined — customer has been notified");
