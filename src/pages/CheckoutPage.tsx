@@ -244,6 +244,7 @@ const CheckoutPage = () => {
       if (error) throw error;
       if (data?.clientSecret) {
         setClientSecret(data.clientSecret);
+        setPaymentIntentId(data.paymentIntentId || null);
         setPaymentReady(true);
       } else {
         throw new Error("No client secret returned");
