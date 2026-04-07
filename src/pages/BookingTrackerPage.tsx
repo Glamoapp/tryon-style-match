@@ -274,7 +274,7 @@ const BookingTrackerPage = () => {
           map,
           title: booking.stylistName,
           icon: {
-            url: stylist1,
+            url: booking.stylistAvatar || stylist1,
             scaledSize: new g.maps.Size(44, 44),
             origin: new g.maps.Point(0, 0),
             anchor: new g.maps.Point(22, 22),
