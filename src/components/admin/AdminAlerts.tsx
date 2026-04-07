@@ -8,6 +8,7 @@ interface AlertItem {
   type: string;
   title: string;
   message: string;
+  customerEmail: string | null;
   created_at: string;
   is_read: boolean;
   completion_code: string | null;
@@ -29,7 +30,7 @@ const AdminAlerts = () => {
       // Fetch recent bookings as alerts
       const { data: bookings } = await supabase
         .from("bookings")
-        .select("id, status, booking_date, booking_time, created_at, completion_code, customer:profiles!bookings_customer_id_fkey(full_name), provider:profiles!bookings_provider_id_fkey(full_name)")
+        .select("id, status, booking_date, booking_time, created_at, completion_code, customer:profiles!bookings_customer_id_fkey(full_name, email), provider:profiles!bookings_provider_id_fkey(full_name)")
         .order("created_at", { ascending: false })
         .limit(20);
 
@@ -39,6 +40,7 @@ const AdminAlerts = () => {
         title: b.status === "completed" ? "Service Completed" :
                b.status === "confirmed" ? "Booking Confirmed" : "New Booking",
         message: `${b.customer?.full_name || "Customer"} → ${b.provider?.full_name || "Stylist"} on ${b.booking_date} at ${b.booking_time}`,
+        customerEmail: b.customer?.email || null,
         created_at: b.created_at,
         is_read: false,
         completion_code: b.completion_code || null,
@@ -87,6 +89,9 @@ const AdminAlerts = () => {
                     <div className="flex-1 min-w-0">
                       <p className="font-body font-semibold text-foreground text-sm">{alert.title}</p>
                       <p className="text-xs text-muted-foreground font-body mt-0.5">{alert.message}</p>
+                      {alert.customerEmail && (
+                        <p className="text-xs text-muted-foreground/70 font-body mt-0.5">📧 {alert.customerEmail}</p>
+                      )}
                       {alert.completion_code && (
                         <p className="text-xs font-mono mt-1 px-2 py-0.5 bg-primary/10 text-primary rounded-md inline-block">
                           Code: {alert.completion_code}
