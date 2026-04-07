@@ -31,7 +31,7 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders })
   }
 
-  // Validate caller JWT
+  // Validate caller JWT — allow service_role or authenticated user
   const authHeader = req.headers.get('Authorization')
   if (!authHeader?.startsWith('Bearer ')) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
@@ -39,11 +39,18 @@ Deno.serve(async (req) => {
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL')
   const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')
-  const authClient = createClient(supabaseUrl!, supabaseAnonKey!, { global: { headers: { Authorization: authHeader } } })
+  const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
   const token = authHeader.replace('Bearer ', '')
-  const { data: claimsData, error: claimsError } = await authClient.auth.getClaims(token)
-  if (claimsError || !claimsData?.claims) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+
+  // Allow service_role key directly (for server-to-server calls)
+  const isServiceRole = token === supabaseServiceKey
+
+  if (!isServiceRole) {
+    const authClient = createClient(supabaseUrl!, supabaseAnonKey!, { global: { headers: { Authorization: authHeader } } })
+    const { data: claimsData, error: claimsError } = await authClient.auth.getClaims(token)
+    if (claimsError || !claimsData?.claims) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+    }
   }
 
   const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
