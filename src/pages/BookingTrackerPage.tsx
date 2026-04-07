@@ -15,6 +15,7 @@ interface BookingData {
   stylistName: string;
   styleName: string;
   stylistPhone: string | null;
+  stylistAvatar: string | null;
   customerName: string;
   email: string;
   phone: string;
