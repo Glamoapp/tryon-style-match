@@ -42,19 +42,21 @@ Deno.serve(async (req) => {
   const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
   const token = authHeader.replace('Bearer ', '')
 
-  // Allow service_role key or anon key for internal/server calls
+  // Allow service_role key for internal/server calls
   const isServiceRole = token === supabaseServiceKey
-  const isAnonKey = token === supabaseAnonKey
 
-  console.log('Auth check:', { isServiceRole, isAnonKey, tokenPrefix: token.substring(0, 20), anonPrefix: supabaseAnonKey?.substring(0, 20) })
-
-  if (!isServiceRole && !isAnonKey) {
-    // Validate as user JWT
+  if (!isServiceRole) {
+    // Validate as user JWT — if it fails, check if it's the publishable key (anon)
     const authClient = createClient(supabaseUrl!, supabaseAnonKey!, { global: { headers: { Authorization: authHeader } } })
     const { data: claimsData, error: claimsError } = await authClient.auth.getClaims(token)
-    console.log('Claims result:', { claims: claimsData?.claims ? 'present' : 'missing', error: claimsError?.message })
+
     if (claimsError || !claimsData?.claims) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+      // Allow if the token is the project's publishable/anon key (JWT format)
+      const supabasePublishableKey = Deno.env.get('SUPABASE_PUBLISHABLE_KEY')
+      const isPublishableKey = token === supabasePublishableKey || token === supabaseAnonKey
+      if (!isPublishableKey) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+      }
     }
   }
 
