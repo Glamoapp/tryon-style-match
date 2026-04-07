@@ -226,12 +226,18 @@ const CheckoutPage = () => {
           : []),
       ];
 
+      // Collect booking IDs from service items in cart
+      const bookingIds = fromCart
+        ? serviceItems.map(s => s.id)
+        : [];
+
       const { data, error } = await supabase.functions.invoke("create-payment-intent", {
         body: {
           products: allProducts.length > 0 ? allProducts : undefined,
           services: services.length > 0 ? services : undefined,
           customerEmail: email,
           customerName: fullName,
+          bookingIds: bookingIds.length > 0 ? bookingIds : undefined,
         },
       });
 
