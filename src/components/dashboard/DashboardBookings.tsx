@@ -185,6 +185,22 @@ export const DashboardBookings = ({
         }
 
         if (customerProfile?.email) {
+          // Fetch customer points for the email
+          let pointsEarned = 0;
+          let totalPoints = 0;
+          const price = Number(booking.total_price);
+          if (price >= 2000) pointsEarned = 100;
+          else if (price >= 1000) pointsEarned = 50;
+          else if (price >= 500) pointsEarned = 20;
+          else pointsEarned = 10;
+
+          const { data: pointsData } = await supabase
+            .from("customer_points")
+            .select("total_points")
+            .eq("user_id", booking.customer_id)
+            .single();
+          if (pointsData) totalPoints = pointsData.total_points;
+
           await supabase.functions.invoke("send-transactional-email", {
             body: {
               templateName: "service-completed",
@@ -195,7 +211,9 @@ export const DashboardBookings = ({
                 serviceName: (booking.service as any)?.service_name || "Hair Service",
                 stylistName: provName,
                 bookingDate: booking.booking_date,
-                totalPrice: Number(booking.total_price).toFixed(2),
+                totalPrice: price.toFixed(2),
+                pointsEarned,
+                totalPoints,
               },
             },
           });
