@@ -90,13 +90,7 @@ Deno.serve(async (req) => {
       },
     };
 
-    // If cart includes services, use manual capture to hold funds
-    // Funds are only captured when the completion code is verified
-    if (hasServices) {
-      sessionParams.payment_intent_data = {
-        capture_method: "manual",
-      };
-    }
+    // Charge immediately — funds are captured at checkout
 
     const session = await stripe.checkout.sessions.create(sessionParams);
 
