@@ -89,6 +89,9 @@ const AdminAlerts = () => {
                     <div className="flex-1 min-w-0">
                       <p className="font-body font-semibold text-foreground text-sm">{alert.title}</p>
                       <p className="text-xs text-muted-foreground font-body mt-0.5">{alert.message}</p>
+                      {alert.customerEmail && (
+                        <p className="text-xs text-muted-foreground/70 font-body mt-0.5">📧 {alert.customerEmail}</p>
+                      )}
                       {alert.completion_code && (
                         <p className="text-xs font-mono mt-1 px-2 py-0.5 bg-primary/10 text-primary rounded-md inline-block">
                           Code: {alert.completion_code}
