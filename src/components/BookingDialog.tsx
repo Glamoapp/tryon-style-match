@@ -202,7 +202,7 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
           completion_code: generateCompletionCode(),
           status: "pending",
         })
-        .select("id")
+        .select("id, completion_code")
         .single();
 
       if (bookingError || !createdBooking) {
