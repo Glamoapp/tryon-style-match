@@ -241,9 +241,10 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
             address,
           };
           addServiceItem(serviceItem);
-          localStorage.setItem("currentBooking", JSON.stringify({
+           localStorage.setItem("currentBooking", JSON.stringify({
             id: createdId, date: format(date, "PPP"), time,
             stylistName: stylistName || "Stylist", styleName: styleName || "Service",
+            stylistAvatar: providerAvatarUrl || null,
             customerName: name, email, phone, address,
           }));
           setBookingId(createdId);
@@ -346,6 +347,7 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
       stylistName: stylistName || "Assigned Stylist",
       styleName: styleName || "Hair Service",
       stylistPhone: stylistPhone || null,
+      stylistAvatar: providerAvatarUrl || null,
       customerName: name,
       email,
       phone,

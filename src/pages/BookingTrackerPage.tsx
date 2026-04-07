@@ -15,6 +15,7 @@ interface BookingData {
   stylistName: string;
   styleName: string;
   stylistPhone: string | null;
+  stylistAvatar: string | null;
   customerName: string;
   email: string;
   phone: string;
@@ -273,7 +274,7 @@ const BookingTrackerPage = () => {
           map,
           title: booking.stylistName,
           icon: {
-            url: stylist1,
+            url: booking.stylistAvatar || stylist1,
             scaledSize: new g.maps.Size(44, 44),
             origin: new g.maps.Point(0, 0),
             anchor: new g.maps.Point(22, 22),
@@ -479,7 +480,7 @@ const BookingTrackerPage = () => {
           >
             <div className="bg-gradient-hero p-6">
               <div className="flex items-center gap-4">
-                <img src={stylist1} alt="Stylist" className="w-14 h-14 rounded-full object-cover ring-2 ring-gold/50" />
+                <img src={booking.stylistAvatar || stylist1} alt="Stylist" className="w-14 h-14 rounded-full object-cover ring-2 ring-gold/50" />
                 <div>
                   <h3 className="font-display font-bold text-cream text-lg">{booking.stylistName}</h3>
                   <p className="text-cream/60 text-sm font-body">{booking.styleName}</p>
