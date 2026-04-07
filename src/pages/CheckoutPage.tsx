@@ -159,6 +159,7 @@ const CheckoutPage = () => {
   const [scheduledDate, setScheduledDate] = useState<Date | undefined>(undefined);
   const [checkingOut, setCheckingOut] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
   const [paymentReady, setPaymentReady] = useState(false);
   const [loadingPayment, setLoadingPayment] = useState(false);
 
@@ -225,18 +226,25 @@ const CheckoutPage = () => {
           : []),
       ];
 
+      // Collect booking IDs from service items in cart
+      const bookingIds = fromCart
+        ? serviceItems.map(s => s.id)
+        : [];
+
       const { data, error } = await supabase.functions.invoke("create-payment-intent", {
         body: {
           products: allProducts.length > 0 ? allProducts : undefined,
           services: services.length > 0 ? services : undefined,
           customerEmail: email,
           customerName: fullName,
+          bookingIds: bookingIds.length > 0 ? bookingIds : undefined,
         },
       });
 
       if (error) throw error;
       if (data?.clientSecret) {
         setClientSecret(data.clientSecret);
+        setPaymentIntentId(data.paymentIntentId || null);
         setPaymentReady(true);
       } else {
         throw new Error("No client secret returned");
@@ -249,7 +257,17 @@ const CheckoutPage = () => {
     }
   };
 
-  const handlePaymentSuccess = () => {
+  const handlePaymentSuccess = async () => {
+    // Save payment_intent_id to all service bookings
+    if (paymentIntentId && fromCart) {
+      const bookingIds = serviceItems.map(s => s.id);
+      for (const bid of bookingIds) {
+        await supabase
+          .from("bookings")
+          .update({ payment_intent_id: paymentIntentId })
+          .eq("id", bid);
+      }
+    }
     toast.success("Payment successful!");
     navigate("/booking-tracker");
   };
