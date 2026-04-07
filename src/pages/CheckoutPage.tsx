@@ -268,6 +268,47 @@ const CheckoutPage = () => {
           .eq("id", bid);
       }
     }
+
+    // Send booking confirmation email(s) for each service
+    if (email) {
+      for (const s of services) {
+        await supabase.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "booking-confirmation",
+            recipientEmail: email,
+            idempotencyKey: `booking-confirm-${paymentIntentId || crypto.randomUUID()}-${s.serviceName}`,
+            templateData: {
+              customerName: fullName,
+              serviceName: s.serviceName,
+              stylistName: s.providerName,
+              bookingDate: s.date,
+              bookingTime: s.time,
+              servicePrice: s.price.toFixed(2),
+              totalAmount: total.toFixed(2),
+            },
+          },
+        });
+      }
+
+      // Send for products-only checkout too
+      if (services.length === 0 && products.length > 0) {
+        await supabase.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "booking-confirmation",
+            recipientEmail: email,
+            idempotencyKey: `purchase-confirm-${paymentIntentId || crypto.randomUUID()}`,
+            templateData: {
+              customerName: fullName,
+              productTitle: products.map(p => p.title).join(", "),
+              productPrice: products.reduce((sum, p) => sum + parseFloat(p.price) * p.quantity, 0).toFixed(2),
+              productQuantity: products.reduce((sum, p) => sum + p.quantity, 0),
+              totalAmount: total.toFixed(2),
+            },
+          },
+        });
+      }
+    }
+
     toast.success("Payment successful!");
     navigate("/booking-tracker");
   };

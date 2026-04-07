@@ -79,16 +79,42 @@ export const DashboardBookings = ({
         user_id: booking.customer_id,
         title: "Booking Confirmed! 🎉",
         message: `${providerName} has confirmed your ${serviceName} appointment on ${booking.booking_date} at ${booking.booking_time}. See you soon!`,
-        type: "booking_confirmed",
+        type: "booking",
         related_booking_id: booking.id,
       });
-      toast.success("Booking confirmed — customer has been notified");
+
+      // Send confirmation email to customer
+      const { data: customerProfile } = await supabase
+        .from("profiles")
+        .select("email, full_name")
+        .eq("id", booking.customer_id)
+        .single();
+
+      if (customerProfile?.email) {
+        await supabase.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "booking-confirmed",
+            recipientEmail: customerProfile.email,
+            idempotencyKey: `booking-confirmed-${booking.id}`,
+            templateData: {
+              customerName: customerProfile.full_name,
+              serviceName,
+              stylistName: providerName,
+              bookingDate: booking.booking_date,
+              bookingTime: booking.booking_time,
+              totalPrice: Number(booking.total_price).toFixed(2),
+            },
+          },
+        });
+      }
+
+      toast.success("Booking confirmed — customer has been notified via email");
     } else {
       await supabase.from("notifications").insert({
         user_id: booking.customer_id,
         title: "Booking Declined",
         message: `${providerName} was unable to accept your ${serviceName} request for ${booking.booking_date} at ${booking.booking_time}. Please try booking another stylist.`,
-        type: "booking_rejected",
+        type: "booking",
         related_booking_id: booking.id,
       });
       toast.success("Booking declined — customer has been notified");
@@ -141,6 +167,40 @@ export const DashboardBookings = ({
 
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
+
+      // Send service-completed email to customer
+      const booking = bookings.find(b => b.id === bookingId);
+      if (booking) {
+        const { data: customerProfile } = await supabase
+          .from("profiles")
+          .select("email, full_name")
+          .eq("id", booking.customer_id)
+          .single();
+
+        const { data: { user } } = await supabase.auth.getUser();
+        let provName = "Your stylist";
+        if (user) {
+          const { data: pProfile } = await supabase.from("profiles").select("full_name").eq("id", user.id).single();
+          if (pProfile) provName = pProfile.full_name;
+        }
+
+        if (customerProfile?.email) {
+          await supabase.functions.invoke("send-transactional-email", {
+            body: {
+              templateName: "service-completed",
+              recipientEmail: customerProfile.email,
+              idempotencyKey: `service-completed-${bookingId}`,
+              templateData: {
+                customerName: customerProfile.full_name,
+                serviceName: (booking.service as any)?.service_name || "Hair Service",
+                stylistName: provName,
+                bookingDate: booking.booking_date,
+                totalPrice: Number(booking.total_price).toFixed(2),
+              },
+            },
+          });
+        }
+      }
 
       const payoutAmount = data?.payout ? `$${data.payout.toFixed(2)}` : "";
       toast.success(`Service completed! ${payoutAmount ? `${payoutAmount} has been transferred to your account.` : "Earnings added."}`);
