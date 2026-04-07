@@ -89,19 +89,56 @@ const BookingTrackerPage = () => {
   // Save the PaymentIntent ID to the booking after successful checkout
   useEffect(() => {
     const sessionId = searchParams.get("session_id");
-    if (!sessionId) return;
+    const paymentIntentParam = searchParams.get("payment_intent");
+    const redirectStatus = searchParams.get("redirect_status");
 
-    const savePaymentIntent = async () => {
-      try {
-        await supabase.functions.invoke("save-booking-payment", {
-          body: { sessionId },
-        });
-        console.log("Payment intent saved for session:", sessionId);
-      } catch (err) {
-        console.error("Failed to save payment intent:", err);
-      }
-    };
-    savePaymentIntent();
+    // Handle Stripe Checkout session redirect
+    if (sessionId) {
+      const savePaymentIntent = async () => {
+        try {
+          await supabase.functions.invoke("save-booking-payment", {
+            body: { sessionId },
+          });
+          console.log("Payment intent saved for session:", sessionId);
+        } catch (err) {
+          console.error("Failed to save payment intent:", err);
+        }
+      };
+      savePaymentIntent();
+    }
+
+    // Handle inline Stripe Payment Element redirect
+    if (paymentIntentParam && redirectStatus === "succeeded") {
+      const saveInlinePayment = async () => {
+        try {
+          // Get current user's most recent pending bookings and update them
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            const { data: pendingBookings } = await supabase
+              .from("bookings")
+              .select("id")
+              .eq("customer_id", user.id)
+              .is("payment_intent_id", null)
+              .eq("status", "pending")
+              .order("created_at", { ascending: false })
+              .limit(5);
+
+            if (pendingBookings) {
+              for (const b of pendingBookings) {
+                await supabase
+                  .from("bookings")
+                  .update({ payment_intent_id: paymentIntentParam })
+                  .eq("id", b.id);
+              }
+              console.log("Saved payment_intent to", pendingBookings.length, "bookings");
+            }
+          }
+        } catch (err) {
+          console.error("Failed to save inline payment:", err);
+        }
+      };
+      saveInlinePayment();
+    }
   }, [searchParams]);
 
   // Fetch Google Maps API key
