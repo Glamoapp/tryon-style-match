@@ -257,7 +257,17 @@ const CheckoutPage = () => {
     }
   };
 
-  const handlePaymentSuccess = () => {
+  const handlePaymentSuccess = async () => {
+    // Save payment_intent_id to all service bookings
+    if (paymentIntentId && fromCart) {
+      const bookingIds = serviceItems.map(s => s.id);
+      for (const bid of bookingIds) {
+        await supabase
+          .from("bookings")
+          .update({ payment_intent_id: paymentIntentId })
+          .eq("id", bid);
+      }
+    }
     toast.success("Payment successful!");
     navigate("/booking-tracker");
   };
