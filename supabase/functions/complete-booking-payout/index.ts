@@ -36,15 +36,12 @@ serve(async (req) => {
 
     if (bookingError || !booking) throw new Error("Booking not found");
 
-    if (booking.status !== "payment_captured") {
+    // Allow payout from confirmed, payment_captured, or any status with a payment
+    if (!["confirmed", "payment_captured"].includes(booking.status)) {
       return new Response(
-        JSON.stringify({ error: "Payment must be captured before completing payout" }),
+        JSON.stringify({ error: "Booking must be confirmed before completing payout" }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
       );
-    }
-
-    if (!booking.payment_intent_id) {
-      throw new Error("No payment found for this booking");
     }
 
     // Look up provider's Stripe Connect account
@@ -67,19 +64,32 @@ serve(async (req) => {
     const totalAmountCents = Math.round(Number(booking.total_price) * 100);
     const stylistPayout = Math.round(totalAmountCents * 0.80);
 
-    if (connectedAccountId) {
+    if (connectedAccountId && booking.payment_intent_id) {
+      // If the payment was captured upfront (succeeded), use a transfer
+      const pi = await stripe.paymentIntents.retrieve(booking.payment_intent_id);
+      
+      if (pi.status === "requires_capture") {
+        // Legacy hold flow — capture first
+        await stripe.paymentIntents.capture(booking.payment_intent_id);
+        console.log("Captured held payment for booking:", bookingId);
+      }
+
       // Transfer 80% to the stylist's connected account
+      // Use the latest charge ID for source_transaction
+      const chargeId = pi.latest_charge;
       await stripe.transfers.create({
         amount: stylistPayout,
         currency: "usd",
         destination: connectedAccountId,
-        source_transaction: booking.payment_intent_id,
+        source_transaction: typeof chargeId === "string" ? chargeId : undefined,
         metadata: {
           booking_id: bookingId,
           provider_id: booking.provider_id,
         },
       });
       console.log("Transferred", stylistPayout, "cents to", connectedAccountId);
+    } else if (!booking.payment_intent_id) {
+      console.log("No payment intent on booking — completing without payout");
     } else {
       console.log("No connected account found for provider — payout skipped, funds retained on platform");
     }

@@ -16,7 +16,7 @@ Deno.serve(async (req) => {
       apiVersion: "2023-10-16",
     });
 
-    const { products, services, customerEmail, customerName, paymentMethod } = await req.json();
+    const { products, services, customerEmail, customerName, paymentMethod, bookingIds } = await req.json();
 
     if (!customerEmail) throw new Error("Email is required");
 
@@ -84,14 +84,12 @@ Deno.serve(async (req) => {
         serviceCount: services ? String(services.length) : "0",
         productCount: products ? String(products.length) : "0",
         customerEmail,
+        // Store booking IDs so we can link payment back to bookings
+        bookingIds: bookingIds ? JSON.stringify(bookingIds) : "",
       },
     };
 
-    // For services, use manual capture (hold funds until completion code verified)
-    if (hasServices) {
-      intentParams.capture_method = "manual";
-    }
-
+    // Charge upfront — no manual capture
     const paymentIntent = await stripe.paymentIntents.create(intentParams);
 
     return new Response(
