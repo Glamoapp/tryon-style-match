@@ -40,6 +40,7 @@ const AdminAlerts = () => {
         title: b.status === "completed" ? "Service Completed" :
                b.status === "confirmed" ? "Booking Confirmed" : "New Booking",
         message: `${b.customer?.full_name || "Customer"} → ${b.provider?.full_name || "Stylist"} on ${b.booking_date} at ${b.booking_time}`,
+        customerEmail: b.customer?.email || null,
         created_at: b.created_at,
         is_read: false,
         completion_code: b.completion_code || null,
