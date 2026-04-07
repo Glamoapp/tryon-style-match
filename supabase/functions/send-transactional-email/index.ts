@@ -31,7 +31,7 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders })
   }
 
-  // Validate caller JWT
+  // Validate caller — allow service_role key, anon key, or authenticated user JWT
   const authHeader = req.headers.get('Authorization')
   if (!authHeader?.startsWith('Bearer ')) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
@@ -39,14 +39,33 @@ Deno.serve(async (req) => {
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL')
   const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')
-  const authClient = createClient(supabaseUrl!, supabaseAnonKey!, { global: { headers: { Authorization: authHeader } } })
+  const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
   const token = authHeader.replace('Bearer ', '')
-  const { data: claimsData, error: claimsError } = await authClient.auth.getClaims(token)
-  if (claimsError || !claimsData?.claims) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+
+  // Allow service_role key for internal/server calls
+  const isServiceRole = token === supabaseServiceKey
+
+  if (!isServiceRole) {
+    // Try to decode the JWT to check if it's an anon key or user token
+    let isAnon = false
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]))
+      if (payload.role === 'anon' && payload.iss?.includes('supabase')) {
+        isAnon = true
+      }
+    } catch { /* not a valid JWT — reject below */ }
+
+    if (!isAnon) {
+      // Validate as authenticated user JWT
+      const authClient = createClient(supabaseUrl!, supabaseAnonKey!, { global: { headers: { Authorization: authHeader } } })
+      const { data: claimsData, error: claimsError } = await authClient.auth.getClaims(token)
+      if (claimsError || !claimsData?.claims) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+      }
+    }
   }
 
-  const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+  
 
   if (!supabaseUrl || !supabaseServiceKey) {
     console.error('Missing required environment variables')
