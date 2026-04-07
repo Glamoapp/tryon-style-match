@@ -251,6 +251,27 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
           setLoading(false);
           setStep(3);
           toast.success("Appointment booked!");
+
+          // Send booking confirmation email for guest booking
+          const guestPoints = (servicePrice ?? 0) >= 200 ? 100 : (servicePrice ?? 0) >= 100 ? 50 : (servicePrice ?? 0) >= 50 ? 20 : 10;
+          supabase.functions.invoke("send-transactional-email", {
+            body: {
+              templateName: "booking-confirmation",
+              recipientEmail: email,
+              idempotencyKey: `booking-confirm-${createdId}`,
+              templateData: {
+                customerName: name,
+                serviceName: styleName || "Hair Service",
+                stylistName: stylistName || "Assigned Stylist",
+                bookingDate: format(date, "EEE, MMM d"),
+                bookingTime: time,
+                servicePrice: (servicePrice ?? 0).toFixed(2),
+                totalAmount: (servicePrice ?? 0).toFixed(2),
+                completionCode: data?.completionCode || "",
+                rewardPoints: guestPoints,
+              },
+            },
+          }).catch((err) => console.error("Guest booking confirmation email failed:", err));
           return;
         } else {
           toast.error("Couldn't create your booking. Please try again.");
