@@ -265,6 +265,27 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
         body: { booking_id: createdId },
       }).catch((err) => console.error("Booking notification failed:", err));
 
+      // Send booking confirmation email to customer
+      const pointsEarned = (servicePrice ?? 0) >= 200 ? 100 : (servicePrice ?? 0) >= 100 ? 50 : (servicePrice ?? 0) >= 50 ? 20 : 10;
+      supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "booking-confirmation",
+          recipientEmail: email,
+          idempotencyKey: `booking-confirm-${createdId}`,
+          templateData: {
+            customerName: name,
+            serviceName: styleName || "Hair Service",
+            stylistName: stylistName || "Assigned Stylist",
+            bookingDate: format(date, "EEE, MMM d"),
+            bookingTime: time,
+            servicePrice: (servicePrice ?? 0).toFixed(2),
+            totalAmount: (servicePrice ?? 0).toFixed(2),
+            completionCode: (createdBooking as any)?.completion_code || "",
+            rewardPoints: pointsEarned,
+          },
+        },
+      }).catch((err) => console.error("Booking confirmation email failed:", err));
+
       // Check if first booking for welcome email
       (async () => {
         try {
