@@ -46,10 +46,13 @@ Deno.serve(async (req) => {
   const isServiceRole = token === supabaseServiceKey
   const isAnonKey = token === supabaseAnonKey
 
+  console.log('Auth check:', { isServiceRole, isAnonKey, tokenPrefix: token.substring(0, 20), anonPrefix: supabaseAnonKey?.substring(0, 20) })
+
   if (!isServiceRole && !isAnonKey) {
     // Validate as user JWT
     const authClient = createClient(supabaseUrl!, supabaseAnonKey!, { global: { headers: { Authorization: authHeader } } })
     const { data: claimsData, error: claimsError } = await authClient.auth.getClaims(token)
+    console.log('Claims result:', { claims: claimsData?.claims ? 'present' : 'missing', error: claimsError?.message })
     if (claimsError || !claimsData?.claims) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
     }
