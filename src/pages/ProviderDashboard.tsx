@@ -63,6 +63,7 @@ const ProviderDashboard = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [isApproved, setIsApproved] = useState<boolean | null>(null);
+  const [customerBookingsCount, setCustomerBookingsCount] = useState(0);
 
   useEffect(() => {
     const init = async () => {
@@ -75,14 +76,20 @@ const ProviderDashboard = () => {
         .select("full_name, is_approved")
         .eq("id", user.id)
         .single();
+
+      const { count } = await supabase
+        .from("bookings")
+        .select("id", { count: "exact", head: true })
+        .eq("customer_id", user.id);
+
       setProfileName(profileData?.full_name || "");
       setIsApproved((profileData as any)?.is_approved ?? false);
+      setCustomerBookingsCount(count || 0);
 
       fetchBookings(user.id);
       fetchNotifications(user.id);
       fetchUnreadMessages(user.id);
 
-      // Realtime
       const channel = supabase
         .channel("provider-dashboard")
         .on("postgres_changes", { event: "*", schema: "public", table: "bookings", filter: `provider_id=eq.${user.id}` }, () => fetchBookings(user.id))
@@ -150,7 +157,6 @@ const ProviderDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <div className="border-b border-border bg-card/50 sticky top-0 z-40">
         <div className="container mx-auto px-6 py-3 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
@@ -167,7 +173,6 @@ const ProviderDashboard = () => {
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 py-6 max-w-5xl">
-        {/* Pending Approval Banner */}
         {isApproved === false && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -186,7 +191,29 @@ const ProviderDashboard = () => {
           </motion.div>
         )}
 
-        {/* Stats row */}
+        {customerBookingsCount > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 rounded-xl border border-border bg-card flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <Calendar className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <p className="font-body font-semibold text-foreground text-sm">Your bookings are available in your customer account</p>
+                <p className="text-xs text-muted-foreground font-body">
+                  You have {customerBookingsCount} personal {customerBookingsCount === 1 ? "booking" : "bookings"} ready to view.
+                </p>
+              </div>
+            </div>
+            <Button variant="outline" asChild className="shrink-0">
+              <Link to="/dashboard">View Bookings</Link>
+            </Button>
+          </motion.div>
+        )}
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           {[
             { label: "Pending", value: pendingCount, icon: Clock, color: "text-gold" },
@@ -202,7 +229,6 @@ const ProviderDashboard = () => {
           ))}
         </div>
 
-        {/* Nav tabs - scrollable on mobile */}
         <div className="flex gap-1 mb-6 bg-muted rounded-lg p-1 overflow-x-auto">
           {NAV_ITEMS.map((tab) => {
             const badge = getBadge(tab.key);
@@ -226,7 +252,6 @@ const ProviderDashboard = () => {
           })}
         </div>
 
-        {/* Content */}
         {activeTab === "bookings" && (
           <DashboardBookings bookings={bookings} onUpdate={() => userId && fetchBookings(userId)} />
         )}

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Package, Tag, CreditCard, LogOut, Clock, Store } from "lucide-react";
+import { Package, Tag, CreditCard, LogOut, Clock, CalendarDays, Store } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
@@ -24,6 +24,7 @@ const VendorDashboard = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [profileName, setProfileName] = useState("");
   const [isApproved, setIsApproved] = useState<boolean | null>(null);
+  const [customerBookingsCount, setCustomerBookingsCount] = useState(0);
 
   useEffect(() => {
     const init = async () => {
@@ -43,8 +44,14 @@ const VendorDashboard = () => {
         return;
       }
 
+      const { count } = await supabase
+        .from("bookings")
+        .select("id", { count: "exact", head: true })
+        .eq("customer_id", user.id);
+
       setProfileName(profile?.full_name || "");
       setIsApproved(profile?.is_approved ?? false);
+      setCustomerBookingsCount(count || 0);
     };
     init();
   }, [navigate]);
@@ -91,7 +98,29 @@ const VendorDashboard = () => {
           </motion.div>
         )}
 
-        {/* Stats */}
+        {customerBookingsCount > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 rounded-xl border border-border bg-card flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <CalendarDays className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <p className="font-body font-semibold text-foreground text-sm">Your bookings are available in your customer account</p>
+                <p className="text-xs text-muted-foreground font-body">
+                  You have {customerBookingsCount} personal {customerBookingsCount === 1 ? "booking" : "bookings"} ready to view.
+                </p>
+              </div>
+            </div>
+            <Button variant="outline" asChild className="shrink-0">
+              <Link to="/dashboard">View Bookings</Link>
+            </Button>
+          </motion.div>
+        )}
+
         <div className="grid grid-cols-3 gap-3 mb-6">
           {[
             { label: "Products", icon: Package, color: "text-primary" },
@@ -105,7 +134,6 @@ const VendorDashboard = () => {
           ))}
         </div>
 
-        {/* Tabs */}
         <div className="flex gap-1 mb-6 bg-muted rounded-lg p-1 overflow-x-auto">
           {NAV_ITEMS.map((tab) => (
             <button
@@ -121,7 +149,6 @@ const VendorDashboard = () => {
           ))}
         </div>
 
-        {/* Content */}
         {activeTab === "products" && userId && <VendorProducts vendorId={userId} isApproved={isApproved ?? false} />}
         {activeTab === "deals" && userId && <VendorDeals vendorId={userId} isApproved={isApproved ?? false} />}
         {activeTab === "payouts" && userId && <VendorPayouts vendorId={userId} />}
