@@ -29,7 +29,7 @@ const AdminAlerts = () => {
       // Fetch recent bookings as alerts
       const { data: bookings } = await supabase
         .from("bookings")
-        .select("id, status, booking_date, booking_time, created_at, completion_code, customer:profiles!bookings_customer_id_fkey(full_name), provider:profiles!bookings_provider_id_fkey(full_name)")
+        .select("id, status, booking_date, booking_time, created_at, completion_code, customer:profiles!bookings_customer_id_fkey(full_name, email), provider:profiles!bookings_provider_id_fkey(full_name)")
         .order("created_at", { ascending: false })
         .limit(20);
 
