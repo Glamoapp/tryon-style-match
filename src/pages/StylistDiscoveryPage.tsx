@@ -325,7 +325,9 @@ const StylistListCard = ({
     }`}
   >
     <div className="w-24 h-24 rounded-xl overflow-hidden shrink-0 bg-muted">
-      {card.coverPhoto ? (
+      {card.avatar ? (
+        <img src={card.avatar} alt={card.name} className="w-full h-full object-cover" />
+      ) : card.coverPhoto ? (
         <img src={card.coverPhoto} alt={card.name} className="w-full h-full object-cover" />
       ) : (
         <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs font-body">
