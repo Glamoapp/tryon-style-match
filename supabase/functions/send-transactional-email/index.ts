@@ -46,15 +46,20 @@ Deno.serve(async (req) => {
   const isServiceRole = token === supabaseServiceKey
 
   if (!isServiceRole) {
-    // Validate as user JWT — if it fails, check if it's the publishable key (anon)
-    const authClient = createClient(supabaseUrl!, supabaseAnonKey!, { global: { headers: { Authorization: authHeader } } })
-    const { data: claimsData, error: claimsError } = await authClient.auth.getClaims(token)
+    // Try to decode the JWT to check if it's an anon key or user token
+    let isAnon = false
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]))
+      if (payload.role === 'anon' && payload.iss?.includes('supabase')) {
+        isAnon = true
+      }
+    } catch { /* not a valid JWT — reject below */ }
 
-    if (claimsError || !claimsData?.claims) {
-      // Allow if the token is the project's publishable/anon key (JWT format)
-      const supabasePublishableKey = Deno.env.get('SUPABASE_PUBLISHABLE_KEY')
-      const isPublishableKey = token === supabasePublishableKey || token === supabaseAnonKey
-      if (!isPublishableKey) {
+    if (!isAnon) {
+      // Validate as authenticated user JWT
+      const authClient = createClient(supabaseUrl!, supabaseAnonKey!, { global: { headers: { Authorization: authHeader } } })
+      const { data: claimsData, error: claimsError } = await authClient.auth.getClaims(token)
+      if (claimsError || !claimsData?.claims) {
         return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
       }
     }
