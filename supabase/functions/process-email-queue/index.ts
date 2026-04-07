@@ -219,6 +219,16 @@ Deno.serve(async (req) => {
         continue
       }
 
+      // Guard: skip messages missing idempotency_key (old/malformed messages)
+      if (!payload.idempotency_key && !payload.run_id) {
+        console.warn('Skipping message without idempotency_key or run_id', {
+          queue,
+          msg_id: msg.msg_id,
+        })
+        await moveToDlq(supabase, queue, msg, 'Missing idempotency_key and run_id')
+        continue
+      }
+
       // Guard: skip if another worker already sent this message (VT expired race)
       if (payload.message_id) {
         const { data: alreadySent } = await supabase
