@@ -24,4 +24,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'first-booking-welcome': firstBookingWelcome,
   'signup-welcome': signupWelcome,
   'stylist-signup-confirmation': stylistSignupConfirmation,
+  'complete-setup-reminder': completeSetupReminder,
 }
