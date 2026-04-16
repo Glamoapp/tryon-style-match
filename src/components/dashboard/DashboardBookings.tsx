@@ -49,78 +49,96 @@ export const DashboardBookings = ({
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
 
   const handleBookingAction = async (booking: Booking, action: "confirmed" | "rejected") => {
-    const { error } = await supabase
-      .from("bookings")
-      .update({ status: action, updated_at: new Date().toISOString() })
-      .eq("id", booking.id);
+    const actionKey = `${booking.id}-${action}`;
+    if (loadingAction === actionKey) return;
 
-    if (error) {
-      toast.error("Failed to update booking");
-      return;
-    }
+    setLoadingAction(actionKey);
 
-    // Get current provider's name
-    const { data: { user } } = await supabase.auth.getUser();
-    let providerName = "Your stylist";
-    if (user) {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("full_name")
-        .eq("id", user.id)
-        .single();
-      if (profile) providerName = profile.full_name;
-    }
+    try {
+      const { data: updatedBooking, error } = await supabase
+        .from("bookings")
+        .update({ status: action, updated_at: new Date().toISOString() })
+        .eq("id", booking.id)
+        .eq("status", "pending")
+        .select("id")
+        .maybeSingle();
 
-    const serviceName = (booking.service as any)?.service_name || "your service";
-
-    // Send notification to customer
-    if (action === "confirmed") {
-      await supabase.from("notifications").insert({
-        user_id: booking.customer_id,
-        title: "Booking Confirmed! 🎉",
-        message: `${providerName} has confirmed your ${serviceName} appointment on ${booking.booking_date} at ${booking.booking_time}. See you soon!`,
-        type: "booking",
-        related_booking_id: booking.id,
-      });
-
-      // Send confirmation email to customer
-      const { data: customerProfile } = await supabase
-        .from("profiles")
-        .select("email, full_name")
-        .eq("id", booking.customer_id)
-        .single();
-
-      if (customerProfile?.email) {
-        await supabase.functions.invoke("send-transactional-email", {
-          body: {
-            templateName: "booking-confirmed",
-            recipientEmail: customerProfile.email,
-            idempotencyKey: `booking-confirmed-${booking.id}`,
-            templateData: {
-              customerName: customerProfile.full_name,
-              serviceName,
-              stylistName: providerName,
-              bookingDate: booking.booking_date,
-              bookingTime: booking.booking_time,
-              totalPrice: Number(booking.total_price).toFixed(2),
-            },
-          },
-        });
+      if (error) {
+        toast.error("Failed to update booking");
+        return;
       }
 
-      toast.success("Booking confirmed — customer has been notified via email");
-    } else {
-      await supabase.from("notifications").insert({
-        user_id: booking.customer_id,
-        title: "Booking Declined",
-        message: `${providerName} was unable to accept your ${serviceName} request for ${booking.booking_date} at ${booking.booking_time}. Please try booking another stylist.`,
-        type: "booking",
-        related_booking_id: booking.id,
-      });
-      toast.success("Booking declined — customer has been notified");
-    }
+      if (!updatedBooking) {
+        toast.error("This booking was already processed.");
+        onUpdate();
+        return;
+      }
 
-    onUpdate();
+      // Get current provider's name
+      const { data: { user } } = await supabase.auth.getUser();
+      let providerName = "Your stylist";
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("full_name")
+          .eq("id", user.id)
+          .single();
+        if (profile) providerName = profile.full_name;
+      }
+
+      const serviceName = (booking.service as any)?.service_name || "your service";
+
+      // Send notification to customer
+      if (action === "confirmed") {
+        await supabase.from("notifications").insert({
+          user_id: booking.customer_id,
+          title: "Booking Confirmed! 🎉",
+          message: `${providerName} has confirmed your ${serviceName} appointment on ${booking.booking_date} at ${booking.booking_time}. See you soon!`,
+          type: "booking",
+          related_booking_id: booking.id,
+        });
+
+        // Send confirmation email to customer
+        const { data: customerProfile } = await supabase
+          .from("profiles")
+          .select("email, full_name")
+          .eq("id", booking.customer_id)
+          .single();
+
+        if (customerProfile?.email) {
+          await supabase.functions.invoke("send-transactional-email", {
+            body: {
+              templateName: "booking-confirmed",
+              recipientEmail: customerProfile.email,
+              idempotencyKey: `booking-confirmed-${booking.id}`,
+              templateData: {
+                customerName: customerProfile.full_name,
+                serviceName,
+                stylistName: providerName,
+                bookingDate: booking.booking_date,
+                bookingTime: booking.booking_time,
+                totalPrice: Number(booking.total_price).toFixed(2),
+              },
+            },
+          });
+        }
+
+        toast.success("Booking confirmed — customer has been notified via email");
+      } else {
+        await supabase.from("notifications").insert({
+          user_id: booking.customer_id,
+          title: "Booking Declined",
+          message: `${providerName} was unable to accept your ${serviceName} request for ${booking.booking_date} at ${booking.booking_time}. Please try booking another stylist.`,
+          type: "booking",
+          related_booking_id: booking.id,
+        });
+        toast.success("Booking declined — customer has been notified");
+      }
+
+      onUpdate();
+    } finally {
+      setLoadingAction(null);
+    }
   };
 
   // Step 1: Verify completion code → Capture payment (pull money from customer)
@@ -243,6 +261,11 @@ export const DashboardBookings = ({
       ) : (
         bookings.map((booking) => (
           <motion.div key={booking.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-5 rounded-xl border border-border bg-card">
+            {(() => {
+              const isProcessingDecision = loadingAction === `${booking.id}-confirmed` || loadingAction === `${booking.id}-rejected`;
+
+              return (
+                <>
             <div className="flex items-start justify-between mb-3">
               <div>
                 <p className="font-medium">{(booking.customer as any)?.full_name || "Customer"}</p>
@@ -280,11 +303,11 @@ export const DashboardBookings = ({
             {/* Pending: Confirm or Pass */}
             {booking.status === "pending" && (
               <div className="flex gap-2 pt-2 border-t border-border/50">
-                <Button size="sm" variant="hero" onClick={() => handleBookingAction(booking, "confirmed")}>
-                  Confirm Booking
+                <Button size="sm" variant="hero" onClick={() => handleBookingAction(booking, "confirmed")} disabled={isProcessingDecision}>
+                  {loadingAction === `${booking.id}-confirmed` ? <><Loader2 className="w-3.5 h-3.5 animate-spin mr-1" /> Confirming...</> : "Confirm Booking"}
                 </Button>
-                <Button size="sm" variant="outline" onClick={() => handleBookingAction(booking, "rejected")}>
-                  Pass
+                <Button size="sm" variant="outline" onClick={() => handleBookingAction(booking, "rejected")} disabled={isProcessingDecision}>
+                  {loadingAction === `${booking.id}-rejected` ? <><Loader2 className="w-3.5 h-3.5 animate-spin mr-1" /> Passing...</> : "Pass"}
                 </Button>
               </div>
             )}
@@ -344,6 +367,9 @@ export const DashboardBookings = ({
                 </div>
               </div>
             )}
+                </>
+              );
+            })()}
           </motion.div>
         ))
       )}
