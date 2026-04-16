@@ -161,40 +161,6 @@ const BestDeals = () => {
         )}
       </div>
 
-      <div className="container mx-auto px-6">
-        {/* ── Best Deals in Hair ── */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <ShoppingBag className="w-4 h-4 text-accent" />
-              <span className="text-sm font-semibold text-accent uppercase tracking-widest font-body">
-                Hair Extensions
-              </span>
-            </div>
-            <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground">
-              Best Deals in Hair
-            </h2>
-          </div>
-          <Link to="/extensions">
-            <Button variant="ghost" size="sm" className="text-primary font-body">
-              Shop all <ChevronRight className="w-4 h-4" />
-            </Button>
-          </Link>
-        </div>
-
-        <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0 md:grid md:grid-cols-3 md:overflow-visible">
-          {hairDeals.map((deal, index) => (
-            <DealCard
-              key={deal.id}
-              deal={deal}
-              index={index}
-              linkTo="/extensions"
-              ctaLabel="Buy Now"
-              typeIcon={<ShoppingBag className="w-3 h-3 text-accent" />}
-            />
-          ))}
-        </div>
-      </div>
     </section>
   );
 };
