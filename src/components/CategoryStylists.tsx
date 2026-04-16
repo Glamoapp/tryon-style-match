@@ -33,7 +33,7 @@ const CategoryStylists = () => {
   const categorySections = CATEGORIES.map((cat) => ({
     ...cat,
     providers: providers.filter((p) => matchesCategory(p, cat.match)),
-  })).filter((cat) => cat.providers.length > 0);
+  })).filter((cat) => cat.providers.length > 5);
 
   if (categorySections.length === 0) return null;
 
