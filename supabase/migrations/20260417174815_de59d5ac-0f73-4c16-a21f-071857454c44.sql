@@ -1,0 +1,1 @@
+UPDATE public.profiles SET email = 'stepsweets@yahoo.com' WHERE id = 'd9eb20e3-1f7f-4682-a6cc-71536c927358';
