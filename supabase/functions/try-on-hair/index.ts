@@ -54,14 +54,23 @@ serve(async (req) => {
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
     if (!selfieBase64) throw new Error("No selfie image provided");
 
-    const stylePrompt = `TASK: Add ONLY a new hairstyle to this exact person. This is a HAIR-ONLY edit, NOT a face swap.
+    const stylePrompt = `TASK: Add ONLY a new hairstyle to this exact person and lightly smooth the skin. This is a HAIR-ONLY edit, NOT a face swap.
 
-CRITICAL RULES — DO NOT VIOLATE:
-1. The person's face MUST remain 100% identical and fully visible — same exact face, same skin tone, same skin texture, same eyes, same nose, same lips, same eyebrows, same facial structure, same expression, same age, same ethnicity. DO NOT regenerate, smooth, beautify, or alter the face in ANY way.
-2. Keep the clothing, neck, shoulders, lighting, pose, and background pixel-identical to the original photo.
-3. ONLY modify the hair region on top of and around the head. Replace the existing hair with the new hairstyle described below.
-4. The forehead, cheeks, jawline, ears (if visible), and entire face must stay clearly visible — do NOT cover the face with hair bangs unless the style explicitly requires it, and even then keep the eyes and main facial features visible.
-5. The new hair must blend naturally at the hairline with realistic shadows and lighting that match the original photo.
+ABSOLUTE IDENTITY PRESERVATION — HIGHEST PRIORITY:
+1. The output MUST be the SAME PERSON from the input photo. Preserve their exact facial identity: same face shape, same jawline, same cheekbones, same nose shape and size, same lips, same eye shape and color, same eyebrows, same ethnicity, same age, same gender, same expression. The result must be instantly recognizable as the same individual.
+2. DO NOT generate a different person. DO NOT swap, replace, restructure, or "beautify" the face into someone else. If the face looks like a different person, you have failed.
+3. Skin tone must match the original EXACTLY — do not lighten, darken, or shift the skin color.
+
+SKIN SMOOTHING (subtle and natural only):
+4. Apply a LIGHT, natural retouch on the facial skin: gently reduce blemishes, small spots, redness, and harsh shadows. Keep natural skin texture and pores visible. Do NOT over-smooth into a plastic, waxy, or airbrushed look. Think "good lighting + light retouch," not heavy filter.
+
+PRESERVE EVERYTHING ELSE:
+5. Keep the clothing, neck, shoulders, lighting direction, pose, camera angle, and background pixel-identical to the original photo.
+
+HAIR (the only structural change allowed):
+6. Replace ONLY the hair region on top of and around the head with the new hairstyle below.
+7. Keep the forehead, cheeks, jawline, and ears (if visible) clearly visible. Do NOT cover the face with bangs unless the style explicitly requires it, and even then keep the eyes and main facial features visible.
+8. Blend the new hair naturally at the hairline with realistic shadows and lighting that match the original photo.
 
 NEW HAIRSTYLE TO APPLY:
 - Style: "${styleName || "natural"}"
@@ -69,7 +78,7 @@ NEW HAIRSTYLE TO APPLY:
 - Length: ${length || "medium"}
 - Texture: ${texture || "straight"}
 
-OUTPUT: A photo of the SAME PERSON (identical face) wearing the new hairstyle, looking like a real salon photo.`;
+OUTPUT: A photo of the SAME PERSON (identical, recognizable face) with lightly smoothed skin, wearing the new hairstyle. It should look like the same person took a salon photo on a good-lighting day.`;
 
     // Try primary model, fall back to flash model on failure
     const models = [
