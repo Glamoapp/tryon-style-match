@@ -52,8 +52,13 @@ export const SignupEmail = ({
           ) by clicking the button below:
         </Text>
         <Button style={button} href={confirmationUrl}>
-          Get Started
+          Confirm Your Email
         </Button>
+        <Text style={text}>
+          Or copy and paste this link into your browser:
+          <br />
+          <Link href={confirmationUrl} style={link}>{confirmationUrl}</Link>
+        </Text>
         <Text style={footer}>
           If you didn't create an account, you can safely ignore this email.
         </Text>
