@@ -77,21 +77,18 @@ OUTPUT: A photo of the SAME PERSON (identical face) wearing the new hairstyle, l
       "google/gemini-3-pro-image-preview",
     ];
 
+    let lastStatus = 500;
     for (const model of models) {
       console.log(`Trying model: ${model}`);
       const result = await callImageModel(LOVABLE_API_KEY, stylePrompt, selfieBase64, model);
+      lastStatus = result.status;
 
-      if (result.status === 429) {
-        return new Response(JSON.stringify({ error: "Too many requests. Please wait a moment and try again." }), {
-          status: 429,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
+      // Payment required - stop immediately, no point retrying other models
       if (result.status === 402) {
-        return new Response(JSON.stringify({ error: "AI credits needed. Please top up your workspace." }), {
-          status: 402,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return new Response(
+          JSON.stringify({ error: "AI credits needed. Please top up your workspace.", fallback: true }),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
       }
 
       if (result.image) {
@@ -100,19 +97,27 @@ OUTPUT: A photo of the SAME PERSON (identical face) wearing the new hairstyle, l
         });
       }
 
-      console.log(`Model ${model} did not return an image, trying next...`);
+      // On 429 or any other error, try next model
+      console.log(`Model ${model} failed (status ${result.status}), trying next...`);
     }
 
-    // All models failed
-    return new Response(JSON.stringify({ error: "Could not generate the hairstyle image. Please try again with a clearer photo or different style." }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    // All models failed - return 200 with fallback signal so client SDK can read the body
+    const isRateLimit = lastStatus === 429;
+    return new Response(
+      JSON.stringify({
+        error: isRateLimit
+          ? "The AI service is busy right now. Please wait a moment and try again."
+          : "Could not generate the hairstyle image. Please try again with a clearer photo or different style.",
+        fallback: true,
+        rateLimited: isRateLimit,
+      }),
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
   } catch (e) {
     console.error("try-on-hair error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error", fallback: true }),
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
   }
 });
