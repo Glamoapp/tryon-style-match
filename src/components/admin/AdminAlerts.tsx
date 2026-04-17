@@ -94,6 +94,14 @@ const AdminAlerts = () => {
                       {alert.customerEmail && (
                         <p className="text-xs text-muted-foreground/70 font-body mt-0.5">📧 {alert.customerEmail}</p>
                       )}
+                      {alert.customerPhone && (
+                        <a
+                          href={`tel:${alert.customerPhone}`}
+                          className="text-xs text-primary font-body mt-0.5 inline-block hover:underline"
+                        >
+                          📞 {alert.customerPhone}
+                        </a>
+                      )}
                       {alert.completion_code && (
                         <p className="text-xs font-mono mt-1 px-2 py-0.5 bg-primary/10 text-primary rounded-md inline-block">
                           Code: {alert.completion_code}
