@@ -80,10 +80,11 @@ NEW HAIRSTYLE TO APPLY:
 
 OUTPUT: A photo of the SAME PERSON (identical, recognizable face) with lightly smoothed skin, wearing the new hairstyle. It should look like the same person took a salon photo on a good-lighting day.`;
 
-    // Try primary model, fall back to flash model on failure
+    // Try the highest-quality model first for best identity preservation,
+    // then fall back to the faster flash model on failure / rate limit.
     const models = [
-      "google/gemini-3.1-flash-image-preview",
       "google/gemini-3-pro-image-preview",
+      "google/gemini-3.1-flash-image-preview",
     ];
 
     let lastStatus = 500;
