@@ -16,6 +16,7 @@ import { template as firstBookingWelcome } from './first-booking-welcome.tsx'
 import { template as signupWelcome } from './signup-welcome.tsx'
 import { template as stylistSignupConfirmation } from './stylist-signup-confirmation.tsx'
 import { template as completeSetupReminder } from './complete-setup-reminder.tsx'
+import { template as adminBookingAlert } from './admin-booking-alert.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'booking-confirmation': bookingConfirmation,
@@ -25,4 +26,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'signup-welcome': signupWelcome,
   'stylist-signup-confirmation': stylistSignupConfirmation,
   'complete-setup-reminder': completeSetupReminder,
+  'admin-booking-alert': adminBookingAlert,
 }
