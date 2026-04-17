@@ -15,14 +15,22 @@ import { useFaceOverlay } from "@/hooks/useFaceOverlay";
 import logoImg from "@/assets/logo.png";
 
 const COLORS = [
-  { name: "Natural Black", value: "natural black", hex: "#1a1a1a" },
-  { name: "Dark Brown", value: "dark brown", hex: "#3b2314" },
-  { name: "Light Brown", value: "light brown", hex: "#8B6914" },
-  { name: "Blonde", value: "blonde", hex: "#D4A843" },
-  { name: "Platinum", value: "platinum blonde", hex: "#E8DCC8" },
-  { name: "Red", value: "auburn red", hex: "#922B05" },
-  { name: "Burgundy", value: "burgundy", hex: "#6D1A36" },
-  { name: "Gray", value: "silver gray", hex: "#9E9E9E" },
+  { name: "#1 Jet Black", value: "jet black hair color #1", hex: "#0a0a0a" },
+  { name: "#1B Natural Black", value: "natural off-black hair color #1B", hex: "#1a1a1a" },
+  { name: "#2 Dark Brown", value: "dark brown hair color #2", hex: "#3b2314" },
+  { name: "#4 Medium Brown", value: "medium chocolate brown hair color #4", hex: "#5a3a22" },
+  { name: "#6 Light Brown", value: "light chestnut brown hair color #6", hex: "#7a4f2c" },
+  { name: "#8 Caramel", value: "caramel brown hair color #8", hex: "#9c6b3a" },
+  { name: "#27 Honey Blonde", value: "honey blonde hair color #27, warm golden honey tone", hex: "#C8923B" },
+  { name: "#30 Medium Auburn", value: "medium auburn hair color #30, warm reddish-brown", hex: "#9C5A2A" },
+  { name: "#33 Dark Auburn", value: "dark auburn hair color #33, deep reddish brown", hex: "#7a3520" },
+  { name: "#99J Burgundy", value: "burgundy wine hair color #99J", hex: "#6D1A36" },
+  { name: "#350 Copper Red", value: "copper red hair color #350", hex: "#B8421C" },
+  { name: "#613 Cookie Blonde", value: "light blonde hair color #613, pale cookie blonde, bleach blonde", hex: "#E8C988" },
+  { name: "#60 Platinum", value: "platinum blonde hair color #60, icy white blonde", hex: "#EFE4CC" },
+  { name: "#613/27 Honey Highlights", value: "honey blonde with #613 highlights, blended balayage", hex: "#D9B26A" },
+  { name: "Silver Gray", value: "silver gray hair color, ash silver", hex: "#B8B8B8" },
+  { name: "Rose Gold", value: "rose gold hair color, soft pink blonde", hex: "#D49A8A" },
 ];
 
 const LENGTHS = ["Short", "Medium", "Long", "Extra Long"];
