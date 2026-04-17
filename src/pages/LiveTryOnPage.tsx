@@ -393,18 +393,28 @@ const LiveTryOnPage = () => {
                     <label className="text-[10px] font-body font-semibold text-white/60 mb-1.5 flex items-center gap-1">
                       <Palette className="w-3 h-3" /> Color: {selectedColor.name}
                     </label>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 overflow-x-auto scrollbar-thin pb-1 -mx-1 px-1">
                       {COLORS.map((c) => (
                         <button
                           key={c.value}
                           onClick={() => setSelectedColor(c)}
-                          className={`w-7 h-7 rounded-full border-2 transition-all ${
-                            selectedColor.value === c.value
-                              ? "border-primary scale-110"
-                              : "border-white/20 hover:border-white/50"
-                          }`}
-                          style={{ backgroundColor: c.hex }}
-                        />
+                          className="flex flex-col items-center gap-1 flex-shrink-0"
+                          title={c.name}
+                        >
+                          <span
+                            className={`w-8 h-8 rounded-full border-2 transition-all block ${
+                              selectedColor.value === c.value
+                                ? "border-primary scale-110 ring-2 ring-primary/40"
+                                : "border-white/20 hover:border-white/50"
+                            }`}
+                            style={{ backgroundColor: c.hex }}
+                          />
+                          <span className={`text-[9px] font-body whitespace-nowrap ${
+                            selectedColor.value === c.value ? "text-primary font-semibold" : "text-white/60"
+                          }`}>
+                            {c.name.split(" ")[0]}
+                          </span>
+                        </button>
                       ))}
                     </div>
                   </div>
