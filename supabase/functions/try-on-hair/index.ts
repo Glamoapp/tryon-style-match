@@ -67,10 +67,15 @@ SKIN SMOOTHING (subtle and natural only):
 PRESERVE EVERYTHING ELSE:
 5. Keep the clothing, neck, shoulders, lighting direction, pose, camera angle, and background pixel-identical to the original photo.
 
-HAIR (the only structural change allowed):
+HAIR PLACEMENT & ANATOMY (the only structural change allowed) — CRITICAL:
 6. Replace ONLY the hair region on top of and around the head with the new hairstyle below.
-7. Keep the forehead, cheeks, jawline, and ears (if visible) clearly visible. Do NOT cover the face with bangs unless the style explicitly requires it, and even then keep the eyes and main facial features visible.
-8. Blend the new hair naturally at the hairline with realistic shadows and lighting that match the original photo.
+7. The hair MUST sit on the actual scalp following the real shape, size, angle, and tilt of the person's head in the photo. Do NOT float the hair above the head, do NOT shift it sideways, and do NOT make the head look bigger or smaller to fit the hair.
+8. The HAIRLINE must start at the person's natural hairline on the forehead — not lower (covering eyebrows), not higher (floating above the scalp). Match the curvature of their forehead and temples exactly.
+9. The TOP/CROWN of the hair must follow the natural dome of the skull. The SIDES must wrap correctly around the temples and ears. The BACK must follow the back of the head with realistic depth.
+10. The BOTTOM of the hair (where it ends) must hang naturally with gravity based on the head pose — falling onto/around the shoulders, not floating in mid-air, not clipping through the neck, shoulders, or clothing.
+11. Keep the forehead, cheeks, jawline, and ears (if visible) clearly visible. Do NOT cover the face with bangs unless the style explicitly requires it, and even then keep the eyes and main facial features visible.
+12. Blend the new hair seamlessly at the hairline with realistic shadows, depth, and lighting that match the original photo's light direction. No floating strands, no flat 2D sticker look, no misalignment with the head.
+13. The result must look like REAL hair physically growing from this person's scalp — not a wig pasted on top.
 
 NEW HAIRSTYLE TO APPLY:
 - Style: "${styleName || "natural"}"
