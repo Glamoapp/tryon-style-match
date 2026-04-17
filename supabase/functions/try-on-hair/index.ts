@@ -78,12 +78,16 @@ HAIR PLACEMENT & ANATOMY (the only structural change allowed) — CRITICAL:
 13. The result must look like REAL hair physically growing from this person's scalp — not a wig pasted on top.
 
 NEW HAIRSTYLE TO APPLY:
-- Style: "${styleName || "natural"}"
-- Color: ${color || "natural black"}
+- Style shape: "${styleName || "natural"}"
+- Hair COLOR (MANDATORY — must clearly show this exact color, even if it differs from the reference style image): ${color || "natural black"}
 - Length: ${length || "medium"}
 - Texture: ${texture || "straight"}
 
-OUTPUT: A photo of the SAME PERSON (identical, recognizable face) with lightly smoothed skin, wearing the new hairstyle. It should look like the same person took a salon photo on a good-lighting day.`;
+COLOR ENFORCEMENT — CRITICAL:
+14. The final hair color MUST visibly match the requested color above. If the user picked "#613 Cookie Blonde", the hair must be pale cookie blonde — NOT black, NOT brown. If they picked "#27 Honey Blonde", it must be warm honey blonde. If they picked "#30 Medium Auburn", it must be warm reddish-brown. Do not default back to the person's original hair color or to the reference style's color. The COLOR field above overrides everything else.
+15. Apply the color uniformly with realistic highlights and shine consistent with the lighting in the photo.
+
+OUTPUT: A photo of the SAME PERSON (identical, recognizable face) with lightly smoothed skin, wearing the new hairstyle in the EXACT requested color. It should look like the same person took a salon photo on a good-lighting day.`;
 
     // Try the highest-quality model first for best identity preservation,
     // then fall back to the faster flash model on failure / rate limit.
