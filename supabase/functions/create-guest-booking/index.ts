@@ -87,10 +87,12 @@ Deno.serve(async (req) => {
       userId = newUser.user.id;
     }
 
-    // Update profile with latest contact info
+    // Update profile with latest contact info from THIS booking
+    // (covers cases where profile email drifted from the email entered at checkout)
     await supabaseAdmin.from("profiles").update({
       full_name: name,
       phone,
+      email,
     }).eq("id", userId);
 
     // Create booking
