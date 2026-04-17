@@ -282,6 +282,17 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
 
       createdId = createdBooking.id;
 
+      // Keep the customer's profile in sync with the contact info they just entered.
+      // This ensures admin alerts and stylist notifications always show the right
+      // name / email / phone for THIS booking — not stale data from a previous signup.
+      supabase
+        .from("profiles")
+        .update({ full_name: name, email, phone })
+        .eq("id", user.id)
+        .then(({ error }) => {
+          if (error) console.error("Profile sync after booking failed:", error);
+        });
+
       supabase.functions.invoke("notify-booking", {
         body: { booking_id: createdId },
       }).catch((err) => console.error("Booking notification failed:", err));
