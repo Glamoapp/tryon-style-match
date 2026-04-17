@@ -93,36 +93,31 @@ Deno.serve(async (req) => {
       console.warn("Missing SMS config - LOVABLE_API_KEY, TWILIO_API_KEY, or ADMIN_PHONE_NUMBER");
     }
 
-    // Send email notification to admin
+    // Send admin email notification via transactional email system
     try {
-      const emailPayload = {
-        to: "nextlookbeauty@gmail.com",
-        subject: `New Booking: ${service?.service_name || "Service"} - ${customer?.full_name || "Customer"}`,
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #8B5CF6;">New Booking Alert 📋</h2>
-            <table style="width: 100%; border-collapse: collapse;">
-              <tr><td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Customer</td><td style="padding: 8px; border-bottom: 1px solid #eee;">${customer?.full_name || "Unknown"}</td></tr>
-              <tr><td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Phone</td><td style="padding: 8px; border-bottom: 1px solid #eee;">${customer?.phone || "N/A"}</td></tr>
-              <tr><td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Stylist</td><td style="padding: 8px; border-bottom: 1px solid #eee;">${provider?.full_name || "Unknown"}</td></tr>
-              <tr><td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Service</td><td style="padding: 8px; border-bottom: 1px solid #eee;">${service?.service_name || "Unknown"}</td></tr>
-              <tr><td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Date</td><td style="padding: 8px; border-bottom: 1px solid #eee;">${booking.booking_date}</td></tr>
-              <tr><td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Time</td><td style="padding: 8px; border-bottom: 1px solid #eee;">${booking.booking_time}</td></tr>
-              <tr><td style="padding: 8px; font-weight: bold;">Price</td><td style="padding: 8px;">$${booking.total_price}</td></tr>
-            </table>
-            <p style="margin-top: 20px; color: #666; font-size: 12px;">— NextLook Beauty Platform</p>
-          </div>
-        `,
-      };
-
-      // Enqueue email via the existing email queue
-      await supabase.rpc("enqueue_email", {
-        queue_name: "transactional_emails",
-        payload: emailPayload,
+      const { error: emailErr } = await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "admin-booking-alert",
+          recipientEmail: "nextlookbeauty@gmail.com",
+          idempotencyKey: `admin-booking-alert-${booking.id}`,
+          templateData: {
+            customerName: customer?.full_name,
+            customerEmail: customer?.email,
+            customerPhone: customer?.phone,
+            customerAddress: booking.customer_address,
+            stylistName: provider?.full_name,
+            serviceName: service?.service_name,
+            bookingDate: booking.booking_date,
+            bookingTime: booking.booking_time,
+            totalPrice: String(booking.total_price ?? ""),
+            bookingId: booking.id,
+          },
+        },
       });
-      console.log("Email enqueued");
+      if (emailErr) console.error("Admin email invoke error:", emailErr);
+      else console.log("Admin booking email queued");
     } catch (emailErr) {
-      console.error("Email error:", emailErr);
+      console.error("Admin email error:", emailErr);
     }
 
     return new Response(JSON.stringify({ ok: true }), {
