@@ -19,15 +19,26 @@ const AdminPayments = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetch = async () => {
-      const { data } = await supabase
-        .from("bookings")
-        .select("id, total_price, status, booking_date, provider:profiles!bookings_provider_id_fkey(full_name)")
-        .order("created_at", { ascending: false });
-      setBookings((data as unknown as BookingPayout[]) || []);
+    const fetchAll = async () => {
+      // Paginate to bypass PostgREST's default 1000-row cap and ensure all bookings load
+      const pageSize = 1000;
+      let from = 0;
+      const all: BookingPayout[] = [];
+      while (true) {
+        const { data, error } = await supabase
+          .from("bookings")
+          .select("id, total_price, status, booking_date, provider:profiles!bookings_provider_id_fkey(full_name)")
+          .order("created_at", { ascending: false })
+          .range(from, from + pageSize - 1);
+        if (error || !data || data.length === 0) break;
+        all.push(...(data as unknown as BookingPayout[]));
+        if (data.length < pageSize) break;
+        from += pageSize;
+      }
+      setBookings(all);
       setLoading(false);
     };
-    fetch();
+    fetchAll();
   }, []);
 
   const completed = bookings.filter((b) => b.status === "completed");
