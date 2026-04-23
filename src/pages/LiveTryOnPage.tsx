@@ -40,12 +40,14 @@ const LiveTryOnPage = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const overlayCanvasRef = useRef<HTMLCanvasElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [cameraActive, setCameraActive] = useState(false);
   const [selfie, setSelfie] = useState<string | null>(null);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
+  const [captureSource, setCaptureSource] = useState<"live" | "file">("live");
 
   const [activeCategory, setActiveCategory] = useState<StyleCategory>("Wig Frontal & Closure");
   const [selectedStyleIdx, setSelectedStyleIdx] = useState(0);
@@ -76,58 +78,120 @@ const LiveTryOnPage = () => {
     mode: isMakeupCategory ? "makeup" : "hair",
   });
 
+  const stopCamera = useCallback(() => {
+    stream?.getTracks().forEach((t) => t.stop());
+    setStream(null);
+    setCameraActive(false);
+  }, [stream]);
+
+  const openPhotoCapture = useCallback(() => {
+    setCaptureSource("file");
+    fileInputRef.current?.click();
+  }, []);
+
+  const requestCameraStream = useCallback(async (preferredFacingMode: "user" | "environment") => {
+    const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const attempts: MediaStreamConstraints[] = [
+      {
+        video: {
+          facingMode: { ideal: preferredFacingMode },
+          width: { ideal: isMobileDevice ? 1080 : 1280 },
+          height: { ideal: isMobileDevice ? 1440 : 1720 },
+        },
+        audio: false,
+      },
+      {
+        video: {
+          facingMode: preferredFacingMode,
+        },
+        audio: false,
+      },
+      {
+        video: true,
+        audio: false,
+      },
+    ];
+
+    let lastError: unknown = null;
+
+    for (const constraints of attempts) {
+      try {
+        return await navigator.mediaDevices.getUserMedia(constraints);
+      } catch (error: any) {
+        lastError = error;
+        const errorName = error?.name || "";
+
+        if (errorName === "NotAllowedError" || errorName === "SecurityError") {
+          throw error;
+        }
+      }
+    }
+
+    throw lastError;
+  }, []);
+
+  const handlePhotoInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const imageData = typeof reader.result === "string" ? reader.result : null;
+      if (!imageData) {
+        toast.error("Could not read the photo. Please try again.");
+        return;
+      }
+
+      stopCamera();
+      setCaptureSource("file");
+      setSelfie(imageData);
+      setResultImage(null);
+    };
+    reader.onerror = () => {
+      toast.error("Could not load the photo. Please try again.");
+    };
+    reader.readAsDataURL(file);
+    event.target.value = "";
+  }, [stopCamera]);
+
   const startCamera = useCallback(async () => {
     // Check API availability first (some in-app browsers don't support getUserMedia)
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      toast.error("Camera not supported. Please open this page in Chrome or Safari (not inside Instagram/Facebook/TikTok browsers).");
+      toast.error("Live camera is not supported here. Use Take Photo instead.");
       return;
     }
 
-    const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     const isAndroid = /Android/i.test(navigator.userAgent);
 
     // IMPORTANT: Call getUserMedia DIRECTLY in the user-gesture stack — no awaits before it.
     // Awaiting permissions.query() first breaks the gesture on Android (Samsung Internet / Chrome)
     // and triggers "This site can't ask for your permission".
     try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode,
-          width: { ideal: isMobileDevice ? 1080 : 1280 },
-          height: { ideal: isMobileDevice ? 1440 : 1720 },
-          ...(isMobileDevice && facingMode === "user" ? { zoom: 1.0 } as any : {}),
-        },
-        audio: false,
-      });
+      const mediaStream = await requestCameraStream(facingMode);
       setStream(mediaStream);
       setCameraActive(true);
+      setCaptureSource("live");
       setSelfie(null);
       setResultImage(null);
     } catch (err: any) {
       const name = err?.name || "";
       if (name === "NotAllowedError" || name === "SecurityError") {
         if (isAndroid) {
-          toast.error("Android blocked the request. Close any floating bubbles (Messenger chat heads, picture-in-picture), then tap Open Camera again. If it keeps failing: Settings → Apps → Chrome → Permissions → Camera → Allow.", { duration: 8000 });
+          toast.error("Live camera was blocked on this Android device. Use Take Photo instead, or close floating bubbles and allow Camera in browser settings.", { duration: 8000 });
         } else {
-          toast.error("Camera permission denied. Enable camera access in your browser settings and try again.");
+          toast.error("Live camera permission was denied. Use Take Photo instead or allow camera access in browser settings.");
         }
       } else if (name === "NotFoundError" || name === "OverconstrainedError") {
-        toast.error("No camera found on this device.");
+        toast.error("No compatible live camera was found. Use Take Photo instead.");
       } else if (name === "NotReadableError") {
-        toast.error("Camera is in use by another app. Close other camera apps and try again.");
+        toast.error("Camera is busy in another app. Close it or use Take Photo instead.");
       } else if (name === "AbortError") {
-        toast.error("Camera request was interrupted. Please try again.");
+        toast.error("Camera request was interrupted. Try again or use Take Photo instead.");
       } else {
-        toast.error("Could not access camera. Please allow camera permissions and try again.");
+        toast.error("Could not access the live camera on this device. Use Take Photo instead.");
       }
     }
-  }, [facingMode]);
-
-  const stopCamera = useCallback(() => {
-    stream?.getTracks().forEach((t) => t.stop());
-    setStream(null);
-    setCameraActive(false);
-  }, [stream]);
+  }, [facingMode, requestCameraStream]);
 
   const flipCamera = useCallback(async () => {
     stream?.getTracks().forEach((t) => t.stop());
@@ -137,22 +201,13 @@ const LiveTryOnPage = () => {
     setFacingMode(newMode);
 
     try {
-      const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: newMode,
-          width: { ideal: isMobileDevice ? 1080 : 1280 },
-          height: { ideal: isMobileDevice ? 1440 : 1720 },
-          ...(isMobileDevice && newMode === "user" ? { zoom: 1.0 } as any : {}),
-        },
-        audio: false,
-      });
+      const mediaStream = await requestCameraStream(newMode);
       setStream(mediaStream);
       setCameraActive(true);
     } catch {
       toast.error("Could not flip camera.");
     }
-  }, [stream, facingMode]);
+  }, [stream, facingMode, requestCameraStream]);
 
   useEffect(() => {
     if (!videoRef.current || !stream || !cameraActive) return;
@@ -222,12 +277,25 @@ const LiveTryOnPage = () => {
     setSelfie(null);
     setResultImage(null);
     setIsGenerating(false);
+    if (captureSource === "file") {
+      openPhotoCapture();
+      return;
+    }
+
     startCamera();
   };
 
   return (
     <div className="fixed inset-0 bg-black flex flex-col z-50">
       <canvas ref={canvasRef} className="hidden" />
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        capture="user"
+        className="hidden"
+        onChange={handlePhotoInputChange}
+      />
 
       {/* Top bar */}
       <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-4 pt-[env(safe-area-inset-top,12px)] pb-2 bg-gradient-to-b from-black/60 to-transparent">
@@ -347,6 +415,9 @@ const LiveTryOnPage = () => {
             <div className="flex flex-col gap-3 w-full max-w-xs">
               <Button variant="hero" size="lg" className="w-full" onClick={startCamera}>
                 <Camera className="w-5 h-5 mr-2" /> Open Camera
+              </Button>
+              <Button variant="outline" size="lg" className="w-full bg-black text-white border border-white/20 hover:bg-black/80" onClick={openPhotoCapture}>
+                <Camera className="w-5 h-5 mr-2" /> Take Photo Instead
               </Button>
               <Link to="/stylists" className="w-full">
                 <Button variant="gold" size="lg" className="w-full">
