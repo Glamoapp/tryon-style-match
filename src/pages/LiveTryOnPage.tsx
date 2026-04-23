@@ -89,46 +89,22 @@ const LiveTryOnPage = () => {
     fileInputRef.current?.click();
   }, []);
 
-  const requestCameraStream = useCallback(async (preferredFacingMode: "user" | "environment") => {
+  const buildCameraConstraints = useCallback((preferredFacingMode: "user" | "environment") => {
     const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    const attempts: MediaStreamConstraints[] = [
-      {
-        video: {
-          facingMode: { ideal: preferredFacingMode },
-          width: { ideal: isMobileDevice ? 1080 : 1280 },
-          height: { ideal: isMobileDevice ? 1440 : 1720 },
-        },
-        audio: false,
+
+    return {
+      video: {
+        facingMode: { ideal: preferredFacingMode },
+        width: { ideal: isMobileDevice ? 1080 : 1280 },
+        height: { ideal: isMobileDevice ? 1440 : 1720 },
       },
-      {
-        video: {
-          facingMode: preferredFacingMode,
-        },
-        audio: false,
-      },
-      {
-        video: true,
-        audio: false,
-      },
-    ];
-
-    let lastError: unknown = null;
-
-    for (const constraints of attempts) {
-      try {
-        return await navigator.mediaDevices.getUserMedia(constraints);
-      } catch (error: any) {
-        lastError = error;
-        const errorName = error?.name || "";
-
-        if (errorName === "NotAllowedError" || errorName === "SecurityError") {
-          throw error;
-        }
-      }
-    }
-
-    throw lastError;
+      audio: false,
+    } satisfies MediaStreamConstraints;
   }, []);
+
+  const requestCameraStream = useCallback(async (preferredFacingMode: "user" | "environment") => {
+    return navigator.mediaDevices.getUserMedia(buildCameraConstraints(preferredFacingMode));
+  }, [buildCameraConstraints]);
 
   const handlePhotoInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -175,20 +151,58 @@ const LiveTryOnPage = () => {
       setResultImage(null);
     } catch (err: any) {
       const name = err?.name || "";
+      if (name === "OverconstrainedError") {
+        try {
+          const mediaStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode },
+            audio: false,
+          });
+          setStream(mediaStream);
+          setCameraActive(true);
+          setCaptureSource("live");
+          setSelfie(null);
+          setResultImage(null);
+          return;
+        } catch (fallbackErr: any) {
+          const fallbackName = fallbackErr?.name || "";
+          if (fallbackName === "NotAllowedError" || fallbackName === "SecurityError") {
+            if (isAndroid) {
+              toast.error("Allow camera access for this site on the device, then tap Open Camera again.", { duration: 8000 });
+            } else {
+              toast.error("Live camera permission was denied. Allow camera access in browser settings and try again.");
+            }
+            return;
+          }
+
+          if (fallbackName === "NotFoundError") {
+            toast.error("No compatible live camera was found on this device.");
+            return;
+          }
+
+          if (fallbackName === "NotReadableError") {
+            toast.error("Camera is busy in another app. Close it and try again.");
+            return;
+          }
+
+          toast.error("Could not start the live camera on this device.");
+          return;
+        }
+      }
+
       if (name === "NotAllowedError" || name === "SecurityError") {
         if (isAndroid) {
-          toast.error("Live camera was blocked on this Android device. Use Take Photo instead, or close floating bubbles and allow Camera in browser settings.", { duration: 8000 });
+          toast.error("Allow camera access for this site on the device, then tap Open Camera again.", { duration: 8000 });
         } else {
-          toast.error("Live camera permission was denied. Use Take Photo instead or allow camera access in browser settings.");
+          toast.error("Live camera permission was denied. Allow camera access in browser settings and try again.");
         }
-      } else if (name === "NotFoundError" || name === "OverconstrainedError") {
-        toast.error("No compatible live camera was found. Use Take Photo instead.");
+      } else if (name === "NotFoundError") {
+        toast.error("No compatible live camera was found on this device.");
       } else if (name === "NotReadableError") {
-        toast.error("Camera is busy in another app. Close it or use Take Photo instead.");
+        toast.error("Camera is busy in another app. Close it and try again.");
       } else if (name === "AbortError") {
-        toast.error("Camera request was interrupted. Try again or use Take Photo instead.");
+        toast.error("Camera request was interrupted. Try again.");
       } else {
-        toast.error("Could not access the live camera on this device. Use Take Photo instead.");
+        toast.error("Could not access the live camera on this device.");
       }
     }
   }, [facingMode, requestCameraStream]);
