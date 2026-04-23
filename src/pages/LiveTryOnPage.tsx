@@ -1,5 +1,5 @@
 /* @refresh reset */
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, type ChangeEvent } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
@@ -130,7 +130,7 @@ const LiveTryOnPage = () => {
     throw lastError;
   }, []);
 
-  const handlePhotoInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
