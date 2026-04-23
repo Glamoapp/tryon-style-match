@@ -77,8 +77,19 @@ const LiveTryOnPage = () => {
   });
 
   const startCamera = useCallback(async () => {
+    // Check API availability first (some in-app browsers don't support getUserMedia)
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      toast.error("Camera not supported. Please open this page in Chrome or Safari (not inside Instagram/Facebook/TikTok browsers).");
+      return;
+    }
+
+    const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const isAndroid = /Android/i.test(navigator.userAgent);
+
+    // IMPORTANT: Call getUserMedia DIRECTLY in the user-gesture stack — no awaits before it.
+    // Awaiting permissions.query() first breaks the gesture on Android (Samsung Internet / Chrome)
+    // and triggers "This site can't ask for your permission".
     try {
-      const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode,
@@ -92,8 +103,23 @@ const LiveTryOnPage = () => {
       setCameraActive(true);
       setSelfie(null);
       setResultImage(null);
-    } catch {
-      toast.error("Could not access camera. Please allow camera permissions.");
+    } catch (err: any) {
+      const name = err?.name || "";
+      if (name === "NotAllowedError" || name === "SecurityError") {
+        if (isAndroid) {
+          toast.error("Android blocked the request. Close any floating bubbles (Messenger chat heads, picture-in-picture), then tap Open Camera again. If it keeps failing: Settings → Apps → Chrome → Permissions → Camera → Allow.", { duration: 8000 });
+        } else {
+          toast.error("Camera permission denied. Enable camera access in your browser settings and try again.");
+        }
+      } else if (name === "NotFoundError" || name === "OverconstrainedError") {
+        toast.error("No camera found on this device.");
+      } else if (name === "NotReadableError") {
+        toast.error("Camera is in use by another app. Close other camera apps and try again.");
+      } else if (name === "AbortError") {
+        toast.error("Camera request was interrupted. Please try again.");
+      } else {
+        toast.error("Could not access camera. Please allow camera permissions and try again.");
+      }
     }
   }, [facingMode]);
 
