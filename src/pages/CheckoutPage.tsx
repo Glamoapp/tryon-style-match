@@ -306,7 +306,12 @@ const CheckoutPage = () => {
     }
 
     setLoadingPayment(true);
+    const checkoutWindow = window.open("about:blank", "_blank");
     try {
+      if (checkoutWindow) {
+        checkoutWindow.document.write("Preparing Klarna checkout...");
+      }
+
       const allProducts = [
         ...products,
         ...(deliveryFee > 0
@@ -339,8 +344,14 @@ const CheckoutPage = () => {
       if (error) throw error;
       if (!data?.url) throw new Error("No Klarna checkout URL returned");
 
-      window.location.assign(data.url);
+      if (checkoutWindow) {
+        checkoutWindow.location.href = data.url;
+        setLoadingPayment(false);
+      } else {
+        window.location.href = data.url;
+      }
     } catch (err) {
+      checkoutWindow?.close();
       console.error("Klarna checkout error:", err);
       toast.error("Couldn't open Klarna checkout. Please try again.");
       setLoadingPayment(false);
