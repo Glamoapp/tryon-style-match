@@ -504,6 +504,17 @@ const CheckoutPage = () => {
                         <span className="font-display font-bold text-sm">Affirm</span>
                         <span className="text-[10px] opacity-90">Pay over time</span>
                       </button>
+                      <button
+                        type="button"
+                        onClick={initializePayment}
+                        disabled={loadingPayment}
+                        className="col-span-2 flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-border hover:border-primary hover:bg-primary/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        style={{ background: "#FFB3C7", color: "#0A0A0A" }}
+                        title="Pay in 4 interest-free installments with Klarna"
+                      >
+                        <span className="font-display font-bold text-sm">Klarna</span>
+                        <span className="text-[10px] opacity-80">Pay in 4 — interest-free</span>
+                      </button>
                     </div>
 
                     <Button
