@@ -90,6 +90,23 @@ Deno.serve(async (req) => {
       },
     };
 
+    // Klarna / Affirm require a shipping address on the PaymentIntent.
+    // Pass it through if the client provided one.
+    if (shippingAddress && shippingAddress.line1) {
+      intentParams.shipping = {
+        name: customerName || customerEmail,
+        phone: customerPhone || undefined,
+        address: {
+          line1: shippingAddress.line1,
+          line2: shippingAddress.line2 || undefined,
+          city: shippingAddress.city,
+          state: shippingAddress.state,
+          postal_code: shippingAddress.postal_code,
+          country: shippingAddress.country || "US",
+        },
+      };
+    }
+
     // Charge upfront — no manual capture
     const paymentIntent = await stripe.paymentIntents.create(intentParams);
 
