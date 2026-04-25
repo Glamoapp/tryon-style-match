@@ -255,7 +255,17 @@ const CheckoutPage = () => {
           services: services.length > 0 ? services : undefined,
           customerEmail: email,
           customerName: fullName,
+          customerPhone: phone || undefined,
           bookingIds: bookingIds.length > 0 ? bookingIds : undefined,
+          shippingAddress: hasPhysicalProducts && address.trim()
+            ? {
+                line1: address,
+                city,
+                state,
+                postal_code: zip,
+                country: "US",
+              }
+            : undefined,
         },
       });
 
