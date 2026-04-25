@@ -308,39 +308,35 @@ function drawHairOverlay(
   faceHeight: number,
   angle: number
 ) {
-  // Size hair relative to the face — wide enough to wrap the head without covering the whole face
-  const hairWidth = faceWidth * 1.72;
+  // Size hair relative to the face — wide enough to frame the head from above
+  const hairWidth = faceWidth * 1.85;
   const hairHeight = hairWidth * (img.height / img.width || 1.2);
 
-  // Wig product images include a display head. Anchor lower in the image so the wig sits on the
-  // user's hairline, then erase the center face region so the mannequin never appears.
-  const HAIRLINE_RATIO = 0.42;
-
+  // Anchor the wig so its bottom edge lands at the user's hairline (forehead top),
+  // making the hair appear to grow OUT of the head rather than covering the face.
+  // Small downward nudge lets the hairline blend slightly onto the forehead.
   const hairX = faceCenterX - hairWidth / 2;
-  const hairY = foreheadY - hairHeight * HAIRLINE_RATIO + faceHeight * 0.02;
+  const hairlineBlend = faceHeight * 0.08;
+  const hairY = foreheadY - hairHeight + hairlineBlend;
 
   ctx.save();
   // Rotate around the forehead point so the wig tilts with the head
   ctx.translate(faceCenterX, foreheadY);
   ctx.rotate(angle);
   ctx.translate(-faceCenterX, -foreheadY);
-  ctx.globalAlpha = 0.96;
+  ctx.globalAlpha = 0.97;
   ctx.drawImage(img, hairX, hairY, hairWidth, hairHeight);
 
-  // Remove any mannequin/face pixels from the overlay canvas while keeping side hair visible.
+  // Erase EVERYTHING from the forehead downward so no wig pixels (mannequin face,
+  // long hair strands, etc.) cover the user's face. Hair only remains above the head.
   ctx.globalAlpha = 1;
   ctx.globalCompositeOperation = "destination-out";
-  ctx.beginPath();
-  ctx.ellipse(
-    faceCenterX,
-    foreheadY + faceHeight * 0.46,
-    faceWidth * 0.46,
-    faceHeight * 0.56,
-    0,
-    0,
-    Math.PI * 2
+  ctx.fillRect(
+    faceCenterX - hairWidth,
+    foreheadY + hairlineBlend,
+    hairWidth * 2,
+    hairHeight + faceHeight * 2
   );
-  ctx.fill();
   ctx.globalCompositeOperation = "source-over";
   ctx.restore();
 }
