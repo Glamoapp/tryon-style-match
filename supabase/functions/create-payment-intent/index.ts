@@ -74,7 +74,10 @@ Deno.serve(async (req) => {
       amount: totalAmount,
       currency: "usd",
       customer: customerId,
-      payment_method_types: paymentMethodTypes,
+      // automatic_payment_methods lets Stripe show every method enabled in the
+      // Dashboard (Card, Apple Pay, Google Pay, Cash App, Affirm, Klarna, etc.)
+      // It auto-filters by amount, currency, and customer country.
+      automatic_payment_methods: { enabled: true },
       description: descriptions.join(", "),
       metadata: {
         hasProducts: hasProducts ? "true" : "false",
