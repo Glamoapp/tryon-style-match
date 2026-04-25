@@ -460,13 +460,52 @@ const CheckoutPage = () => {
                 {!paymentReady ? (
                   <div className="space-y-4">
                     <p className="text-sm text-muted-foreground font-body">
-                      Fill in your details above, then click below to enter your payment information.
+                      Choose how you want to pay. All options appear on the next step.
                     </p>
-                    <div className="flex flex-wrap gap-3 items-center text-xs text-muted-foreground font-body">
-                      <span className="flex items-center gap-1"><CreditCard className="w-3.5 h-3.5" /> Card</span>
-                      <span className="flex items-center gap-1"><Smartphone className="w-3.5 h-3.5" /> Apple Pay</span>
-                      <span className="flex items-center gap-1"><DollarSign className="w-3.5 h-3.5" /> Cash App</span>
+
+                    {/* Visual payment method buttons (all route to the same Stripe sheet) */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={initializePayment}
+                        disabled={loadingPayment}
+                        className="flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-border hover:border-primary hover:bg-primary/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-card"
+                      >
+                        <CreditCard className="w-5 h-5 text-foreground" />
+                        <span className="font-display font-bold text-sm text-foreground">Card</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={initializePayment}
+                        disabled={loadingPayment}
+                        className="flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-border hover:border-primary hover:bg-primary/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-black text-white"
+                      >
+                        <Smartphone className="w-5 h-5" />
+                        <span className="font-display font-bold text-sm">Apple Pay</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={initializePayment}
+                        disabled={loadingPayment}
+                        className="flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-border hover:border-primary hover:bg-primary/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        style={{ background: "#00D632", color: "#000" }}
+                      >
+                        <DollarSign className="w-5 h-5" />
+                        <span className="font-display font-bold text-sm">Cash App</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={initializePayment}
+                        disabled={loadingPayment || total < 50}
+                        className="flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-border hover:border-primary hover:bg-primary/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        style={{ background: "#0FA0EA", color: "#fff" }}
+                        title={total < 50 ? "Affirm requires a $50 minimum" : "Pay over time with Affirm"}
+                      >
+                        <span className="font-display font-bold text-sm">Affirm</span>
+                        <span className="text-[10px] opacity-90">Pay over time</span>
+                      </button>
                     </div>
+
                     <Button
                       variant="hero"
                       size="lg"
@@ -480,6 +519,12 @@ const CheckoutPage = () => {
                         <>Continue to Payment — ${total.toFixed(2)}</>
                       )}
                     </Button>
+
+                    {total < 50 && (
+                      <p className="text-xs text-muted-foreground font-body text-center">
+                        Affirm (Buy Now, Pay Later) is available on orders of $50 or more.
+                      </p>
+                    )}
                   </div>
                 ) : clientSecret ? (
                   <Elements stripe={stripePromise} options={{ clientSecret, appearance: stripeAppearance }}>
