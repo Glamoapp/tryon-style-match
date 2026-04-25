@@ -298,7 +298,7 @@ function drawSkinSmoothing(
   ctx.fillRect(cx - radius, cy - radius, radius * 2, radius * 2);
 }
 
-/** Draw hair overlay above the forehead */
+/** Draw hair overlay sitting ON the head — hairline aligned to forehead, crown covering scalp */
 function drawHairOverlay(
   ctx: CanvasRenderingContext2D,
   img: HTMLImageElement,
@@ -308,16 +308,25 @@ function drawHairOverlay(
   faceHeight: number,
   angle: number
 ) {
-  const hairWidth = faceWidth * 2.8;
-  const hairHeight = faceHeight * 2.8;
+  // Size hair relative to the face — slightly wider than the face so it wraps the head
+  const hairWidth = faceWidth * 1.9;
+  const hairHeight = hairWidth * (img.height / img.width || 1.2);
+
+  // Anchor: the hair image's natural hairline sits roughly ~22% down from the top of the image.
+  // We want that hairline pixel to land right on the forehead landmark, AND we want the crown
+  // of the hair to sit on top of the scalp (above the forehead by ~ a quarter of the face height).
+  const HAIRLINE_RATIO = 0.22; // where the hairline appears inside the wig image
+  const scalpLift = faceHeight * 0.28; // how far above the forehead the actual scalp/crown sits
+
   const hairX = faceCenterX - hairWidth / 2;
-  const hairY = foreheadY - hairHeight * 0.88;
+  const hairY = foreheadY - scalpLift - hairHeight * HAIRLINE_RATIO;
 
   ctx.save();
+  // Rotate around the forehead point so the wig tilts with the head
   ctx.translate(faceCenterX, foreheadY);
   ctx.rotate(angle);
   ctx.translate(-faceCenterX, -foreheadY);
-  ctx.globalAlpha = 0.88;
+  ctx.globalAlpha = 0.92;
   ctx.drawImage(img, hairX, hairY, hairWidth, hairHeight);
   ctx.restore();
 }
