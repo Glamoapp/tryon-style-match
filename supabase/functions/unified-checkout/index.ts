@@ -16,7 +16,7 @@ Deno.serve(async (req) => {
       apiVersion: "2023-10-16",
     });
 
-    const { products, services, customerEmail, customerName } = await req.json();
+    const { products, services, customerEmail, customerName, customerPhone, bookingIds, shippingAddress, preferredPaymentMethod } = await req.json();
 
     if (!customerEmail) throw new Error("Email is required");
 
@@ -80,8 +80,10 @@ Deno.serve(async (req) => {
       (sum, item) => sum + (item.price_data.unit_amount * (item.quantity || 1)),
       0,
     );
-    const paymentMethodTypes: string[] = ["card", "cashapp"];
-    if (totalCents >= 5000) {
+    const paymentMethodTypes: string[] = preferredPaymentMethod === "klarna"
+      ? ["klarna"]
+      : ["card", "cashapp"];
+    if (preferredPaymentMethod !== "klarna" && totalCents >= 5000) {
       paymentMethodTypes.push("affirm");
     }
 
@@ -90,6 +92,8 @@ Deno.serve(async (req) => {
       line_items: lineItems,
       mode: "payment",
       payment_method_types: paymentMethodTypes,
+      billing_address_collection: preferredPaymentMethod === "klarna" ? "required" : "auto",
+      phone_number_collection: { enabled: preferredPaymentMethod === "klarna" },
       success_url: `${origin}/booking-tracker?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/extensions`,
       metadata: {
@@ -97,8 +101,28 @@ Deno.serve(async (req) => {
         hasServices: hasServices ? "true" : "false",
         serviceCount: services ? String(services.length) : "0",
         productCount: products ? String(products.length) : "0",
+        customerEmail,
+        bookingIds: bookingIds ? JSON.stringify(bookingIds) : "",
       },
     };
+
+    if (shippingAddress && shippingAddress.line1) {
+      sessionParams.shipping_options = [{ shipping_rate_data: { type: "fixed_amount", fixed_amount: { amount: 0, currency: "usd" }, display_name: "Delivery" } }];
+      sessionParams.payment_intent_data = {
+        shipping: {
+          name: customerName || customerEmail,
+          phone: customerPhone || undefined,
+          address: {
+            line1: shippingAddress.line1,
+            line2: shippingAddress.line2 || undefined,
+            city: shippingAddress.city,
+            state: shippingAddress.state,
+            postal_code: shippingAddress.postal_code,
+            country: shippingAddress.country || "US",
+          },
+        },
+      };
+    }
 
     // Charge immediately — funds are captured at checkout
 

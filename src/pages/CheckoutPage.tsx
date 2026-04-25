@@ -285,6 +285,68 @@ const CheckoutPage = () => {
     }
   };
 
+  /** Send Klarna customers to Stripe Checkout so Klarna can redirect them to its hosted approval flow */
+  const redirectToKlarnaCheckout = async () => {
+    if (!fullName.trim() || !email.trim()) {
+      toast.error("Please fill in your name and email");
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+    if (hasPhysicalProducts && (!address.trim() || !city.trim() || !state.trim() || !zip.trim())) {
+      toast.error("Please fill in your delivery address");
+      return;
+    }
+    if (hasPhysicalProducts && deliveryType === "scheduled" && !scheduledDate) {
+      toast.error("Please pick a delivery date");
+      return;
+    }
+
+    setLoadingPayment(true);
+    try {
+      const allProducts = [
+        ...products,
+        ...(deliveryFee > 0
+          ? [{ title: "Express Delivery (20 min)", price: String(expressFee), quantity: 1, imageUrl: null }]
+          : []),
+      ];
+      const bookingIds = fromCart ? serviceItems.map(s => s.id) : [];
+
+      const { data, error } = await supabase.functions.invoke("unified-checkout", {
+        body: {
+          products: allProducts.length > 0 ? allProducts : undefined,
+          services: services.length > 0 ? services : undefined,
+          customerEmail: email,
+          customerName: fullName,
+          customerPhone: phone || undefined,
+          bookingIds: bookingIds.length > 0 ? bookingIds : undefined,
+          preferredPaymentMethod: "klarna",
+          shippingAddress: hasPhysicalProducts && address.trim()
+            ? {
+                line1: address,
+                city,
+                state,
+                postal_code: zip,
+                country: "US",
+              }
+            : undefined,
+        },
+      });
+
+      if (error) throw error;
+      if (!data?.url) throw new Error("No Klarna checkout URL returned");
+
+      window.location.assign(data.url);
+    } catch (err) {
+      console.error("Klarna checkout error:", err);
+      toast.error("Couldn't open Klarna checkout. Please try again.");
+      setLoadingPayment(false);
+    }
+  };
+
   const handlePaymentSuccess = async () => {
     // Save payment_intent_id to all service bookings
     if (paymentIntentId && fromCart) {
@@ -534,7 +596,7 @@ const CheckoutPage = () => {
                       </button>
                       <button
                         type="button"
-                        onClick={initializePayment}
+                        onClick={redirectToKlarnaCheckout}
                         disabled={loadingPayment}
                         className="col-span-2 flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-border hover:border-primary hover:bg-primary/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                         style={{ background: "#FFB3C7", color: "#0A0A0A" }}
