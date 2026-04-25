@@ -389,9 +389,16 @@ function drawMakeupOverlay(
   ctx.rotate(angle);
   ctx.translate(-faceCenterX, -faceCenterY);
 
-  // Blend the makeup into the skin
-  ctx.globalAlpha = 0.55;
-  ctx.globalCompositeOperation = "multiply";
+  // Blend ONLY the makeup color/tone onto the user's skin — keep their facial
+  // features (eyes, nose, mouth, lighting) intact so it looks like makeup, not
+  // a different face pasted on top.
+  ctx.globalAlpha = 0.45;
+  ctx.globalCompositeOperation = "color";
+  ctx.drawImage(img, overlayX, overlayY, overlayWidth, overlayHeight);
+
+  // A second very subtle pass adds a touch of warmth/glow without showing features.
+  ctx.globalAlpha = 0.18;
+  ctx.globalCompositeOperation = "soft-light";
   ctx.drawImage(img, overlayX, overlayY, overlayWidth, overlayHeight);
 
   ctx.globalCompositeOperation = "source-over";
