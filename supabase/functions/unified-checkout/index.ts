@@ -1,4 +1,4 @@
-import Stripe from "https://esm.sh/stripe@14.21.0?target=deno";
+import Stripe from "https://esm.sh/stripe@14.21.0?target=denonext";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
