@@ -164,10 +164,11 @@ export function useFaceOverlay({
           const w = canvas.width;
           const h = canvas.height;
 
-          // Always show face mesh during scanning, then keep skin smoothing after.
-          if (!complete) {
-            drawScanningPhase(ctx, lm, w, h, progress);
-          } else {
+          // Always show the purple face mesh + scan dots so the user can see
+          // the live tracking on their face — even after the initial scan completes.
+          drawScanningPhase(ctx, lm, w, h, progress);
+
+          if (complete) {
             const foreheadTop = lm[10];
             const leftTemple = lm[234];
             const rightTemple = lm[454];
