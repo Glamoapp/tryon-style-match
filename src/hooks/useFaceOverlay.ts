@@ -298,7 +298,7 @@ function drawSkinSmoothing(
   ctx.fillRect(cx - radius, cy - radius, radius * 2, radius * 2);
 }
 
-/** Draw hair overlay sitting ON the head — hairline aligned to forehead, crown covering scalp */
+/** Draw hair overlay sitting ON the head, then cut the face area out so only hair remains */
 function drawHairOverlay(
   ctx: CanvasRenderingContext2D,
   img: HTMLImageElement,
@@ -308,26 +308,40 @@ function drawHairOverlay(
   faceHeight: number,
   angle: number
 ) {
-  // Size hair relative to the face — slightly wider than the face so it wraps the head
-  const hairWidth = faceWidth * 1.9;
+  // Size hair relative to the face — wide enough to wrap the head without covering the whole face
+  const hairWidth = faceWidth * 1.72;
   const hairHeight = hairWidth * (img.height / img.width || 1.2);
 
-  // Anchor: the hair image's natural hairline sits roughly ~22% down from the top of the image.
-  // We want that hairline pixel to land right on the forehead landmark, AND we want the crown
-  // of the hair to sit on top of the scalp (above the forehead by ~ a quarter of the face height).
-  const HAIRLINE_RATIO = 0.22; // where the hairline appears inside the wig image
-  const scalpLift = faceHeight * 0.28; // how far above the forehead the actual scalp/crown sits
+  // Wig product images include a display head. Anchor lower in the image so the wig sits on the
+  // user's hairline, then erase the center face region so the mannequin never appears.
+  const HAIRLINE_RATIO = 0.42;
 
   const hairX = faceCenterX - hairWidth / 2;
-  const hairY = foreheadY - scalpLift - hairHeight * HAIRLINE_RATIO;
+  const hairY = foreheadY - hairHeight * HAIRLINE_RATIO + faceHeight * 0.02;
 
   ctx.save();
   // Rotate around the forehead point so the wig tilts with the head
   ctx.translate(faceCenterX, foreheadY);
   ctx.rotate(angle);
   ctx.translate(-faceCenterX, -foreheadY);
-  ctx.globalAlpha = 0.92;
+  ctx.globalAlpha = 0.96;
   ctx.drawImage(img, hairX, hairY, hairWidth, hairHeight);
+
+  // Remove any mannequin/face pixels from the overlay canvas while keeping side hair visible.
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = "destination-out";
+  ctx.beginPath();
+  ctx.ellipse(
+    faceCenterX,
+    foreheadY + faceHeight * 0.46,
+    faceWidth * 0.46,
+    faceHeight * 0.56,
+    0,
+    0,
+    Math.PI * 2
+  );
+  ctx.fill();
+  ctx.globalCompositeOperation = "source-over";
   ctx.restore();
 }
 
