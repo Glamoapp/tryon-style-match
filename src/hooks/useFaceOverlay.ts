@@ -376,9 +376,12 @@ function drawCornerPreview(
   const aspect = img.height / img.width || 1.2;
   const previewW = Math.min(canvasW, canvasH) * 0.22;
   const previewH = previewW * aspect;
-  const margin = canvasW * 0.03;
-  const x = canvasW - previewW - margin;
-  const y = canvasH - previewH - margin;
+  const marginX = canvasW * 0.03;
+  // Lift the preview well above the bottom edge so on-screen UI controls
+  // never cover the wig — keep the full image visible inside the magenta box.
+  const marginBottom = canvasH * 0.18;
+  const x = canvasW - previewW - marginX;
+  const y = canvasH - previewH - marginBottom;
 
   ctx.save();
   // Rounded card background for contrast
