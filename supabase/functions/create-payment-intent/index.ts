@@ -16,7 +16,7 @@ Deno.serve(async (req) => {
       apiVersion: "2023-10-16",
     });
 
-    const { products, services, customerEmail, customerName, paymentMethod, bookingIds } = await req.json();
+    const { products, services, customerEmail, customerName, paymentMethod, bookingIds, shippingAddress, customerPhone } = await req.json();
 
     if (!customerEmail) throw new Error("Email is required");
 
