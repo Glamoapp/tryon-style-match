@@ -52,6 +52,15 @@ const PaymentForm = ({ total, onSuccess, checkingOut, setCheckingOut }: {
 
     setCheckingOut(true);
     try {
+      // Ensure all PaymentElement fields are valid before confirming —
+      // Klarna/Affirm need billing address and full customer details.
+      const { error: submitError } = await elements.submit();
+      if (submitError) {
+        toast.error(submitError.message || "Please complete all payment details");
+        setCheckingOut(false);
+        return;
+      }
+
       const { error } = await stripe.confirmPayment({
         elements,
         confirmParams: {
@@ -63,7 +72,7 @@ const PaymentForm = ({ total, onSuccess, checkingOut, setCheckingOut }: {
         if (error.type === "card_error" || error.type === "validation_error") {
           toast.error(error.message || "Payment failed");
         } else {
-          toast.error("An unexpected error occurred.");
+          toast.error(error.message || "An unexpected error occurred.");
         }
       } else {
         onSuccess();
@@ -81,6 +90,15 @@ const PaymentForm = ({ total, onSuccess, checkingOut, setCheckingOut }: {
       <PaymentElement
         options={{
           layout: "tabs",
+          // Collect full billing details — required for Klarna, Affirm, Cash App
+          fields: {
+            billingDetails: {
+              name: "auto",
+              email: "auto",
+              phone: "auto",
+              address: "auto",
+            },
+          },
         }}
       />
       <Button
