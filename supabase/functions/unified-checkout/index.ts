@@ -75,11 +75,21 @@ Deno.serve(async (req) => {
 
     const origin = req.headers.get("origin") || "https://tryon-style-match.lovable.app";
 
+    // Calculate total to determine Affirm eligibility (USD, $50+ minimum)
+    const totalCents = lineItems.reduce(
+      (sum, item) => sum + (item.price_data.unit_amount * (item.quantity || 1)),
+      0,
+    );
+    const paymentMethodTypes: string[] = ["card", "cashapp"];
+    if (totalCents >= 5000) {
+      paymentMethodTypes.push("affirm");
+    }
+
     const sessionParams: any = {
       customer: customerId,
       line_items: lineItems,
       mode: "payment",
-      payment_method_types: ["card"],
+      payment_method_types: paymentMethodTypes,
       success_url: `${origin}/booking-tracker?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/extensions`,
       metadata: {
