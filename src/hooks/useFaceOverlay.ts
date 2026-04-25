@@ -370,3 +370,43 @@ function drawMakeupOverlay(
   ctx.globalCompositeOperation = "source-over";
   ctx.restore();
 }
+
+/** Draw a small wig preview thumbnail in the lower-right corner during scanning */
+function drawCornerPreview(
+  ctx: CanvasRenderingContext2D,
+  img: HTMLImageElement,
+  canvasW: number,
+  canvasH: number
+) {
+  const aspect = img.height / img.width || 1.2;
+  const previewW = Math.min(canvasW, canvasH) * 0.22;
+  const previewH = previewW * aspect;
+  const margin = canvasW * 0.03;
+  const x = canvasW - previewW - margin;
+  const y = canvasH - previewH - margin;
+
+  ctx.save();
+  // Rounded card background for contrast
+  const radius = 12;
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + previewW - radius, y);
+  ctx.quadraticCurveTo(x + previewW, y, x + previewW, y + radius);
+  ctx.lineTo(x + previewW, y + previewH - radius);
+  ctx.quadraticCurveTo(x + previewW, y + previewH, x + previewW - radius, y + previewH);
+  ctx.lineTo(x + radius, y + previewH);
+  ctx.quadraticCurveTo(x, y + previewH, x, y + previewH - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
+  ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
+  ctx.fill();
+  ctx.strokeStyle = "rgba(200, 100, 255, 0.7)";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  ctx.clip();
+  ctx.globalAlpha = 0.95;
+  ctx.drawImage(img, x, y, previewW, previewH);
+  ctx.restore();
+}
