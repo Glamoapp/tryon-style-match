@@ -187,7 +187,7 @@ export function useFaceOverlay({
                 (lm[454].y - lm[234].y) * h,
                 (lm[454].x - lm[234].x) * w
               );
-              drawMakeupOverlay(ctx, hairImgRef.current, faceCenterX, faceCenterY, faceWidth, faceHeight, angle);
+              drawMakeupOverlay(ctx, hairImgRef.current, lm, w, h, faceCenterX, faceCenterY, faceWidth, faceHeight, angle);
             }
           }
 
@@ -339,29 +339,61 @@ function drawHairOverlay(
   ctx.restore();
 }
 
-/** Draw makeup overlay centered on the face */
+/**
+ * MediaPipe face oval landmark indices — the outline of the face.
+ * Used to clip the makeup overlay to the user's actual face shape.
+ */
+const FACE_OVAL_INDICES = [
+  10, 338, 297, 332, 284, 251, 389, 356, 454, 323, 361, 288,
+  397, 365, 379, 378, 400, 377, 152, 148, 176, 149, 150, 136,
+  172, 58, 132, 93, 234, 127, 162, 21, 54, 103, 67, 109,
+];
+
+/** Draw makeup like a filter — clipped to the user's actual face contour */
 function drawMakeupOverlay(
   ctx: CanvasRenderingContext2D,
   img: HTMLImageElement,
+  lm: any[],
+  canvasW: number,
+  canvasH: number,
   faceCenterX: number,
   faceCenterY: number,
   faceWidth: number,
   faceHeight: number,
   angle: number
 ) {
-  // Scale the makeup overlay to cover the full face
-  const overlayWidth = faceWidth * 2.2;
-  const overlayHeight = faceHeight * 1.8;
+  // Scale the makeup overlay to fully cover the face contour
+  const overlayWidth = faceWidth * 1.3;
+  const overlayHeight = faceHeight * 1.25;
   const overlayX = faceCenterX - overlayWidth / 2;
   const overlayY = faceCenterY - overlayHeight / 2;
 
   ctx.save();
+
+  // Build a clip path that follows the face oval landmarks so the makeup
+  // conforms to the user's face like a filter (not a flat rectangle).
+  ctx.beginPath();
+  for (let i = 0; i < FACE_OVAL_INDICES.length; i++) {
+    const p = lm[FACE_OVAL_INDICES[i]];
+    if (!p) continue;
+    const px = p.x * canvasW;
+    const py = p.y * canvasH;
+    if (i === 0) ctx.moveTo(px, py);
+    else ctx.lineTo(px, py);
+  }
+  ctx.closePath();
+  ctx.clip();
+
+  // Rotate around face center so makeup follows head tilt
   ctx.translate(faceCenterX, faceCenterY);
   ctx.rotate(angle);
   ctx.translate(-faceCenterX, -faceCenterY);
-  ctx.globalAlpha = 0.7;
+
+  // Blend the makeup into the skin
+  ctx.globalAlpha = 0.55;
   ctx.globalCompositeOperation = "multiply";
   ctx.drawImage(img, overlayX, overlayY, overlayWidth, overlayHeight);
+
   ctx.globalCompositeOperation = "source-over";
   ctx.restore();
 }
