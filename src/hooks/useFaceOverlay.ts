@@ -187,7 +187,7 @@ export function useFaceOverlay({
                 (lm[454].y - lm[234].y) * h,
                 (lm[454].x - lm[234].x) * w
               );
-              drawMakeupOverlay(ctx, hairImgRef.current, faceCenterX, faceCenterY, faceWidth, faceHeight, angle);
+              drawMakeupOverlay(ctx, hairImgRef.current, lm, w, h, faceCenterX, faceCenterY, faceWidth, faceHeight, angle);
             }
           }
 
