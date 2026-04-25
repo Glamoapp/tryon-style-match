@@ -164,16 +164,10 @@ export function useFaceOverlay({
           const w = canvas.width;
           const h = canvas.height;
 
-          // During scanning phase: draw face mesh dots + progress ring + small wig preview in corner
+          // Always show face mesh during scanning, then keep skin smoothing after.
           if (!complete) {
             drawScanningPhase(ctx, lm, w, h, progress);
-            if (hairImgRef.current && mode === "hair") {
-              drawCornerPreview(ctx, hairImgRef.current, w, h);
-            }
-          }
-
-          // After scan: draw smooth skin + overlay
-          if (complete) {
+          } else {
             const foreheadTop = lm[10];
             const leftTemple = lm[234];
             const rightTemple = lm[454];
@@ -183,25 +177,26 @@ export function useFaceOverlay({
             const faceHeight = Math.abs(chin.y - foreheadTop.y) * h;
             const faceCenterX = ((leftTemple.x + rightTemple.x) / 2) * w;
             const faceCenterY = ((foreheadTop.y + chin.y) / 2) * h;
-            const foreheadY = foreheadTop.y * h;
 
             // Subtle skin smoothing — soft transparent overlay on face region only
             drawSkinSmoothing(ctx, faceCenterX, faceCenterY, faceWidth, faceHeight);
 
-            // Draw the overlay image
-            if (hairImgRef.current) {
+            // Makeup overlays still apply on the face after scan completes.
+            if (hairImgRef.current && mode === "makeup") {
               const angle = Math.atan2(
                 (lm[454].y - lm[234].y) * h,
                 (lm[454].x - lm[234].x) * w
               );
-
-              if (mode === "makeup") {
-                drawMakeupOverlay(ctx, hairImgRef.current, faceCenterX, faceCenterY, faceWidth, faceHeight, angle);
-              } else {
-                drawHairOverlay(ctx, hairImgRef.current, faceCenterX, foreheadY, faceWidth, faceHeight, angle);
-              }
+              drawMakeupOverlay(ctx, hairImgRef.current, faceCenterX, faceCenterY, faceWidth, faceHeight, angle);
             }
           }
+
+          // Hair mode: always show the wig as a small forward-facing preview in the corner —
+          // never overlaid on the user's head.
+          if (hairImgRef.current && mode === "hair") {
+            drawCornerPreview(ctx, hairImgRef.current, w, h);
+          }
+
         } else {
           scanStartRef.current = null;
           scanProgressRef.current = 0;
