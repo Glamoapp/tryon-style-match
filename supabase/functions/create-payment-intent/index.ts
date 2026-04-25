@@ -56,9 +56,15 @@ Deno.serve(async (req) => {
     }
 
     // Map payment method selection to Stripe payment_method_types
+    // Affirm requires USD, amount >= $50, and a US shipping address.
     const paymentMethodTypes: string[] = ["card"];
     if (paymentMethod === "cash_app") {
       paymentMethodTypes.push("cashapp");
+    }
+    // Offer Affirm (Buy Now, Pay Later) on orders of $50+
+    const affirmEligible = totalAmount >= 5000;
+    if (affirmEligible) {
+      paymentMethodTypes.push("affirm");
     }
 
     // Build description for the payment
