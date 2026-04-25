@@ -41,8 +41,23 @@ serve(async (req) => {
 
     // Get booking ID from session metadata
     const bookingId = session.metadata?.bookingId;
+    const bookingIds = session.metadata?.bookingIds
+      ? JSON.parse(session.metadata.bookingIds)
+      : [];
 
-    if (bookingId) {
+    if (Array.isArray(bookingIds) && bookingIds.length > 0) {
+      const { error } = await supabase
+        .from("bookings")
+        .update({ payment_intent_id: paymentIntentId })
+        .in("id", bookingIds);
+
+      if (error) {
+        console.error("Failed to update bookings with payment intent:", error);
+        throw new Error("Failed to save payment info");
+      }
+
+      console.log("Saved payment_intent_id", paymentIntentId, "to bookings", bookingIds);
+    } else if (bookingId) {
       // Save payment_intent_id directly to the booking
       const { error } = await supabase
         .from("bookings")
