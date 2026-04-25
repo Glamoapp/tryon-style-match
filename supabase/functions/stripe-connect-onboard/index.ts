@@ -26,7 +26,7 @@ serve(async (req) => {
 
     const stripe = createStripeClient();
     const existingAccounts = await stripe.accounts.list({ limit: 100 });
-    let account = existingAccounts.data.find((a) => a.metadata?.provider_id === provider_id);
+    let account = existingAccounts.data.find((a: any) => a.metadata?.provider_id === provider_id);
 
     if (!account) {
       account = await stripe.accounts.create({

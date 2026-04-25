@@ -26,7 +26,7 @@ serve(async (req) => {
 
     const stripe = createStripeClient();
     const accounts = await stripe.accounts.list({ limit: 100 });
-    const account = accounts.data.find((a) => a.metadata?.provider_id === provider_id);
+    const account = accounts.data.find((a: any) => a.metadata?.provider_id === provider_id);
 
     if (!account) {
       return json({ status: "not_connected" });
