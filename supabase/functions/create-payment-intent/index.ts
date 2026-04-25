@@ -55,17 +55,9 @@ Deno.serve(async (req) => {
       customerId = customer.id;
     }
 
-    // Map payment method selection to Stripe payment_method_types
-    // Affirm requires USD, amount >= $50, and a US shipping address.
-    const paymentMethodTypes: string[] = ["card"];
-    if (paymentMethod === "cash_app") {
-      paymentMethodTypes.push("cashapp");
-    }
-    // Offer Affirm (Buy Now, Pay Later) on orders of $50+
-    const affirmEligible = totalAmount >= 5000;
-    if (affirmEligible) {
-      paymentMethodTypes.push("affirm");
-    }
+    // Use automatic_payment_methods so Stripe shows ALL methods enabled in
+    // the Stripe Dashboard (Card, Apple Pay, Google Pay, Cash App, Affirm, Klarna, etc.)
+    // This is the recommended approach — it auto-adapts to amount/currency/country eligibility.
 
     // Build description for the payment
     const descriptions: string[] = [];
@@ -82,7 +74,10 @@ Deno.serve(async (req) => {
       amount: totalAmount,
       currency: "usd",
       customer: customerId,
-      payment_method_types: paymentMethodTypes,
+      // automatic_payment_methods lets Stripe show every method enabled in the
+      // Dashboard (Card, Apple Pay, Google Pay, Cash App, Affirm, Klarna, etc.)
+      // It auto-filters by amount, currency, and customer country.
+      automatic_payment_methods: { enabled: true },
       description: descriptions.join(", "),
       metadata: {
         hasProducts: hasProducts ? "true" : "false",
