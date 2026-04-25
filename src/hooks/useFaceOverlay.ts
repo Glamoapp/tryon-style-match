@@ -164,9 +164,12 @@ export function useFaceOverlay({
           const w = canvas.width;
           const h = canvas.height;
 
-          // During scanning phase: draw face mesh dots + progress ring
+          // During scanning phase: draw face mesh dots + progress ring + small wig preview in corner
           if (!complete) {
             drawScanningPhase(ctx, lm, w, h, progress);
+            if (hairImgRef.current && mode === "hair") {
+              drawCornerPreview(ctx, hairImgRef.current, w, h);
+            }
           }
 
           // After scan: draw smooth skin + overlay
