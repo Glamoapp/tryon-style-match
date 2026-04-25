@@ -57,7 +57,7 @@ serve(async (req) => {
         },
       ],
       mode: "payment",
-      payment_method_types: ["card"],
+      payment_method_types: amountInCents >= 5000 ? ["card", "affirm"] : ["card"],
       payment_intent_data: {
         metadata: {
           bookingId,
