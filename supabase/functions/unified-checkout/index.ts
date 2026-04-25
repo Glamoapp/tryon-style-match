@@ -83,7 +83,7 @@ Deno.serve(async (req) => {
     const paymentMethodTypes: string[] = preferredPaymentMethod === "klarna"
       ? ["klarna"]
       : ["card", "cashapp"];
-    if (totalCents >= 5000) {
+    if (preferredPaymentMethod !== "klarna" && totalCents >= 5000) {
       paymentMethodTypes.push("affirm");
     }
 
@@ -92,6 +92,8 @@ Deno.serve(async (req) => {
       line_items: lineItems,
       mode: "payment",
       payment_method_types: paymentMethodTypes,
+      billing_address_collection: preferredPaymentMethod === "klarna" ? "required" : "auto",
+      phone_number_collection: { enabled: preferredPaymentMethod === "klarna" },
       success_url: `${origin}/booking-tracker?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/extensions`,
       metadata: {
