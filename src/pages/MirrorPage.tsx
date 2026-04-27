@@ -6,7 +6,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { ScanFace, Sparkles, CalendarCheck, Cpu, Wifi, Mic, ShieldCheck, Truck, X, Plus, Minus } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import mirrorHero from "@/assets/mirror-lifestyle.jpg";
+import mirrorHero from "@/assets/mirror-hotel.jpg";
 import mirrorProduct from "@/assets/mirror-product.jpg";
 import mirrorScan from "@/assets/mirror-scan.jpg";
 import mirrorWithFace from "@/assets/mirror-with-face.jpg";
