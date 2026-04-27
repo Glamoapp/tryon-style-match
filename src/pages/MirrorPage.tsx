@@ -195,31 +195,6 @@ const MirrorPage = () => {
         </div>
       </section>
 
-      {/* VIDEO DEMO — clean, no gradient overlay */}
-      <section id="video" className="px-6 pb-32">
-        <div className="max-w-6xl mx-auto">
-          <motion.div
-            {...fadeUp}
-            className="rounded-3xl overflow-hidden bg-neutral-900"
-          >
-            <video
-              src={(mirrorVideo as { url: string }).url}
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-auto block"
-            />
-          </motion.div>
-          <motion.div {...fadeUp} className="mt-8 text-center">
-            <p className="text-sm uppercase tracking-widest text-white/60 mb-2">Live Demo</p>
-            <h3 className="font-display text-2xl md:text-4xl font-semibold tracking-tight text-white">
-              Stand. Scan. See a brand new look.
-            </h3>
-          </motion.div>
-        </div>
-      </section>
-
       {/* THREE STEPS — light cards */}
       <section className="py-32 px-6 bg-neutral-950">
         <div className="max-w-6xl mx-auto">
