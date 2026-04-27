@@ -181,17 +181,18 @@ const MirrorPage = () => {
         </motion.div>
       </section>
 
-      {/* TAGLINE — generous whitespace */}
-      <section className="py-32 md:py-40 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.h2
-            {...fadeUp}
-            className="font-canva text-4xl md:text-6xl font-semibold tracking-tight leading-[1.05] text-white"
-          >
-            Your beauty studio.
-            <br />
-            <span className="text-white/40">Reimagined as a mirror.</span>
-          </motion.h2>
+      {/* REIMAGINED AS A MIRROR — Apple-style expandable feature pills next to product */}
+      <section className="py-24 md:py-32 px-6 bg-black overflow-hidden">
+        <div className="max-w-7xl mx-auto">
+          <motion.div {...fadeUp} className="text-center mb-16 md:mb-24">
+            <h2 className="font-canva text-4xl md:text-6xl font-semibold tracking-tight leading-[1.05] text-white">
+              Your beauty studio.
+              <br />
+              <span className="text-white/40">Reimagined as a mirror.</span>
+            </h2>
+          </motion.div>
+
+          <ReimaginedShowcase />
         </div>
       </section>
 
