@@ -16,6 +16,7 @@ export default {
       fontFamily: {
         display: ['"Playfair Display"', 'serif'],
         body: ['Inter', 'sans-serif'],
+        canva: ['Quicksand', 'Inter', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
