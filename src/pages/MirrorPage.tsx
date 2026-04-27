@@ -420,9 +420,9 @@ const FEATURES: Feature[] = [
     body: "12MP TrueDepth array with privacy shutter. Used only when you ask — for try-ons, scans, and stylist consults.",
   },
   {
-    id: "audio",
-    label: "Mics & speakers",
-    body: "Beam-forming far-field mics and stereo speakers tuned for natural voice and ambient music. Just say, 'Mirror, try a wig.'",
+    id: "touch",
+    label: "Touch screen",
+    body: "Responsive multi-touch glass. Tap, swipe, and pinch to browse styles, scan your face, and book a stylist — right from the mirror.",
   },
   {
     id: "durability",
