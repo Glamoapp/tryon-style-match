@@ -212,8 +212,10 @@ const CheckoutPage = () => {
   const deliveryFee = hasPhysicalProducts && deliveryType === "express" ? expressFee : 0;
   const productSubtotal = products.reduce((sum, p) => sum + parseFloat(p.price) * p.quantity, 0);
   const serviceSubtotal = services.reduce((sum, s) => sum + s.price, 0);
+  // 10% booking fee applied to services only
+  const bookingFee = +(serviceSubtotal * 0.10).toFixed(2);
   const subtotal = productSubtotal + serviceSubtotal;
-  const total = subtotal + deliveryFee;
+  const total = subtotal + deliveryFee + bookingFee;
 
   /** Create PaymentIntent and get client secret */
   const initializePayment = async () => {
