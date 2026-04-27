@@ -123,14 +123,14 @@ const MirrorPage = () => {
         <motion.h1
           {...fadeUp}
           transition={{ ...fadeUp.transition, delay: 0.05 }}
-          className="font-display text-5xl md:text-7xl font-semibold tracking-tight"
+          className="font-canva text-5xl md:text-7xl font-semibold tracking-tight"
         >
           NextLook Smart Mirror
         </motion.h1>
         <motion.p
           {...fadeUp}
           transition={{ ...fadeUp.transition, delay: 0.1 }}
-          className="mt-4 font-display text-2xl md:text-3xl text-white/80 font-medium tracking-tight"
+          className="mt-4 font-canva text-2xl md:text-3xl text-white/80 font-medium tracking-tight"
         >
           Mirror, mirror. Reimagined.
         </motion.p>
@@ -186,7 +186,7 @@ const MirrorPage = () => {
         <div className="max-w-4xl mx-auto text-center">
           <motion.h2
             {...fadeUp}
-            className="font-display text-4xl md:text-6xl font-semibold tracking-tight leading-[1.05] text-white"
+            className="font-canva text-4xl md:text-6xl font-semibold tracking-tight leading-[1.05] text-white"
           >
             Your beauty studio.
             <br />
@@ -200,7 +200,7 @@ const MirrorPage = () => {
         <div className="max-w-6xl mx-auto">
           <motion.div {...fadeUp} className="text-center mb-16">
             <p className="text-sm uppercase tracking-widest text-white/60 mb-3">How it works</p>
-            <h2 className="font-display text-4xl md:text-5xl font-semibold tracking-tight">
+            <h2 className="font-canva text-4xl md:text-5xl font-semibold tracking-tight">
               From reflection to booking in seconds.
             </h2>
           </motion.div>
@@ -221,7 +221,7 @@ const MirrorPage = () => {
               >
                 <div className="text-white/40 text-sm font-mono mb-6">0{i + 1}</div>
                 <step.icon className="w-9 h-9 text-white mb-6" strokeWidth={1.5} />
-                <h3 className="font-display text-2xl font-semibold mb-3 tracking-tight">{step.title}</h3>
+                <h3 className="font-canva text-2xl font-semibold mb-3 tracking-tight">{step.title}</h3>
                 <p className="text-white/70 leading-relaxed">{step.desc}</p>
               </motion.div>
             ))}
@@ -234,7 +234,7 @@ const MirrorPage = () => {
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
           <motion.div {...fadeUp}>
             <p className="text-sm uppercase tracking-widest text-white/60 mb-3">Precision AI</p>
-            <h2 className="font-display text-4xl md:text-5xl font-semibold tracking-tight leading-[1.05]">
+            <h2 className="font-canva text-4xl md:text-5xl font-semibold tracking-tight leading-[1.05]">
               468 facial points.
               <br />
               <span className="text-white/40">60 frames per second.</span>
@@ -264,7 +264,7 @@ const MirrorPage = () => {
         <div className="max-w-6xl mx-auto">
           <motion.div {...fadeUp} className="text-center mb-16">
             <p className="text-sm uppercase tracking-widest text-white/60 mb-3">The details</p>
-            <h2 className="font-display text-4xl md:text-5xl font-semibold tracking-tight">
+            <h2 className="font-canva text-4xl md:text-5xl font-semibold tracking-tight">
               Engineered to belong in your space.
             </h2>
           </motion.div>
@@ -297,7 +297,7 @@ const MirrorPage = () => {
                   className="rounded-2xl bg-neutral-900 p-5"
                 >
                   <s.icon className="w-6 h-6 text-white mb-3" strokeWidth={1.5} />
-                  <div className="font-display text-lg font-semibold tracking-tight">{s.label}</div>
+                  <div className="font-canva text-lg font-semibold tracking-tight">{s.label}</div>
                   <div className="text-white/60 text-sm mt-1">{s.sub}</div>
                 </motion.div>
               ))}
@@ -309,7 +309,7 @@ const MirrorPage = () => {
       {/* PRE-ORDER CTA — minimal, centered */}
       <section className="py-32 px-6">
         <motion.div {...fadeUp} className="max-w-3xl mx-auto text-center">
-          <h2 className="font-display text-4xl md:text-6xl font-semibold tracking-tight">
+          <h2 className="font-canva text-4xl md:text-6xl font-semibold tracking-tight">
             Pre-order yours today.
           </h2>
           <p className="mt-5 text-white/70 text-lg max-w-xl mx-auto">
@@ -317,7 +317,7 @@ const MirrorPage = () => {
           </p>
 
           <div className="mt-10 inline-flex items-baseline gap-2">
-            <span className="font-display text-5xl md:text-6xl font-semibold tracking-tight">$2,000</span>
+            <span className="font-canva text-5xl md:text-6xl font-semibold tracking-tight">$2,000</span>
             <span className="text-white/60">USD</span>
           </div>
 
@@ -364,7 +364,7 @@ const MirrorPage = () => {
           </div>
           <div className="p-6 text-center">
             <p className="text-sm uppercase tracking-widest text-white/60 mb-2">The Film</p>
-            <h3 className="font-display text-2xl md:text-3xl font-semibold tracking-tight text-white">
+            <h3 className="font-canva text-2xl md:text-3xl font-semibold tracking-tight text-white">
               Beauty, delivered — instantly.
             </h3>
             <p className="mt-2 text-white/60 text-sm">
