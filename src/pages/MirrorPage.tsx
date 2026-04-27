@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { ScanFace, Sparkles, CalendarCheck, Cpu, Wifi, Mic, ShieldCheck, Truck, X } from "lucide-react";
+import { ScanFace, Sparkles, CalendarCheck, Cpu, Wifi, Mic, ShieldCheck, Truck, X, Plus, Minus } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import mirrorHero from "@/assets/mirror-lifestyle.jpg";
