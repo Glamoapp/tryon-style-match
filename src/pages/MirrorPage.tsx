@@ -12,7 +12,7 @@ import mirrorVideo from "@/assets/videos/mirror-demo.mp4.asset.json";
 
 const SEO = () => {
   useEffect(() => {
-    document.title = "NextLook Mirror — 43\" Smart Beauty Mirror | Pre-Order $2000";
+    document.title = "NextLook Smart Mirror — 43\" Smart Beauty Mirror | Pre-Order $2000";
     const meta = document.querySelector('meta[name="description"]') || (() => {
       const m = document.createElement("meta");
       m.setAttribute("name", "description");
@@ -21,7 +21,7 @@ const SEO = () => {
     })();
     meta.setAttribute(
       "content",
-      "NextLook Mirror: a 43-inch AI smart mirror. Scan your face, try on hairstyles, and book a stylist — right from the mirror. Pre-order today for $2000."
+      "NextLook Smart Mirror: a 43-inch AI smart mirror. Scan your face, try on hairstyles, and book a stylist — right from the mirror. Pre-order today for $2000."
     );
     let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
     if (!canonical) {
@@ -45,7 +45,7 @@ const MirrorPage = () => {
     setTimeout(() => {
       setPreordering(false);
       toast.success("Pre-order reserved", {
-        description: "We'll email you when your NextLook Mirror ships (≈20 days).",
+        description: "We'll email you when your NextLook Smart Mirror ships (≈20 days).",
       });
     }, 800);
   };
@@ -86,7 +86,7 @@ const MirrorPage = () => {
             transition={{ duration: 0.9, delay: 0.1 }}
             className="font-display text-6xl md:text-8xl lg:text-9xl font-bold tracking-tight"
           >
-            NextLook<span className="bg-clip-text text-transparent bg-gradient-to-r from-pink-400 via-fuchsia-400 to-purple-400"> Mirror</span>
+            NextLook<span className="bg-clip-text text-transparent bg-gradient-to-r from-pink-400 via-fuchsia-400 to-purple-400"> Smart Mirror</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -249,7 +249,7 @@ const MirrorPage = () => {
             transition={{ duration: 0.8 }}
             className="relative rounded-3xl overflow-hidden ring-1 ring-white/10 shadow-[0_30px_120px_-20px_rgba(168,85,247,0.4)]"
           >
-            <img src={mirrorScan} alt="Face scanning AR interface on the NextLook Mirror" className="w-full h-auto" loading="lazy" width={1024} height={1024} />
+            <img src={mirrorScan} alt="Face scanning AR interface on the NextLook Smart Mirror" className="w-full h-auto" loading="lazy" width={1024} height={1024} />
           </motion.div>
         </div>
       </section>
@@ -321,7 +321,7 @@ const MirrorPage = () => {
             Pre-order yours today.
           </h2>
           <p className="mt-5 text-white/70 text-lg font-body max-w-xl mx-auto">
-            Reserve your NextLook Mirror now. Estimated delivery in 20 days from order.
+            Reserve your NextLook Smart Mirror now. Estimated delivery in 20 days from order.
           </p>
 
           <div className="mt-10 inline-flex items-baseline gap-2">
