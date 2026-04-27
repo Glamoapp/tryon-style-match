@@ -1,14 +1,37 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ScanFace, Sparkles, CalendarCheck, Cpu, Wifi, Mic, ShieldCheck, Truck } from "lucide-react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { ScanFace, Sparkles, CalendarCheck, Cpu, Wifi, Mic, ShieldCheck, Truck, X } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import mirrorHero from "@/assets/mirror-lifestyle.jpg";
 import mirrorProduct from "@/assets/mirror-product.jpg";
 import mirrorScan from "@/assets/mirror-scan.jpg";
-import mirrorVideo from "@/assets/videos/mirror-demo.mp4.asset.json";
+import mirrorNarration from "@/assets/videos/mirror-narration.mp4.asset.json";
+
+const NARRATION_SCRIPT = `Imagine a world where beauty doesn't wait. It arrives exactly when you need it.
+
+Introducing Nextlook Smart Micro, a powerful, seamless way to access beauty services and products in real time, designed to fit effortlessly into your lifestyle.
+
+The Smart Micro is built for speed, convenience, and precision. It connects you instantly to nearby stylists, beauty professionals, and products, all from one simple interface. No more long waits. No more endless searching. No more uncertainty. Everything you need is right at your fingertips.
+
+With just a few taps, you can browse services, view real profiles, compare styles, and book instantly. Whether it's a last-minute hairstyle, a fresh install, or a product you need today, Smart Micro makes it happen, fast.
+
+But it doesn't stop there.
+
+The Smart Micro intelligently matches you with the best options based on your location, preferences, and urgency. It's not just booking. It's smart booking. You get access to trusted professionals, real availability, and same-day service when you need it most.
+
+How it works. You open Nextlook. You select your service or product. You choose your stylist or get matched instantly. You book. And just like that, your beauty experience is on the way to you.
+
+No stress. No guesswork. Just results.
+
+What does this mean for your life? It means more time saved. It means confidence on demand. It means never missing a moment because of your hair or beauty needs. It means control over your time, your look, and your experience.
+
+Nextlook Smart Micro isn't just a feature. It's a smarter way to live, look, and move.
+
+Beauty, delivered, instantly.`;
 
 const SEO = () => {
   useEffect(() => {
@@ -43,7 +66,46 @@ const fadeUp = {
 
 const MirrorPage = () => {
   const navigate = useNavigate();
+  const [filmOpen, setFilmOpen] = useState(false);
   const handlePreorder = () => navigate("/mirror/preorder");
+  const openFilm = () => setFilmOpen(true);
+
+  // Narrate the script with Web Speech API while the modal is open.
+  useEffect(() => {
+    if (!filmOpen) return;
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+
+    const synth = window.speechSynthesis;
+    synth.cancel();
+
+    const utter = new SpeechSynthesisUtterance(NARRATION_SCRIPT);
+    utter.rate = 0.95;
+    utter.pitch = 1;
+    utter.volume = 1;
+
+    const pickVoice = () => {
+      const voices = synth.getVoices();
+      const preferred =
+        voices.find((v) => /female|samantha|victoria|google us english/i.test(v.name)) ||
+        voices.find((v) => v.lang?.toLowerCase().startsWith("en"));
+      if (preferred) utter.voice = preferred;
+      synth.speak(utter);
+    };
+
+    if (synth.getVoices().length === 0) {
+      const onVoices = () => {
+        pickVoice();
+        synth.removeEventListener("voiceschanged", onVoices);
+      };
+      synth.addEventListener("voiceschanged", onVoices);
+    } else {
+      pickVoice();
+    }
+
+    return () => {
+      synth.cancel();
+    };
+  }, [filmOpen]);
 
   return (
     <div className="min-h-screen bg-black text-white overflow-x-hidden">
@@ -90,9 +152,9 @@ const MirrorPage = () => {
           >
             Pre-order &gt;
           </button>
-          <a href="#video" className="text-sky-400 hover:underline font-medium">
+          <button onClick={openFilm} className="text-sky-400 hover:underline font-medium">
             Watch the film &gt;
-          </a>
+          </button>
         </motion.div>
         <motion.p
           {...fadeUp}
@@ -130,31 +192,6 @@ const MirrorPage = () => {
             <br />
             <span className="text-white/40">Reimagined as a mirror.</span>
           </motion.h2>
-        </div>
-      </section>
-
-      {/* VIDEO DEMO — clean, no gradient overlay */}
-      <section id="video" className="px-6 pb-32">
-        <div className="max-w-6xl mx-auto">
-          <motion.div
-            {...fadeUp}
-            className="rounded-3xl overflow-hidden bg-neutral-900"
-          >
-            <video
-              src={(mirrorVideo as { url: string }).url}
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-auto block"
-            />
-          </motion.div>
-          <motion.div {...fadeUp} className="mt-8 text-center">
-            <p className="text-sm uppercase tracking-widest text-white/60 mb-2">Live Demo</p>
-            <h3 className="font-display text-2xl md:text-4xl font-semibold tracking-tight text-white">
-              Stand. Scan. See a brand new look.
-            </h3>
-          </motion.div>
         </div>
       </section>
 
@@ -291,12 +328,12 @@ const MirrorPage = () => {
             >
               Pre-order Mirror
             </Button>
-            <a
-              href="#video"
+            <button
+              onClick={openFilm}
               className="text-sky-400 hover:underline font-medium"
             >
-              Learn more &gt;
-            </a>
+              Watch the film &gt;
+            </button>
           </div>
 
           <p className="mt-6 text-white/40 text-xs">
@@ -305,7 +342,40 @@ const MirrorPage = () => {
         </motion.div>
       </section>
 
+      {/* NARRATED FILM MODAL */}
+      <Dialog open={filmOpen} onOpenChange={setFilmOpen}>
+        <DialogContent className="max-w-5xl w-full p-0 bg-black border-neutral-800 overflow-hidden">
+          <button
+            onClick={() => setFilmOpen(false)}
+            aria-label="Close"
+            className="absolute top-4 right-4 z-10 rounded-full bg-white/10 hover:bg-white/20 p-2 text-white"
+          >
+            <X className="w-5 h-5" />
+          </button>
+          <div className="aspect-video w-full bg-black">
+            <video
+              src={(mirrorNarration as { url: string }).url}
+              autoPlay
+              loop
+              playsInline
+              muted
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="p-6 text-center">
+            <p className="text-sm uppercase tracking-widest text-white/60 mb-2">The Film</p>
+            <h3 className="font-display text-2xl md:text-3xl font-semibold tracking-tight text-white">
+              Beauty, delivered — instantly.
+            </h3>
+            <p className="mt-2 text-white/60 text-sm">
+              Narration plays through your device. Close to stop.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <Footer />
+
     </div>
   );
 };
