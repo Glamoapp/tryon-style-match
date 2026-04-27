@@ -342,7 +342,40 @@ const MirrorPage = () => {
         </motion.div>
       </section>
 
+      {/* NARRATED FILM MODAL */}
+      <Dialog open={filmOpen} onOpenChange={setFilmOpen}>
+        <DialogContent className="max-w-5xl w-full p-0 bg-black border-neutral-800 overflow-hidden">
+          <button
+            onClick={() => setFilmOpen(false)}
+            aria-label="Close"
+            className="absolute top-4 right-4 z-10 rounded-full bg-white/10 hover:bg-white/20 p-2 text-white"
+          >
+            <X className="w-5 h-5" />
+          </button>
+          <div className="aspect-video w-full bg-black">
+            <video
+              src={(mirrorNarration as { url: string }).url}
+              autoPlay
+              loop
+              playsInline
+              muted
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="p-6 text-center">
+            <p className="text-sm uppercase tracking-widest text-white/60 mb-2">The Film</p>
+            <h3 className="font-display text-2xl md:text-3xl font-semibold tracking-tight text-white">
+              Beauty, delivered — instantly.
+            </h3>
+            <p className="mt-2 text-white/60 text-sm">
+              Narration plays through your device. Close to stop.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <Footer />
+
     </div>
   );
 };
