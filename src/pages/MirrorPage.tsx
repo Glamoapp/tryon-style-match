@@ -99,10 +99,10 @@ const MirrorPage = () => {
             </div>
             <Button
               onClick={handlePreorder}
-              disabled={preordering}
+              
               className="rounded-full bg-white text-black hover:bg-white/90 px-8 h-12 font-semibold"
             >
-              {preordering ? "Reserving…" : "Pre-order"} <ArrowRight className="w-4 h-4 ml-1" />
+              Pre-order <ArrowRight className="w-4 h-4 ml-1" />
             </Button>
             <a href="#video" className="text-white/80 hover:text-white text-sm underline-offset-4 hover:underline">
               Watch the film →
@@ -324,10 +324,10 @@ const MirrorPage = () => {
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button
               onClick={handlePreorder}
-              disabled={preordering}
+              
               className="rounded-full bg-white text-black hover:bg-white/90 px-10 h-14 text-base font-semibold"
             >
-              {preordering ? "Reserving…" : "Pre-order Mirror"} <ArrowRight className="w-4 h-4 ml-1" />
+              Pre-order Mirror <ArrowRight className="w-4 h-4 ml-1" />
             </Button>
             <div className="flex items-center gap-2 text-white/60 text-sm">
               <Truck className="w-4 h-4" /> Free white-glove delivery · ~20 days
