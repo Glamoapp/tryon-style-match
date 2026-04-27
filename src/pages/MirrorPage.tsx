@@ -152,9 +152,9 @@ const MirrorPage = () => {
           >
             Pre-order &gt;
           </button>
-          <a href="#video" className="text-sky-400 hover:underline font-medium">
+          <button onClick={openFilm} className="text-sky-400 hover:underline font-medium">
             Watch the film &gt;
-          </a>
+          </button>
         </motion.div>
         <motion.p
           {...fadeUp}
