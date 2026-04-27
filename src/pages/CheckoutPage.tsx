@@ -735,6 +735,12 @@ const CheckoutPage = () => {
                       <span>{deliveryFee > 0 ? `$${deliveryFee.toFixed(2)}` : "Free"}</span>
                     </div>
                   )}
+                  {hasServices && bookingFee > 0 && (
+                    <div className="flex justify-between text-muted-foreground">
+                      <span>Booking fee (10%)</span>
+                      <span>${bookingFee.toFixed(2)}</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex justify-between items-center font-display font-bold text-lg text-foreground pt-4 border-t border-border mb-6">
