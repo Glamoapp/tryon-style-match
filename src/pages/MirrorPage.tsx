@@ -1,14 +1,37 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ScanFace, Sparkles, CalendarCheck, Cpu, Wifi, Mic, ShieldCheck, Truck } from "lucide-react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { ScanFace, Sparkles, CalendarCheck, Cpu, Wifi, Mic, ShieldCheck, Truck, X } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import mirrorHero from "@/assets/mirror-lifestyle.jpg";
 import mirrorProduct from "@/assets/mirror-product.jpg";
 import mirrorScan from "@/assets/mirror-scan.jpg";
-import mirrorVideo from "@/assets/videos/mirror-demo.mp4.asset.json";
+import mirrorNarration from "@/assets/videos/mirror-narration.mp4.asset.json";
+
+const NARRATION_SCRIPT = `Imagine a world where beauty doesn't wait. It arrives exactly when you need it.
+
+Introducing Nextlook Smart Micro, a powerful, seamless way to access beauty services and products in real time, designed to fit effortlessly into your lifestyle.
+
+The Smart Micro is built for speed, convenience, and precision. It connects you instantly to nearby stylists, beauty professionals, and products, all from one simple interface. No more long waits. No more endless searching. No more uncertainty. Everything you need is right at your fingertips.
+
+With just a few taps, you can browse services, view real profiles, compare styles, and book instantly. Whether it's a last-minute hairstyle, a fresh install, or a product you need today, Smart Micro makes it happen, fast.
+
+But it doesn't stop there.
+
+The Smart Micro intelligently matches you with the best options based on your location, preferences, and urgency. It's not just booking. It's smart booking. You get access to trusted professionals, real availability, and same-day service when you need it most.
+
+How it works. You open Nextlook. You select your service or product. You choose your stylist or get matched instantly. You book. And just like that, your beauty experience is on the way to you.
+
+No stress. No guesswork. Just results.
+
+What does this mean for your life? It means more time saved. It means confidence on demand. It means never missing a moment because of your hair or beauty needs. It means control over your time, your look, and your experience.
+
+Nextlook Smart Micro isn't just a feature. It's a smarter way to live, look, and move.
+
+Beauty, delivered, instantly.`;
 
 const SEO = () => {
   useEffect(() => {
