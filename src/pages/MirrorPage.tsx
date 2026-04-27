@@ -66,7 +66,46 @@ const fadeUp = {
 
 const MirrorPage = () => {
   const navigate = useNavigate();
+  const [filmOpen, setFilmOpen] = useState(false);
   const handlePreorder = () => navigate("/mirror/preorder");
+  const openFilm = () => setFilmOpen(true);
+
+  // Narrate the script with Web Speech API while the modal is open.
+  useEffect(() => {
+    if (!filmOpen) return;
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+
+    const synth = window.speechSynthesis;
+    synth.cancel();
+
+    const utter = new SpeechSynthesisUtterance(NARRATION_SCRIPT);
+    utter.rate = 0.95;
+    utter.pitch = 1;
+    utter.volume = 1;
+
+    const pickVoice = () => {
+      const voices = synth.getVoices();
+      const preferred =
+        voices.find((v) => /female|samantha|victoria|google us english/i.test(v.name)) ||
+        voices.find((v) => v.lang?.toLowerCase().startsWith("en"));
+      if (preferred) utter.voice = preferred;
+      synth.speak(utter);
+    };
+
+    if (synth.getVoices().length === 0) {
+      const onVoices = () => {
+        pickVoice();
+        synth.removeEventListener("voiceschanged", onVoices);
+      };
+      synth.addEventListener("voiceschanged", onVoices);
+    } else {
+      pickVoice();
+    }
+
+    return () => {
+      synth.cancel();
+    };
+  }, [filmOpen]);
 
   return (
     <div className="min-h-screen bg-black text-white overflow-x-hidden">
