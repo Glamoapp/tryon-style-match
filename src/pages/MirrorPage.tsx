@@ -328,12 +328,12 @@ const MirrorPage = () => {
             >
               Pre-order Mirror
             </Button>
-            <a
-              href="#video"
+            <button
+              onClick={openFilm}
               className="text-sky-400 hover:underline font-medium"
             >
-              Learn more &gt;
-            </a>
+              Watch the film &gt;
+            </button>
           </div>
 
           <p className="mt-6 text-white/40 text-xs">
