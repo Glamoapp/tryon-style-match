@@ -494,6 +494,11 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
               {styleName && stylistName && " with "}
               {stylistName && <span className="font-semibold">{stylistName}</span>}
               {servicePrice != null && <span className="ml-2 font-bold">${servicePrice.toFixed(2)}</span>}
+              {servicePrice != null && (
+                <span className="block text-xs text-muted-foreground/80 mt-0.5">
+                  +10% booking fee (${(servicePrice * 0.10).toFixed(2)}) added at checkout
+                </span>
+              )}
             </p>
           )}
           <div className="flex items-center gap-2 pt-2">
