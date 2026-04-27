@@ -46,7 +46,7 @@ const MirrorPage = () => {
   const handlePreorder = () => navigate("/mirror/preorder");
 
   return (
-    <div className="min-h-screen bg-white text-neutral-900 overflow-x-hidden">
+    <div className="min-h-screen bg-black text-white overflow-x-hidden">
       <SEO />
       <Navbar />
 
@@ -54,7 +54,7 @@ const MirrorPage = () => {
       <section className="pt-28 pb-10 text-center px-6">
         <motion.p
           {...fadeUp}
-          className="text-sm md:text-base text-neutral-500 font-body mb-3"
+          className="text-sm md:text-base text-white/60 font-body mb-3"
         >
           New
         </motion.p>
@@ -68,14 +68,14 @@ const MirrorPage = () => {
         <motion.p
           {...fadeUp}
           transition={{ ...fadeUp.transition, delay: 0.1 }}
-          className="mt-4 font-display text-2xl md:text-3xl text-neutral-700 font-medium tracking-tight"
+          className="mt-4 font-display text-2xl md:text-3xl text-white/80 font-medium tracking-tight"
         >
           Mirror, mirror. Reimagined.
         </motion.p>
         <motion.p
           {...fadeUp}
           transition={{ ...fadeUp.transition, delay: 0.15 }}
-          className="mt-6 text-base md:text-lg text-neutral-600 max-w-xl mx-auto"
+          className="mt-6 text-base md:text-lg text-white/70 max-w-xl mx-auto"
         >
           A 43-inch smart mirror with on-device AI. Scan, try on, and book — all from the glass.
         </motion.p>
@@ -86,18 +86,18 @@ const MirrorPage = () => {
         >
           <button
             onClick={handlePreorder}
-            className="text-blue-600 hover:underline font-medium"
+            className="text-sky-400 hover:underline font-medium"
           >
             Pre-order &gt;
           </button>
-          <a href="#video" className="text-blue-600 hover:underline font-medium">
+          <a href="#video" className="text-sky-400 hover:underline font-medium">
             Watch the film &gt;
           </a>
         </motion.div>
         <motion.p
           {...fadeUp}
           transition={{ ...fadeUp.transition, delay: 0.25 }}
-          className="mt-4 text-sm text-neutral-500"
+          className="mt-4 text-sm text-white/60"
         >
           From $2,000. Ships in ~20 days.
         </motion.p>
@@ -124,11 +124,11 @@ const MirrorPage = () => {
         <div className="max-w-4xl mx-auto text-center">
           <motion.h2
             {...fadeUp}
-            className="font-display text-4xl md:text-6xl font-semibold tracking-tight leading-[1.05] text-neutral-900"
+            className="font-display text-4xl md:text-6xl font-semibold tracking-tight leading-[1.05] text-white"
           >
             Your beauty studio.
             <br />
-            <span className="text-neutral-400">Reimagined as a mirror.</span>
+            <span className="text-white/40">Reimagined as a mirror.</span>
           </motion.h2>
         </div>
       </section>
@@ -138,7 +138,7 @@ const MirrorPage = () => {
         <div className="max-w-6xl mx-auto">
           <motion.div
             {...fadeUp}
-            className="rounded-3xl overflow-hidden bg-neutral-100"
+            className="rounded-3xl overflow-hidden bg-neutral-900"
           >
             <video
               src={(mirrorVideo as { url: string }).url}
@@ -150,8 +150,8 @@ const MirrorPage = () => {
             />
           </motion.div>
           <motion.div {...fadeUp} className="mt-8 text-center">
-            <p className="text-sm uppercase tracking-widest text-neutral-500 mb-2">Live Demo</p>
-            <h3 className="font-display text-2xl md:text-4xl font-semibold tracking-tight text-neutral-900">
+            <p className="text-sm uppercase tracking-widest text-white/60 mb-2">Live Demo</p>
+            <h3 className="font-display text-2xl md:text-4xl font-semibold tracking-tight text-white">
               Stand. Scan. See a brand new look.
             </h3>
           </motion.div>
@@ -159,10 +159,10 @@ const MirrorPage = () => {
       </section>
 
       {/* THREE STEPS — light cards */}
-      <section className="py-32 px-6 bg-neutral-50">
+      <section className="py-32 px-6 bg-neutral-950">
         <div className="max-w-6xl mx-auto">
           <motion.div {...fadeUp} className="text-center mb-16">
-            <p className="text-sm uppercase tracking-widest text-neutral-500 mb-3">How it works</p>
+            <p className="text-sm uppercase tracking-widest text-white/60 mb-3">How it works</p>
             <h2 className="font-display text-4xl md:text-5xl font-semibold tracking-tight">
               From reflection to booking in seconds.
             </h2>
@@ -180,12 +180,12 @@ const MirrorPage = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: i * 0.08 }}
-                className="rounded-3xl bg-white p-10"
+                className="rounded-3xl bg-neutral-900 p-10"
               >
-                <div className="text-neutral-400 text-sm font-mono mb-6">0{i + 1}</div>
-                <step.icon className="w-9 h-9 text-neutral-900 mb-6" strokeWidth={1.5} />
+                <div className="text-white/40 text-sm font-mono mb-6">0{i + 1}</div>
+                <step.icon className="w-9 h-9 text-white mb-6" strokeWidth={1.5} />
                 <h3 className="font-display text-2xl font-semibold mb-3 tracking-tight">{step.title}</h3>
-                <p className="text-neutral-600 leading-relaxed">{step.desc}</p>
+                <p className="text-white/70 leading-relaxed">{step.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -196,19 +196,19 @@ const MirrorPage = () => {
       <section className="py-32 px-6">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
           <motion.div {...fadeUp}>
-            <p className="text-sm uppercase tracking-widest text-neutral-500 mb-3">Precision AI</p>
+            <p className="text-sm uppercase tracking-widest text-white/60 mb-3">Precision AI</p>
             <h2 className="font-display text-4xl md:text-5xl font-semibold tracking-tight leading-[1.05]">
               468 facial points.
               <br />
-              <span className="text-neutral-400">60 frames per second.</span>
+              <span className="text-white/40">60 frames per second.</span>
             </h2>
-            <p className="mt-6 text-neutral-600 text-lg leading-relaxed max-w-md">
+            <p className="mt-6 text-white/70 text-lg leading-relaxed max-w-md">
               On-device neural rendering moves every hairstyle with you in real time. No lag. Just you, with a new look.
             </p>
           </motion.div>
           <motion.div
             {...fadeUp}
-            className="rounded-3xl overflow-hidden bg-neutral-100"
+            className="rounded-3xl overflow-hidden bg-neutral-900"
           >
             <img
               src={mirrorScan}
@@ -223,10 +223,10 @@ const MirrorPage = () => {
       </section>
 
       {/* SPECS — simple grid, no colored accents */}
-      <section className="py-32 px-6 bg-neutral-50">
+      <section className="py-32 px-6 bg-neutral-950">
         <div className="max-w-6xl mx-auto">
           <motion.div {...fadeUp} className="text-center mb-16">
-            <p className="text-sm uppercase tracking-widest text-neutral-500 mb-3">The details</p>
+            <p className="text-sm uppercase tracking-widest text-white/60 mb-3">The details</p>
             <h2 className="font-display text-4xl md:text-5xl font-semibold tracking-tight">
               Engineered to belong in your space.
             </h2>
@@ -257,11 +257,11 @@ const MirrorPage = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: i * 0.04 }}
-                  className="rounded-2xl bg-white p-5"
+                  className="rounded-2xl bg-neutral-900 p-5"
                 >
-                  <s.icon className="w-6 h-6 text-neutral-900 mb-3" strokeWidth={1.5} />
+                  <s.icon className="w-6 h-6 text-white mb-3" strokeWidth={1.5} />
                   <div className="font-display text-lg font-semibold tracking-tight">{s.label}</div>
-                  <div className="text-neutral-500 text-sm mt-1">{s.sub}</div>
+                  <div className="text-white/60 text-sm mt-1">{s.sub}</div>
                 </motion.div>
               ))}
             </div>
@@ -275,31 +275,31 @@ const MirrorPage = () => {
           <h2 className="font-display text-4xl md:text-6xl font-semibold tracking-tight">
             Pre-order yours today.
           </h2>
-          <p className="mt-5 text-neutral-600 text-lg max-w-xl mx-auto">
+          <p className="mt-5 text-white/70 text-lg max-w-xl mx-auto">
             Reserve your NextLook Smart Mirror. Estimated delivery in 20 days from order.
           </p>
 
           <div className="mt-10 inline-flex items-baseline gap-2">
             <span className="font-display text-5xl md:text-6xl font-semibold tracking-tight">$2,000</span>
-            <span className="text-neutral-500">USD</span>
+            <span className="text-white/60">USD</span>
           </div>
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button
               onClick={handlePreorder}
-              className="rounded-full bg-blue-600 text-white hover:bg-blue-700 px-8 h-12 text-base font-medium"
+              className="rounded-full bg-white text-black hover:bg-white/90 px-8 h-12 text-base font-medium"
             >
               Pre-order Mirror
             </Button>
             <a
               href="#video"
-              className="text-blue-600 hover:underline font-medium"
+              className="text-sky-400 hover:underline font-medium"
             >
               Learn more &gt;
             </a>
           </div>
 
-          <p className="mt-6 text-neutral-400 text-xs">
+          <p className="mt-6 text-white/40 text-xs">
             No charge today. We'll confirm payment when your mirror is ready to ship.
           </p>
         </motion.div>
