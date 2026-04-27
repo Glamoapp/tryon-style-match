@@ -9,6 +9,7 @@ import Footer from "@/components/Footer";
 import mirrorHero from "@/assets/mirror-lifestyle.jpg";
 import mirrorProduct from "@/assets/mirror-product.jpg";
 import mirrorScan from "@/assets/mirror-scan.jpg";
+import mirrorWithFace from "@/assets/mirror-with-face.jpg";
 import mirrorNarration from "@/assets/videos/mirror-narration.mp4.asset.json";
 
 const NARRATION_SCRIPT = `Imagine a world where beauty doesn't wait. It arrives exactly when you need it.
@@ -434,33 +435,35 @@ function ReimaginedShowcase() {
   const [openId, setOpenId] = useState<string | null>("size");
 
   return (
-    <div className="grid lg:grid-cols-[minmax(0,360px)_1fr] gap-10 lg:gap-16 items-center">
-      {/* Pills column */}
-      <div className="space-y-3 order-2 lg:order-1">
+    <div className="grid lg:grid-cols-[320px_1fr] gap-8 lg:gap-4 items-center">
+      {/* Pills column — compact, Apple-style */}
+      <div className="space-y-2.5 order-2 lg:order-1 w-full max-w-sm">
         {FEATURES.map((f, i) => {
           const isOpen = openId === f.id;
           return (
             <motion.div
               key={f.id}
-              initial={{ opacity: 0, x: -20 }}
+              initial={{ opacity: 0, x: -16 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.05 }}
-              className="rounded-3xl bg-neutral-900/80 backdrop-blur border border-white/5 overflow-hidden"
+              className="rounded-full bg-neutral-900 overflow-hidden"
             >
               <button
                 onClick={() => setOpenId(isOpen ? null : f.id)}
-                className="w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-white/[0.03] transition-colors"
+                className="w-full flex items-center gap-3 px-3 py-3 text-left hover:bg-neutral-800/80 transition-colors"
                 aria-expanded={isOpen}
               >
                 <span
-                  className={`flex items-center justify-center w-7 h-7 rounded-full border border-white/30 shrink-0 transition-colors ${
-                    isOpen ? "bg-white text-black border-white" : "text-white/70"
+                  className={`flex items-center justify-center w-8 h-8 rounded-full border shrink-0 transition-colors ${
+                    isOpen
+                      ? "bg-white text-black border-white"
+                      : "border-white/40 text-white/80"
                   }`}
                 >
                   {isOpen ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
                 </span>
-                <span className="font-canva text-lg md:text-xl font-medium text-white tracking-tight">
+                <span className="font-canva text-base md:text-lg font-medium text-white tracking-tight">
                   {f.label}
                 </span>
               </button>
@@ -473,7 +476,7 @@ function ReimaginedShowcase() {
                 transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                 className="overflow-hidden"
               >
-                <p className="px-5 pb-5 pl-16 text-white/70 text-sm md:text-base leading-relaxed">
+                <p className="px-5 pb-4 pl-14 pr-6 text-white/70 text-sm leading-relaxed">
                   {f.body}
                 </p>
               </motion.div>
@@ -482,27 +485,23 @@ function ReimaginedShowcase() {
         })}
       </div>
 
-      {/* Hero mirror image */}
+      {/* Hero mirror image — floats on black, no card/background */}
       <motion.div
         initial={{ opacity: 0, scale: 0.96 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-        className="order-1 lg:order-2 relative"
+        className="order-1 lg:order-2 relative flex justify-center lg:justify-end"
       >
-        {/* Soft glow under the mirror */}
-        <div
-          aria-hidden
-          className="absolute inset-x-10 bottom-0 h-24 blur-3xl bg-white/10 rounded-full"
-        />
         <img
-          src={mirrorProduct}
-          alt="NextLook Smart Mirror — sleek 43-inch design"
-          className="relative w-full h-auto select-none"
+          src={mirrorWithFace}
+          alt="NextLook Smart Mirror reflecting a woman's face with AR facial tracking"
+          className="relative w-full max-w-[680px] h-auto select-none"
           loading="lazy"
-          width={1600}
-          height={1200}
+          width={1280}
+          height={1280}
           draggable={false}
+          style={{ background: "transparent" }}
         />
       </motion.div>
     </div>
