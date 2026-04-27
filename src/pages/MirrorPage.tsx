@@ -430,7 +430,7 @@ const FEATURES: Feature[] = [
   },
 ];
 
-const ReimaginedShowcase = () => {
+function ReimaginedShowcase() {
   const [openId, setOpenId] = useState<string | null>("size");
 
   return (
