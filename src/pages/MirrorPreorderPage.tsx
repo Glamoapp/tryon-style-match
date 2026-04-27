@@ -67,7 +67,11 @@ const MirrorPreorderPage = () => {
       });
       if (error) throw error;
       if (!data?.url) throw new Error("Could not start checkout");
-      window.location.href = data.url;
+      window.open(data.url, "_blank");
+      setLoading(false);
+      toast.success("Checkout opened in a new tab", {
+        description: "Complete your $2,000 pre-order there.",
+      });
     } catch (err) {
       console.error(err);
       toast.error("Couldn't start checkout", {
