@@ -9,6 +9,7 @@ import Footer from "@/components/Footer";
 import mirrorHero from "@/assets/mirror-lifestyle.jpg";
 import mirrorProduct from "@/assets/mirror-product.jpg";
 import mirrorScan from "@/assets/mirror-scan.jpg";
+import mirrorWithFace from "@/assets/mirror-with-face.jpg";
 import mirrorNarration from "@/assets/videos/mirror-narration.mp4.asset.json";
 
 const NARRATION_SCRIPT = `Imagine a world where beauty doesn't wait. It arrives exactly when you need it.
