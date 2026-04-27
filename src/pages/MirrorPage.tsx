@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ScanFace, Sparkles, CalendarCheck, Cpu, Wifi, Mic, ShieldCheck, Truck, ArrowRight, Check } from "lucide-react";
-import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import mirrorHero from "@/assets/mirror-lifestyle.jpg";
@@ -35,20 +35,12 @@ const SEO = () => {
 };
 
 const MirrorPage = () => {
+  const navigate = useNavigate();
   const { scrollY } = useScroll();
   const heroScale = useTransform(scrollY, [0, 600], [1, 1.08]);
   const heroOpacity = useTransform(scrollY, [0, 500], [1, 0.4]);
-  const [preordering, setPreordering] = useState(false);
 
-  const handlePreorder = () => {
-    setPreordering(true);
-    setTimeout(() => {
-      setPreordering(false);
-      toast.success("Pre-order reserved", {
-        description: "We'll email you when your NextLook Smart Mirror ships (≈20 days).",
-      });
-    }, 800);
-  };
+  const handlePreorder = () => navigate("/mirror/preorder");
 
   return (
     <div className="min-h-screen bg-black text-white overflow-x-hidden">
@@ -107,10 +99,10 @@ const MirrorPage = () => {
             </div>
             <Button
               onClick={handlePreorder}
-              disabled={preordering}
+              
               className="rounded-full bg-white text-black hover:bg-white/90 px-8 h-12 font-semibold"
             >
-              {preordering ? "Reserving…" : "Pre-order"} <ArrowRight className="w-4 h-4 ml-1" />
+              Pre-order <ArrowRight className="w-4 h-4 ml-1" />
             </Button>
             <a href="#video" className="text-white/80 hover:text-white text-sm underline-offset-4 hover:underline">
               Watch the film →
@@ -332,10 +324,10 @@ const MirrorPage = () => {
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button
               onClick={handlePreorder}
-              disabled={preordering}
+              
               className="rounded-full bg-white text-black hover:bg-white/90 px-10 h-14 text-base font-semibold"
             >
-              {preordering ? "Reserving…" : "Pre-order Mirror"} <ArrowRight className="w-4 h-4 ml-1" />
+              Pre-order Mirror <ArrowRight className="w-4 h-4 ml-1" />
             </Button>
             <div className="flex items-center gap-2 text-white/60 text-sm">
               <Truck className="w-4 h-4" /> Free white-glove delivery · ~20 days
