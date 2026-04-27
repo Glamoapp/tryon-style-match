@@ -99,7 +99,6 @@ const MirrorPage = () => {
             </div>
             <Button
               onClick={handlePreorder}
-              
               className="rounded-full bg-white text-black hover:bg-white/90 px-8 h-12 font-semibold"
             >
               Pre-order <ArrowRight className="w-4 h-4 ml-1" />
