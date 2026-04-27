@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ScanFace, Sparkles, CalendarCheck, Cpu, Wifi, Mic, ShieldCheck, Truck, ArrowRight, Check } from "lucide-react";
-import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import mirrorHero from "@/assets/mirror-lifestyle.jpg";
@@ -35,20 +35,12 @@ const SEO = () => {
 };
 
 const MirrorPage = () => {
+  const navigate = useNavigate();
   const { scrollY } = useScroll();
   const heroScale = useTransform(scrollY, [0, 600], [1, 1.08]);
   const heroOpacity = useTransform(scrollY, [0, 500], [1, 0.4]);
-  const [preordering, setPreordering] = useState(false);
 
-  const handlePreorder = () => {
-    setPreordering(true);
-    setTimeout(() => {
-      setPreordering(false);
-      toast.success("Pre-order reserved", {
-        description: "We'll email you when your NextLook Smart Mirror ships (≈20 days).",
-      });
-    }, 800);
-  };
+  const handlePreorder = () => navigate("/mirror/preorder");
 
   return (
     <div className="min-h-screen bg-black text-white overflow-x-hidden">
