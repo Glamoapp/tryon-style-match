@@ -244,6 +244,9 @@ const CheckoutPage = () => {
         ...(deliveryFee > 0
           ? [{ title: "Express Delivery (20 min)", price: String(expressFee), quantity: 1, imageUrl: null }]
           : []),
+        ...(bookingFee > 0
+          ? [{ title: "Booking fee (10%)", price: bookingFee.toFixed(2), quantity: 1, imageUrl: null }]
+          : []),
       ];
 
       // Collect booking IDs from service items in cart
