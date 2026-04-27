@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Scissors, Sparkles, Search, ShoppingBag, Star, CalendarDays, UserCog, LogOut, LogIn, User, Store, Info } from "lucide-react";
+import { Menu, X, Scissors, Sparkles, Search, ShoppingBag, Star, CalendarDays, UserCog, LogOut, LogIn, User, Store, Info, Monitor } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { CartDrawer } from "@/components/CartDrawer";
 import MessageNotification from "@/components/MessageNotification";
@@ -12,6 +12,7 @@ import logoImg from "@/assets/logo.png";
 const navLinks = [
   { label: "Services", href: "/discover", icon: Scissors },
   { label: "Virtual Try-On", href: "/tryon", icon: Sparkles },
+  { label: "NextLook Mirror", href: "/mirror", icon: Monitor },
   { label: "Find Stylists", href: "/stylists", icon: Search },
   { label: "Shop Extensions", href: "/extensions", icon: ShoppingBag },
   { label: "GlowUp Monday", href: "/glowup-monday", icon: Star },
