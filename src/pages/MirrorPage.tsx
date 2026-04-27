@@ -507,4 +507,4 @@ function ReimaginedShowcase() {
       </motion.div>
     </div>
   );
-};
+}
