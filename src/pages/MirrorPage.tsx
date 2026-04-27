@@ -308,37 +308,47 @@ const MirrorPage = () => {
         </div>
       </section>
 
-      {/* PRE-ORDER CTA — minimal, centered */}
-      <section className="py-32 px-6">
-        <motion.div {...fadeUp} className="max-w-3xl mx-auto text-center">
-          <h2 className="font-canva text-4xl md:text-6xl font-semibold tracking-tight">
+      {/* PRE-ORDER CTA — purple gradient box */}
+      <section className="py-24 px-6 bg-black">
+        <motion.div
+          {...fadeUp}
+          className="max-w-5xl mx-auto rounded-[2.5rem] px-8 md:px-16 py-20 md:py-24 text-center ring-1 ring-white/10 shadow-2xl"
+          style={{
+            background:
+              "radial-gradient(ellipse at center, hsl(290 60% 18%) 0%, hsl(280 50% 10%) 50%, hsl(0 0% 6%) 100%)",
+          }}
+        >
+          <p className="text-xs uppercase tracking-[0.3em] text-pink-300/90 mb-6">
+            Limited First Run
+          </p>
+          <h2 className="font-canva text-4xl md:text-6xl font-semibold tracking-tight text-white">
             Pre-order yours today.
           </h2>
           <p className="mt-5 text-white/70 text-lg max-w-xl mx-auto">
-            Reserve your NextLook Smart Mirror. Estimated delivery in 20 days from order.
+            Reserve your NextLook Smart Mirror now. Estimated delivery in 20 days from order.
           </p>
 
           <div className="mt-10 inline-flex items-baseline gap-2">
-            <span className="font-canva text-5xl md:text-6xl font-semibold tracking-tight">$2,000</span>
+            <span className="font-canva text-5xl md:text-6xl font-semibold tracking-tight text-white">
+              $2,000
+            </span>
             <span className="text-white/60">USD</span>
           </div>
 
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-5">
             <Button
               onClick={handlePreorder}
               className="rounded-full bg-white text-black hover:bg-white/90 px-8 h-12 text-base font-medium"
             >
-              Pre-order Mirror
+              Pre-order Mirror →
             </Button>
-            <button
-              onClick={openFilm}
-              className="text-sky-400 hover:underline font-medium"
-            >
-              Watch the film &gt;
-            </button>
+            <div className="inline-flex items-center gap-2 text-white/70 text-sm">
+              <Truck className="w-4 h-4" />
+              Free white-glove delivery · ~20 days
+            </div>
           </div>
 
-          <p className="mt-6 text-white/40 text-xs">
+          <p className="mt-8 text-white/40 text-xs">
             No charge today. We'll confirm payment when your mirror is ready to ship.
           </p>
         </motion.div>
