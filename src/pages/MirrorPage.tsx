@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { ScanFace, Sparkles, CalendarCheck, Cpu, Wifi, Mic, ShieldCheck, Truck, X } from "lucide-react";
+import { ScanFace, Sparkles, CalendarCheck, Cpu, Wifi, Mic, ShieldCheck, Truck, X, Plus, Minus } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import mirrorHero from "@/assets/mirror-lifestyle.jpg";
@@ -181,17 +181,18 @@ const MirrorPage = () => {
         </motion.div>
       </section>
 
-      {/* TAGLINE — generous whitespace */}
-      <section className="py-32 md:py-40 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.h2
-            {...fadeUp}
-            className="font-canva text-4xl md:text-6xl font-semibold tracking-tight leading-[1.05] text-white"
-          >
-            Your beauty studio.
-            <br />
-            <span className="text-white/40">Reimagined as a mirror.</span>
-          </motion.h2>
+      {/* REIMAGINED AS A MIRROR — Apple-style expandable feature pills next to product */}
+      <section className="py-24 md:py-32 px-6 bg-black overflow-hidden">
+        <div className="max-w-7xl mx-auto">
+          <motion.div {...fadeUp} className="text-center mb-16 md:mb-24">
+            <h2 className="font-canva text-4xl md:text-6xl font-semibold tracking-tight leading-[1.05] text-white">
+              Your beauty studio.
+              <br />
+              <span className="text-white/40">Reimagined as a mirror.</span>
+            </h2>
+          </motion.div>
+
+          <ReimaginedShowcase />
         </div>
       </section>
 
@@ -381,3 +382,129 @@ const MirrorPage = () => {
 };
 
 export default MirrorPage;
+
+// =============================================================================
+// Apple-style expandable feature pills next to a hero mirror image.
+// =============================================================================
+type Feature = {
+  id: string;
+  label: string;
+  body: string;
+};
+
+const FEATURES: Feature[] = [
+  {
+    id: "size",
+    label: "Size",
+    body: "A 43-inch edge-to-edge mirror display. Large enough to see yourself head to shoulders, slim enough to feel like a piece of furniture.",
+  },
+  {
+    id: "finish",
+    label: "Finish",
+    body: "Aerospace-grade aluminum frame in Midnight or Silver. A seamless glass front that disappears into the room when off.",
+  },
+  {
+    id: "display",
+    label: "Display",
+    body: "4K mirror-grade panel with True Tone, calibrated for accurate skin tones in any light. Reflects perfectly. Renders beautifully.",
+  },
+  {
+    id: "ai",
+    label: "AI",
+    body: "On-device neural chip tracks 468 facial points at 60 frames per second. Your face never leaves the mirror.",
+  },
+  {
+    id: "camera",
+    label: "Camera",
+    body: "12MP TrueDepth array with privacy shutter. Used only when you ask — for try-ons, scans, and stylist consults.",
+  },
+  {
+    id: "audio",
+    label: "Mics & speakers",
+    body: "Beam-forming far-field mics and stereo speakers tuned for natural voice and ambient music. Just say, 'Mirror, try a wig.'",
+  },
+  {
+    id: "durability",
+    label: "Durability",
+    body: "Tempered shatter-resistant glass and a moisture-sealed body. Built for bathrooms, bedrooms, and salons alike.",
+  },
+];
+
+const ReimaginedShowcase = () => {
+  const [openId, setOpenId] = useState<string | null>("size");
+
+  return (
+    <div className="grid lg:grid-cols-[minmax(0,360px)_1fr] gap-10 lg:gap-16 items-center">
+      {/* Pills column */}
+      <div className="space-y-3 order-2 lg:order-1">
+        {FEATURES.map((f, i) => {
+          const isOpen = openId === f.id;
+          return (
+            <motion.div
+              key={f.id}
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: i * 0.05 }}
+              className="rounded-3xl bg-neutral-900/80 backdrop-blur border border-white/5 overflow-hidden"
+            >
+              <button
+                onClick={() => setOpenId(isOpen ? null : f.id)}
+                className="w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-white/[0.03] transition-colors"
+                aria-expanded={isOpen}
+              >
+                <span
+                  className={`flex items-center justify-center w-7 h-7 rounded-full border border-white/30 shrink-0 transition-colors ${
+                    isOpen ? "bg-white text-black border-white" : "text-white/70"
+                  }`}
+                >
+                  {isOpen ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                </span>
+                <span className="font-canva text-lg md:text-xl font-medium text-white tracking-tight">
+                  {f.label}
+                </span>
+              </button>
+              <motion.div
+                initial={false}
+                animate={{
+                  height: isOpen ? "auto" : 0,
+                  opacity: isOpen ? 1 : 0,
+                }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                className="overflow-hidden"
+              >
+                <p className="px-5 pb-5 pl-16 text-white/70 text-sm md:text-base leading-relaxed">
+                  {f.body}
+                </p>
+              </motion.div>
+            </motion.div>
+          );
+        })}
+      </div>
+
+      {/* Hero mirror image */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.96 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+        className="order-1 lg:order-2 relative"
+      >
+        {/* Soft glow under the mirror */}
+        <div
+          aria-hidden
+          className="absolute inset-x-10 bottom-0 h-24 blur-3xl bg-white/10 rounded-full"
+        />
+        <img
+          src={mirrorProduct}
+          alt="NextLook Smart Mirror — sleek 43-inch design"
+          className="relative w-full h-auto select-none"
+          loading="lazy"
+          width={1600}
+          height={1200}
+          draggable={false}
+        />
+      </motion.div>
+    </div>
+  );
+};
