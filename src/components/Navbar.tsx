@@ -12,7 +12,7 @@ import logoImg from "@/assets/logo.png";
 const navLinks = [
   { label: "Services", href: "/discover", icon: Scissors },
   { label: "Virtual Try-On", href: "/tryon", icon: Sparkles },
-  { label: "NextLook Mirror", href: "/mirror", icon: Monitor },
+  { label: "NextLook Smart Mirror", href: "/mirror", icon: Monitor },
   { label: "Find Stylists", href: "/stylists", icon: Search },
   { label: "Shop Extensions", href: "/extensions", icon: ShoppingBag },
   { label: "GlowUp Monday", href: "/glowup-monday", icon: Star },
