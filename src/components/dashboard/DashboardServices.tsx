@@ -149,6 +149,7 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
     }
     setSaving(true);
     try {
+      await supabase.auth.refreshSession();
       let serviceId = editingId;
 
       if (editingId) {
