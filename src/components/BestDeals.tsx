@@ -53,7 +53,7 @@ const DealCard = ({ deal, index, linkTo, ctaLabel, typeIcon }: DealCardProps) =>
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
     transition={{ delay: index * 0.08 }}
-    className="min-w-[200px] md:min-w-0"
+    className=""
   >
     <Link to={linkTo} className="block group">
       <div className="bg-card rounded-2xl overflow-hidden shadow-card hover:shadow-elevated transition-all duration-300 border border-border/50">
