@@ -3,6 +3,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Plus, Pencil, Trash2, X, Save, Scissors, Upload, ImageIcon, Tag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -45,6 +55,9 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
   const [pendingPhotos, setPendingPhotos] = useState<File[]>([]);
   const [uploadingPhotos, setUploadingPhotos] = useState(false);
 
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
   useEffect(() => { fetchServices(); }, [userId]);
 
   const fetchServices = async () => {
@@ -82,6 +95,7 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
       discount_price: (svc as any).discount_price ? String((svc as any).discount_price) : "",
       discount_badge: (svc as any).discount_badge || "",
     });
+    setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 50);
   };
 
   const startAdd = () => {
@@ -135,6 +149,7 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
     }
     setSaving(true);
     try {
+      await supabase.auth.refreshSession();
       let serviceId = editingId;
 
       if (editingId) {
@@ -188,18 +203,28 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Delete this service? It will be removed from your profile.")) return;
-    // Delete photos from storage first
-    const servicePhotos = photos[id] || [];
-    for (const photo of servicePhotos) {
-      const path = photo.photo_url.split("/service-photos/")[1];
-      if (path) await supabase.storage.from("service-photos").remove([path]);
-      await supabase.from("service_photos").delete().eq("id", photo.id);
+  const confirmDelete = async () => {
+    if (!deleteId) return;
+    setDeleting(true);
+    try {
+      await supabase.auth.refreshSession();
+      const id = deleteId;
+      const servicePhotos = photos[id] || [];
+      for (const photo of servicePhotos) {
+        const path = photo.photo_url.split("/service-photos/")[1];
+        if (path) await supabase.storage.from("service-photos").remove([path]);
+        await supabase.from("service_photos").delete().eq("id", photo.id);
+      }
+      const { error } = await supabase.from("provider_services").delete().eq("id", id);
+      if (error) throw error;
+      toast.success("Service deleted");
+      setDeleteId(null);
+      fetchServices();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete service");
+    } finally {
+      setDeleting(false);
     }
-    const { error } = await supabase.from("provider_services").delete().eq("id", id);
-    if (error) toast.error("Failed to delete service");
-    else { toast.success("Service deleted"); fetchServices(); }
   };
 
   const handleToggleActive = async (svc: Service) => {
@@ -454,7 +479,7 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
                   <Button variant="ghost" size="icon" onClick={() => startEdit(svc)}>
                     <Pencil className="w-4 h-4" />
                   </Button>
-                  <Button variant="ghost" size="icon" onClick={() => handleDelete(svc.id)} className="text-destructive hover:text-destructive">
+                  <Button variant="ghost" size="icon" onClick={() => setDeleteId(svc.id)} className="text-destructive hover:text-destructive">
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
@@ -488,6 +513,27 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
           );
         })
       )}
+
+      <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && !deleting && setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this service?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will remove the service and its photos from your profile. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => { e.preventDefault(); confirmDelete(); }}
+              disabled={deleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleting ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
