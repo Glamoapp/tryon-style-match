@@ -55,6 +55,9 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
   const [pendingPhotos, setPendingPhotos] = useState<File[]>([]);
   const [uploadingPhotos, setUploadingPhotos] = useState(false);
 
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
   useEffect(() => { fetchServices(); }, [userId]);
 
   const fetchServices = async () => {
