@@ -142,16 +142,17 @@ const BestDeals = () => {
         </div>
 
         {serviceDeals.length > 0 ? (
-          <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0 md:grid md:grid-cols-4 md:overflow-visible">
+          <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory -mx-6 px-6">
             {serviceDeals.map((deal, index) => (
-              <DealCard
-                key={deal.id}
-                deal={deal}
-                index={index}
-                linkTo={`/stylist/${deal.providerId}`}
-                ctaLabel="Book Now"
-                typeIcon={<Tag className="w-3 h-3 text-primary" />}
-              />
+              <div key={deal.id} className="snap-start flex-shrink-0 w-[calc(50%-8px)] md:w-[calc(25%-12px)]">
+                <DealCard
+                  deal={deal}
+                  index={index}
+                  linkTo={`/stylist/${deal.providerId}`}
+                  ctaLabel="Book Now"
+                  typeIcon={<Tag className="w-3 h-3 text-primary" />}
+                />
+              </div>
             ))}
           </div>
         ) : (
