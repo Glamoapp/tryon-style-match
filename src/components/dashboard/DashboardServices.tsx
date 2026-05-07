@@ -202,18 +202,28 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Delete this service? It will be removed from your profile.")) return;
-    // Delete photos from storage first
-    const servicePhotos = photos[id] || [];
-    for (const photo of servicePhotos) {
-      const path = photo.photo_url.split("/service-photos/")[1];
-      if (path) await supabase.storage.from("service-photos").remove([path]);
-      await supabase.from("service_photos").delete().eq("id", photo.id);
+  const confirmDelete = async () => {
+    if (!deleteId) return;
+    setDeleting(true);
+    try {
+      await supabase.auth.refreshSession();
+      const id = deleteId;
+      const servicePhotos = photos[id] || [];
+      for (const photo of servicePhotos) {
+        const path = photo.photo_url.split("/service-photos/")[1];
+        if (path) await supabase.storage.from("service-photos").remove([path]);
+        await supabase.from("service_photos").delete().eq("id", photo.id);
+      }
+      const { error } = await supabase.from("provider_services").delete().eq("id", id);
+      if (error) throw error;
+      toast.success("Service deleted");
+      setDeleteId(null);
+      fetchServices();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete service");
+    } finally {
+      setDeleting(false);
     }
-    const { error } = await supabase.from("provider_services").delete().eq("id", id);
-    if (error) toast.error("Failed to delete service");
-    else { toast.success("Service deleted"); fetchServices(); }
   };
 
   const handleToggleActive = async (svc: Service) => {
