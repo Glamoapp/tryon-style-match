@@ -478,7 +478,7 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
                   <Button variant="ghost" size="icon" onClick={() => startEdit(svc)}>
                     <Pencil className="w-4 h-4" />
                   </Button>
-                  <Button variant="ghost" size="icon" onClick={() => handleDelete(svc.id)} className="text-destructive hover:text-destructive">
+                  <Button variant="ghost" size="icon" onClick={() => setDeleteId(svc.id)} className="text-destructive hover:text-destructive">
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
