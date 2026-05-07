@@ -95,6 +95,7 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
       discount_price: (svc as any).discount_price ? String((svc as any).discount_price) : "",
       discount_badge: (svc as any).discount_badge || "",
     });
+    setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 50);
   };
 
   const startAdd = () => {
