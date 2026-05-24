@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { SEO } from "@/components/SEO";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useCustomerPoints } from "@/hooks/useCustomerPoints";
@@ -80,6 +81,7 @@ const GlowUpMondayPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="GlowUp Monday Rewards | NEXTLOOK" description="Earn points and unlock weekly beauty perks with the NEXTLOOK GlowUp Monday rewards program." path="/glowup-monday" />
       <Navbar />
 
       {/* Hero */}

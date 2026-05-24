@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { SEO } from "@/components/SEO";
 import { ArrowLeft, Download, BookOpen, Clock, Shirt, Shield, MessageSquare, Heart, Star, Sparkles, AlertTriangle, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
@@ -62,6 +63,7 @@ const sections = [
 const HandbookPage = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="Stylist Handbook | NEXTLOOK" description="Professional standards, dress code, and service guidelines for NEXTLOOK beauty professionals." path="/handbook" />
       <Navbar />
 
       {/* Hero */}

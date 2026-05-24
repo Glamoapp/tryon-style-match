@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { SEO } from "@/components/SEO";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Check, Truck, ShieldCheck, Sparkles, Loader2 } from "lucide-react";
@@ -79,6 +80,7 @@ const MirrorPreorderPage = () => {
 
   return (
     <div className="min-h-screen bg-black text-white">
+      <SEO title="Pre-Order the NEXTLOOK Smart Mirror" description="Reserve your NEXTLOOK Smart Mirror today. Secure your spot for the next generation of at-home beauty technology." path="/mirror/preorder" />
       <Navbar />
 
       <div className="pt-24 pb-20 px-4 md:px-8">

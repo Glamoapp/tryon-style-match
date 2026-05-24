@@ -12,3 +12,13 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /provider/dashboard
+Disallow: /vendor/dashboard
+Disallow: /messages
+Disallow: /checkout
+Disallow: /reset-password
+Disallow: /unsubscribe
+
+Sitemap: https://nextlookbeauty.com/sitemap.xml

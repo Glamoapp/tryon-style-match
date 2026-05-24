@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { SEO } from "@/components/SEO";
 import { Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Star, MapPin, Clock, ChevronRight, Search, ArrowLeft } from "lucide-react";
@@ -57,6 +58,7 @@ const StylistsPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="Find Top-Rated Beauty Stylists Near You | NEXTLOOK" description="Browse vetted hairstylists, braiders, and makeup artists offering at-home and on-location beauty services in your city." path="/stylists" />
       <Navbar />
       <div className="pt-24 pb-16">
         <div className="container mx-auto px-6">

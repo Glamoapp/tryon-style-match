@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from "react";
+import { SEO } from "@/components/SEO";
 import { motion, AnimatePresence } from "framer-motion";
 import { Play, Pause, Volume2, VolumeX, ChevronDown, Sparkles, MapPin, Calendar, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -71,6 +72,7 @@ const AboutPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="About NEXTLOOK — Beauty That Comes to You" description="Discover the story behind NEXTLOOK, the luxury beauty marketplace bringing stylists, products, and AI try-on directly to your door." path="/about" />
       <Navbar />
 
       {/* Hero Video Section */}

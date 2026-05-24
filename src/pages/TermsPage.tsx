@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import { SEO } from "@/components/SEO";
 import Footer from "@/components/Footer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSearchParams } from "react-router-dom";
@@ -9,6 +10,7 @@ const TermsPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="Terms of Service | NEXTLOOK" description="Read the NEXTLOOK terms of service governing the use of our luxury beauty marketplace." path="/terms" />
       <Navbar />
 
       <section className="pt-28 pb-8 bg-gradient-hero">

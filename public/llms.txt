@@ -1,0 +1,24 @@
+# NEXTLOOK
+
+> Luxury beauty marketplace bringing top stylists, hair extensions, and virtual try-on directly to you. Beauty that comes to your doorstep.
+
+NEXTLOOK matches customers with vetted beauty professionals, lets them virtually try on hairstyles and makeup, shop premium hair extensions, and book at-home services with upfront secure payments.
+
+## Pages
+
+- [Home](/): Overview of NEXTLOOK — book stylists, try on styles, shop extensions.
+- [About](/about): Our mission, values, and the team behind NEXTLOOK.
+- [Find Stylists](/stylists): Browse top-rated beauty professionals.
+- [Discover Map](/discover): Airbnb-style map view of nearby stylists.
+- [Hair Extensions Shop](/extensions): Premium hair extensions and beauty products.
+- [Virtual Try-On](/tryon): Try hairstyles and makeup with AI before booking.
+- [Smart Mirror](/mirror): The NEXTLOOK Smart Mirror — at-home AI styling device.
+- [Pre-order Mirror](/mirror/preorder): Reserve the NEXTLOOK Smart Mirror.
+- [GlowUp Monday](/glowup-monday): Weekly rewards program with points and perks.
+- [Stylist Handbook](/handbook): Professional standards for NEXTLOOK stylists.
+- [Terms](/terms): Terms of service.
+
+## Optional
+
+- [Become a Stylist](/provider/signup): Apply to provide services on NEXTLOOK.
+- [Become a Vendor](/vendor/signup): Sell beauty products on NEXTLOOK.
