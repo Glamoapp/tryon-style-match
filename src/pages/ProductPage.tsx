@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { SEO } from "@/components/SEO";
 import { storefrontApiRequest, type ShopifyProduct } from "@/lib/shopify";
 import { useCartStore } from "@/stores/cartStore";
 import {
@@ -140,8 +141,33 @@ const ProductPage = () => {
     });
   };
 
+  const productImage = images[0]?.node?.url;
+  const productPrice = product.node.priceRange.minVariantPrice;
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.node.title,
+    description: product.node.description?.slice(0, 300) || product.node.title,
+    image: productImage ? [productImage] : undefined,
+    offers: {
+      "@type": "Offer",
+      url: `https://nextlookbeauty.com/product/${product.node.handle}`,
+      priceCurrency: productPrice.currencyCode,
+      price: productPrice.amount,
+      availability: selectedVariant?.availableForSale ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+    },
+  };
+
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title={`${product.node.title} | NEXTLOOK`}
+        description={(product.node.description?.slice(0, 155) || `Shop ${product.node.title} on NEXTLOOK.`).replace(/\s+/g, " ")}
+        path={`/product/${product.node.handle}`}
+        image={productImage}
+        type="product"
+        jsonLd={productJsonLd}
+      />
       <Navbar />
       <div className="pt-24 pb-16">
         <div className="container mx-auto px-6">

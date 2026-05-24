@@ -10,6 +10,7 @@ import LeaveReview from "@/components/LeaveReview";
 import ProfileChatSection from "@/components/ProfileChatSection";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { SEO } from "@/components/SEO";
 import { toast } from "@/components/ui/sonner";
 import type { ProviderListing } from "@/hooks/useProviders";
 
@@ -189,8 +190,28 @@ const StylistProfilePage = () => {
     );
   }
 
+  const stylistJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: provider.full_name,
+    image: provider.avatar_url || undefined,
+    url: `https://nextlookbeauty.com/stylist/${id}`,
+    jobTitle: "Beauty Stylist",
+    address: provider.city ? { "@type": "PostalAddress", addressLocality: provider.city } : undefined,
+    aggregateRating: provider.rating
+      ? { "@type": "AggregateRating", ratingValue: provider.rating, reviewCount: Math.max(reviews.length, 1) }
+      : undefined,
+  };
+
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title={`${provider.full_name} — Beauty Stylist${provider.city ? ` in ${provider.city}` : ""} | NEXTLOOK`}
+        description={`Book ${provider.full_name}${provider.city ? ` in ${provider.city}` : ""} on NEXTLOOK. ${provider.specialties?.slice(0, 3).join(", ") || "Premium beauty services"}.`.slice(0, 160)}
+        path={`/stylist/${id}`}
+        image={provider.coverPhoto || provider.avatar_url || undefined}
+        jsonLd={stylistJsonLd}
+      />
       <Navbar />
       <div className="pt-24 pb-16">
         <div className="container mx-auto px-6 max-w-4xl">
