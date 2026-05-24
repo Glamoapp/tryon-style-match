@@ -35,7 +35,7 @@ Nextlook Smart Micro isn't just a feature. It's a smarter way to live, look, and
 
 Beauty, delivered, instantly.`;
 
-const SEO = () => {
+const MirrorHead = () => {
   useEffect(() => {
     document.title = "NextLook Smart Mirror — 43\" Smart Beauty Mirror | Pre-Order $2000";
     const meta = document.querySelector('meta[name="description"]') || (() => {
@@ -111,7 +111,7 @@ const MirrorPage = () => {
 
   return (
     <div className="min-h-screen bg-black text-white overflow-x-hidden">
-      <SEO />
+      <MirrorHead />
       <PageSEO title="NEXTLOOK Smart Mirror — AI Beauty at Home" description="The NEXTLOOK Smart Mirror brings AI beauty styling, real-time stylist booking, and product discovery to your home." path="/mirror" />
       <Navbar />
 
