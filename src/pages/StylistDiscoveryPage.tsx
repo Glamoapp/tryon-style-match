@@ -3,6 +3,7 @@ declare global {
   interface Window { google: any; }
 }
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
+import { SEO } from "@/components/SEO";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, MapPin, ChevronRight, Search, ArrowLeft, List, Map as MapIcon, SlidersHorizontal, ChevronUp } from "lucide-react";
@@ -563,6 +564,7 @@ const StylistDiscoveryPage = () => {
   if (isMobile) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
+        <SEO title="Discover Stylists on the Map | NEXTLOOK" description="Explore nearby beauty professionals with an interactive map. Find availability, pricing, and book instantly." path="/discover" />
         <Navbar />
         <div className="pt-16 flex-1 flex flex-col relative">
           {/* Search + filters overlay on top of map */}

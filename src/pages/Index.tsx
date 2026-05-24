@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import { SEO } from "@/components/SEO";
 import HomepageHero from "@/components/HomepageHero";
 import NearbyStylists from "@/components/NearbyStylists";
 import ProductsNearYou from "@/components/ProductsNearYou";
@@ -14,6 +15,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="NEXTLOOK — Luxury Beauty That Comes to You" description="Match with top-rated stylists, try on hairstyles virtually, shop premium hair extensions, and book at-home beauty services." path="/" />
       <Navbar />
       <HomepageHero />
       <NearbyStylists />

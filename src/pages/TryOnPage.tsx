@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { SEO } from "@/components/SEO";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
@@ -17,6 +18,7 @@ const TryOnPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="AI Virtual Try-On — Hair & Makeup | NEXTLOOK" description="See yourself in any hairstyle or makeup look instantly with AI-powered virtual try-on. Try before you book." path="/tryon" />
       <Navbar />
       <div className="pt-24 pb-16">
         <div className="container mx-auto px-6">

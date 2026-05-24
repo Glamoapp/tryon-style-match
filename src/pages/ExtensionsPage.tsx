@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { SEO } from "@/components/SEO";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ShoppingCart, Loader2, ArrowLeft, Package, Zap, Tag } from "lucide-react";
@@ -139,6 +140,7 @@ const ExtensionsPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="Premium Hair Extensions & Beauty Products | NEXTLOOK" description="Shop curated bundles, frontals, wigs, K-tips, and beauty products from trusted vendors. Fast delivery to your door." path="/extensions" />
       <Navbar />
       <div className="pt-24 pb-16">
         <div className="container mx-auto px-6">
