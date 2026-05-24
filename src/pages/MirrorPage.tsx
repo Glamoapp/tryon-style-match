@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { SEO } from "@/components/SEO";
+import { SEO as PageSEO } from "@/components/SEO";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -112,7 +112,7 @@ const MirrorPage = () => {
   return (
     <div className="min-h-screen bg-black text-white overflow-x-hidden">
       <SEO />
-      <SEO title="NEXTLOOK Smart Mirror — AI Beauty at Home" description="The NEXTLOOK Smart Mirror brings AI beauty styling, real-time stylist booking, and product discovery to your home." path="/mirror" />
+      <PageSEO title="NEXTLOOK Smart Mirror — AI Beauty at Home" description="The NEXTLOOK Smart Mirror brings AI beauty styling, real-time stylist booking, and product discovery to your home." path="/mirror" />
       <Navbar />
 
       {/* HERO — Apple style: tight headline, two text links, then product image */}
