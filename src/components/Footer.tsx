@@ -22,8 +22,10 @@ const Footer = () => {
               links: ["Weave Installations", "Braids", "K-Tips", "Wigs", "Makeup", "Barber"],
             },
             {
+              title: "Company",
               links: [
                 { label: "About Us", href: "/about" },
+                { label: "Hairstyle Maintenance", href: "/maintenance" },
                 "Careers", "Blog", "Press"
               ],
             },
@@ -32,6 +34,7 @@ const Footer = () => {
               links: [
                 "Help Center",
                 "Safety",
+                { label: "Hair Care Guides", href: "/maintenance" },
                 { label: "Terms of Service", href: "/terms" },
                 { label: "Privacy Policy", href: "/terms?tab=privacy" },
                 { label: "Stylist Handbook", href: "/handbook" },
