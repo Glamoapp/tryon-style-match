@@ -36,6 +36,8 @@ import AboutPage from "./pages/AboutPage.tsx";
 import ResetPasswordPage from "./pages/ResetPasswordPage.tsx";
 import MirrorPage from "./pages/MirrorPage.tsx";
 import MirrorPreorderPage from "./pages/MirrorPreorderPage.tsx";
+import MaintenancePage from "./pages/MaintenancePage.tsx";
+import MaintenanceDetailPage from "./pages/MaintenanceDetailPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -74,6 +76,8 @@ const AppContent = () => {
         <Route path="/reset-password" element={<PageTransition><ResetPasswordPage /></PageTransition>} />
         <Route path="/mirror" element={<PageTransition><MirrorPage /></PageTransition>} />
         <Route path="/mirror/preorder" element={<PageTransition><MirrorPreorderPage /></PageTransition>} />
+        <Route path="/maintenance" element={<PageTransition><MaintenancePage /></PageTransition>} />
+        <Route path="/maintenance/:slug" element={<PageTransition><MaintenanceDetailPage /></PageTransition>} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
