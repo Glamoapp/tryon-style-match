@@ -63,7 +63,7 @@ const ServicesNearYou = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.05 }}
-              className="min-w-[45%] sm:min-w-[30%] md:min-w-[18%] flex-shrink-0"
+              className="min-w-[32%] sm:min-w-[22%] md:min-w-[14%] lg:min-w-[11%] flex-shrink-0"
             >
               <Link
                 to={`/stylists?specialty=${encodeURIComponent(s.label)}`}
