@@ -44,10 +44,8 @@ const HomepageHero = () => {
             transition={{ duration: 0.6 }}
           >
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-foreground leading-[1.05]">
-              BEAUTY MEETS <span className="text-gradient-purple">AI.</span>
-              <br />
-              <span className="text-foreground">LUXURY IS OUR </span>
-              <span className="text-gradient-gold">STANDARD.</span>
+              <span className="text-foreground">LUXURY </span>
+              <span className="text-gradient-gold">ON DEMAND.</span>
             </h1>
             <p className="text-muted-foreground font-body mt-5 max-w-lg text-base">
               Book beauty services, shop premium products, and try your look with AI —
