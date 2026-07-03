@@ -29,7 +29,42 @@ const TryOnPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEO title="AI Virtual Try-On — Hair & Makeup | NEXTLOOK" description="See yourself in any hairstyle or makeup look instantly with AI-powered virtual try-on. Try before you book." path="/tryon" />
+
+      {/* Intro splash — brand logo zoomed, click to get started */}
+      <AnimatePresence>
+        {showIntro && (
+          <motion.button
+            key="intro"
+            type="button"
+            onClick={dismissIntro}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black cursor-pointer"
+            aria-label="Get started"
+          >
+            <motion.img
+              src={brandLogo}
+              alt="NEXTLOOK"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1.15, opacity: 1 }}
+              transition={{ duration: 1.2, ease: "easeOut" }}
+              className="w-[78vw] max-w-[520px] h-auto object-contain drop-shadow-[0_0_60px_rgba(197,165,90,0.35)]"
+            />
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.9 }}
+              className="mt-8 font-body text-sm sm:text-base tracking-[0.35em] uppercase text-[hsl(38_70%_65%)]"
+            >
+              Click to get started
+            </motion.p>
+          </motion.button>
+        )}
+      </AnimatePresence>
+
       <Navbar />
+
       <div className="pt-24 pb-16">
         <div className="container mx-auto px-6">
           {/* Hero section with centered logo */}
