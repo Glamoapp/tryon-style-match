@@ -55,7 +55,7 @@ const ServicesNearYou = () => {
           </Link>
         </div>
 
-        <div className="flex items-start gap-3 overflow-x-auto pb-4 scrollbar-hide">
+        <div className="flex items-start gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
           {sections.map((s, i) => (
             <motion.div
               key={s.label}
@@ -63,7 +63,7 @@ const ServicesNearYou = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.05 }}
-              className="w-[132px] sm:w-[140px] md:w-[148px] lg:w-[156px] flex-none"
+              className="w-[78vw] sm:w-[520px] md:w-[560px] lg:w-[560px] max-w-[calc(100vw-3rem)] flex-none snap-start"
             >
               <Link
                 to={`/stylists?specialty=${encodeURIComponent(s.label)}`}
