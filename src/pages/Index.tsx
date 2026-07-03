@@ -25,6 +25,7 @@ const Index = () => {
       <ExploreNextlook />
       <SeasonalPromo />
       <NearbyStylists />
+      <ServicesNearYou />
       <CategoryStylists />
       <BestDeals />
       <ProductsNearYou />
