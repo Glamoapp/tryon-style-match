@@ -55,7 +55,7 @@ const ServicesNearYou = () => {
           </Link>
         </div>
 
-        <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
+        <div className="flex items-start gap-3 overflow-x-auto pb-4 scrollbar-hide">
           {sections.map((s, i) => (
             <motion.div
               key={s.label}
@@ -63,14 +63,14 @@ const ServicesNearYou = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.05 }}
-              className="min-w-[32%] sm:min-w-[22%] md:min-w-[14%] lg:min-w-[11%] flex-shrink-0"
+              className="w-[132px] sm:w-[140px] md:w-[148px] lg:w-[156px] flex-none"
             >
               <Link
                 to={`/stylists?specialty=${encodeURIComponent(s.label)}`}
                 className="block group"
               >
                 <div className="relative rounded-xl overflow-hidden aspect-[4/5] shadow-card hover:shadow-elevated transition-all duration-300">
-                  <img src={s.image} alt={s.label} className="w-full h-full object-cover" />
+                  <img src={s.image} alt={s.label} className="block w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-charcoal/85 via-charcoal/20 to-transparent" />
                   <div className="absolute top-1.5 right-1.5 bg-background/90 backdrop-blur-sm rounded-full px-1.5 py-0.5">
                     <span className="text-[9px] font-bold text-primary font-body">
