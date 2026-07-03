@@ -1,6 +1,11 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Crown } from "lucide-react";
+import bookImg from "@/assets/explore-book.jpg";
+import stylistImg from "@/assets/explore-stylist.jpg";
+import productsImg from "@/assets/explore-products.jpg";
+import salonImg from "@/assets/explore-salon.jpg";
+import mirrorImg from "@/assets/explore-mirror.jpg";
 
 const cards = [
   {
@@ -9,6 +14,7 @@ const cards = [
     sub: "Hair, Makeup, Nails & More",
     href: "/discover",
     tone: "purple" as const,
+    image: bookImg,
   },
   {
     title: "FIND",
@@ -16,6 +22,7 @@ const cards = [
     sub: "Top Rated Beauty Professionals",
     href: "/stylists",
     tone: "gold" as const,
+    image: stylistImg,
   },
   {
     title: "SHOP",
@@ -23,6 +30,7 @@ const cards = [
     sub: "Premium Hair & Beauty Products",
     href: "/extensions",
     tone: "purple" as const,
+    image: productsImg,
   },
   {
     title: "VISIT",
@@ -30,6 +38,7 @@ const cards = [
     sub: "Luxury Salons Near You",
     href: "/discover",
     tone: "gold" as const,
+    image: salonImg,
   },
   {
     title: "AI SMART",
@@ -37,6 +46,7 @@ const cards = [
     sub: "Try Your Look Virtually",
     href: "/tryon",
     tone: "purple" as const,
+    image: mirrorImg,
   },
 ];
 
