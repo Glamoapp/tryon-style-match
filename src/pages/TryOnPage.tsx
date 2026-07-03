@@ -8,10 +8,20 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { styles, categories, type StyleCategory } from "@/data/tryOnStyles";
 import logo from "@/assets/logo.png";
+import brandLogo from "@/assets/logo-nextlook.png";
 
 const TryOnPage = () => {
   const [selectedStyle, setSelectedStyle] = useState(0);
   const [activeCategory, setActiveCategory] = useState<StyleCategory>("Wig Frontal & Closure");
+  const [showIntro, setShowIntro] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return sessionStorage.getItem("tryon-intro-seen") !== "1";
+  });
+
+  const dismissIntro = () => {
+    sessionStorage.setItem("tryon-intro-seen", "1");
+    setShowIntro(false);
+  };
 
   const filteredStyles = styles.filter((s) => s.category === activeCategory);
   const currentStyle = filteredStyles[selectedStyle] || filteredStyles[0];
