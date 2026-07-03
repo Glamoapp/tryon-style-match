@@ -16,6 +16,8 @@ import { useProviders, ProviderListing } from "@/hooks/useProviders";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useFavorites } from "@/hooks/useFavorites";
+import blowdryerPin from "@/assets/blowdryer-pin.png";
+
 
 const serviceFilters = [
   "All",
