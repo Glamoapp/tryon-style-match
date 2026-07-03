@@ -37,14 +37,15 @@ export function useProviders() {
   const fetchProviders = async () => {
     setLoading(true);
     try {
-      // Fetch onboarded providers
-      const { data: profiles, error: profilesError } = await supabase
-        .from("profiles")
+      // Fetch onboarded providers via the safe public view (no PII exposure)
+      const { data: profiles, error: profilesError } = await (supabase as any)
+        .from("public_profiles")
         .select("id, full_name, avatar_url, bio, city, latitude, longitude, show_location")
         .eq("role", "provider")
         .eq("is_onboarded", true)
         .eq("is_approved", true)
         .eq("show_location", true);
+
 
       if (profilesError || !profiles?.length) {
         setProviders([]);
