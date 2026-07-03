@@ -63,7 +63,7 @@ const HomepageHero = () => {
                     onClick={() => setTab(t.id)}
                     className={`px-4 py-2 rounded-xl text-sm font-body font-semibold transition-all ${
                       tab === t.id
-                        ? "bg-[hsl(42_60%_48%)] text-white shadow-soft"
+                        ? "bg-[hsl(270_60%_35%)] text-white shadow-soft"
                         : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
@@ -92,7 +92,7 @@ const HomepageHero = () => {
                     <p className="text-sm font-body text-foreground truncate">Select date</p>
                   </div>
                 </div>
-                <Button type="submit" className="rounded-xl bg-[hsl(42_60%_48%)] hover:bg-[hsl(38_65%_40%)] text-white h-full px-6">
+                <Button type="submit" className="rounded-xl bg-[hsl(270_60%_35%)] hover:bg-[hsl(270_65%_28%)] text-white h-full px-6">
                   <Search className="w-5 h-5" />
                 </Button>
               </form>
@@ -140,7 +140,7 @@ const HomepageHero = () => {
                 <p className="text-xs font-body text-muted-foreground mb-3 leading-snug">
                   Try on hairstyles, colors and looks in real-time with our AI technology.
                 </p>
-                <Button size="sm" className="rounded-full bg-[hsl(42_60%_48%)] hover:bg-[hsl(38_65%_40%)] text-white h-8 px-4 text-xs">
+                <Button size="sm" className="rounded-full bg-[hsl(270_60%_35%)] hover:bg-[hsl(270_65%_28%)] text-white h-8 px-4 text-xs">
                   Try it Now
                 </Button>
               </motion.div>
