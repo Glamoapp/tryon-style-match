@@ -33,7 +33,7 @@ const HomepageHero = () => {
     <section className="relative pt-24 pb-12 bg-background overflow-hidden">
       {/* Soft gold + purple ambient glows */}
       <div className="absolute -top-32 -left-32 w-[520px] h-[520px] rounded-full bg-[hsl(38_70%_55%/0.10)] blur-[120px] pointer-events-none" />
-      <div className="absolute top-1/3 -right-32 w-[480px] h-[480px] rounded-full bg-[hsl(270_70%_45%/0.08)] blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/3 -right-32 w-[480px] h-[480px] rounded-full bg-[hsl(42_65%_55%/0.15)] blur-[120px] pointer-events-none" />
 
       <div className="container mx-auto px-6 relative z-10">
         <div className="grid lg:grid-cols-[1.1fr_1fr] gap-10 items-center">
@@ -63,7 +63,7 @@ const HomepageHero = () => {
                     onClick={() => setTab(t.id)}
                     className={`px-4 py-2 rounded-xl text-sm font-body font-semibold transition-all ${
                       tab === t.id
-                        ? "bg-[hsl(270_70%_40%)] text-white shadow-soft"
+                        ? "bg-[hsl(42_60%_48%)] text-white shadow-soft"
                         : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
@@ -80,7 +80,7 @@ const HomepageHero = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border bg-background">
-                  <Sparkles className="w-4 h-4 text-[hsl(270_70%_45%)]" />
+                  <Sparkles className="w-4 h-4 text-[hsl(42_65%_50%)]" />
                   <div className="min-w-0">
                     <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-body">Service</p>
                     <p className="text-sm font-body text-foreground truncate">Select a service</p>
@@ -92,7 +92,7 @@ const HomepageHero = () => {
                     <p className="text-sm font-body text-foreground truncate">Select date</p>
                   </div>
                 </div>
-                <Button type="submit" className="rounded-xl bg-[hsl(270_70%_40%)] hover:bg-[hsl(270_70%_35%)] text-white h-full px-6">
+                <Button type="submit" className="rounded-xl bg-[hsl(42_60%_48%)] hover:bg-[hsl(38_65%_40%)] text-white h-full px-6">
                   <Search className="w-5 h-5" />
                 </Button>
               </form>
@@ -140,7 +140,7 @@ const HomepageHero = () => {
                 <p className="text-xs font-body text-muted-foreground mb-3 leading-snug">
                   Try on hairstyles, colors and looks in real-time with our AI technology.
                 </p>
-                <Button size="sm" className="rounded-full bg-[hsl(270_70%_40%)] hover:bg-[hsl(270_70%_35%)] text-white h-8 px-4 text-xs">
+                <Button size="sm" className="rounded-full bg-[hsl(42_60%_48%)] hover:bg-[hsl(38_65%_40%)] text-white h-8 px-4 text-xs">
                   Try it Now
                 </Button>
               </motion.div>
