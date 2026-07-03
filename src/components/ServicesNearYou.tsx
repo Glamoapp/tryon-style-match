@@ -63,25 +63,25 @@ const ServicesNearYou = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.05 }}
-              className="min-w-[45%] sm:min-w-[30%] md:min-w-[18%] flex-shrink-0"
+              className="min-w-[32%] sm:min-w-[22%] md:min-w-[14%] lg:min-w-[11%] flex-shrink-0"
             >
               <Link
                 to={`/stylists?specialty=${encodeURIComponent(s.label)}`}
                 className="block group"
               >
-                <div className="relative rounded-2xl overflow-hidden aspect-[4/5] shadow-card hover:shadow-elevated transition-all duration-300">
+                <div className="relative rounded-xl overflow-hidden aspect-[4/5] shadow-card hover:shadow-elevated transition-all duration-300">
                   <img src={s.image} alt={s.label} className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-charcoal/85 via-charcoal/20 to-transparent" />
-                  <div className="absolute top-2 right-2 bg-background/90 backdrop-blur-sm rounded-full px-2 py-0.5">
-                    <span className="text-[10px] font-bold text-primary font-body">
-                      {s.count > 0 ? `${s.count} nearby` : "Available"}
+                  <div className="absolute top-1.5 right-1.5 bg-background/90 backdrop-blur-sm rounded-full px-1.5 py-0.5">
+                    <span className="text-[9px] font-bold text-primary font-body">
+                      {s.count > 0 ? `${s.count}` : "•"}
                     </span>
                   </div>
-                  <div className="absolute bottom-0 left-0 right-0 p-3">
-                    <h3 className="font-display font-bold text-cream text-base leading-tight">
+                  <div className="absolute bottom-0 left-0 right-0 p-2">
+                    <h3 className="font-display font-bold text-cream text-xs leading-tight">
                       {s.label}
                     </h3>
-                    <p className="text-[11px] text-cream/80 font-body mt-0.5">
+                    <p className="text-[9px] text-cream/80 font-body">
                       From ${s.from}
                     </p>
                   </div>

@@ -25,13 +25,13 @@ const Index = () => {
       <ExploreNextlook />
       <SeasonalPromo />
       <NearbyStylists />
-      <ServicesNearYou />
       <CategoryStylists />
       <BestDeals />
       <ProductsNearYou />
       <TopRatedStylists />
       <FaceScanPromo />
       <HowItWorks />
+      <ServicesNearYou />
       <Footer />
     </div>
   );
