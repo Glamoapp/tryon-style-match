@@ -109,29 +109,44 @@ class PricePinOverlay {
     this.div.style.cursor = "pointer";
     this.div.style.transform = "translate(-50%, -100%)";
     this.div.style.zIndex = this.isSelected ? "10" : "1";
+
+    const pinSize = this.isSelected ? 64 : 52;
+    const ring = this.isSelected ? "hsl(42, 65%, 50%)" : "hsl(42, 40%, 80%)";
+    const bubbleBg = this.isSelected ? "hsl(42, 65%, 48%)" : "#fff";
+    const bubbleColor = this.isSelected ? "#fff" : "hsl(30, 20%, 15%)";
+    const bubbleBorder = this.isSelected ? "hsl(38, 65%, 40%)" : "hsl(42, 40%, 82%)";
+
     this.div.innerHTML = `
-      <div style="
-        background: ${this.isSelected ? "hsl(270, 50%, 40%)" : "#fff"};
-        color: ${this.isSelected ? "#fff" : "hsl(270, 30%, 10%)"};
-        font-weight: 700;
-        font-size: 13px;
-        padding: 6px 10px;
-        border-radius: 20px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.18);
-        border: 2px solid ${this.isSelected ? "hsl(270, 50%, 30%)" : "hsl(270, 20%, 90%)"};
-        white-space: nowrap;
-        transition: all 0.2s;
-        text-align: center;
-        min-width: 48px;
-      ">${this.price}+</div>
-      <div style="
-        width: 0; height: 0;
-        border-left: 6px solid transparent;
-        border-right: 6px solid transparent;
-        border-top: 6px solid ${this.isSelected ? "hsl(270, 50%, 40%)" : "#fff"};
-        margin: -1px auto 0;
-      "></div>
+      <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+        <div style="
+          background: ${bubbleBg};
+          color: ${bubbleColor};
+          font-weight: 700;
+          font-size: 12px;
+          padding: 4px 10px;
+          border-radius: 999px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+          border: 1.5px solid ${bubbleBorder};
+          white-space: nowrap;
+          text-align: center;
+          font-family: Inter, sans-serif;
+        ">${this.price}+</div>
+        <div style="
+          width: ${pinSize}px;
+          height: ${pinSize}px;
+          border-radius: 50%;
+          background: #fff;
+          border: 2.5px solid ${ring};
+          box-shadow: 0 4px 12px rgba(0,0,0,0.22);
+          display:flex; align-items:center; justify-content:center;
+          overflow:hidden;
+          transition: all 0.2s;
+        ">
+          <img src="${blowdryerPin}" alt="stylist" style="width:78%; height:78%; object-fit:contain;" draggable="false" />
+        </div>
+      </div>
     `;
+
 
     // Single click selects, double click navigates to profile
     this.div.addEventListener("click", (e) => {
