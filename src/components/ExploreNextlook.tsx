@@ -76,19 +76,31 @@ const ExploreNextlook = () => {
               >
                 <Link
                   to={c.href}
-                  className="group block rounded-2xl bg-card border border-border/60 p-5 shadow-card hover:shadow-elevated transition-all hover:-translate-y-1"
+                  className="group block rounded-2xl bg-card border border-border/60 shadow-card hover:shadow-elevated transition-all hover:-translate-y-1 overflow-hidden"
                 >
-                  <h3 className="font-display font-bold leading-tight text-foreground text-lg">
-                    <span>{c.title}</span>
-                    <br />
-                    <span className={isPurple ? "text-[hsl(270_70%_40%)]" : "text-[hsl(38_70%_45%)]"}>
-                      {c.accent}
-                    </span>
-                  </h3>
-                  <p className="text-xs text-muted-foreground font-body mt-3 leading-relaxed">
-                    {c.sub}
-                  </p>
-                  <div className="mt-4 h-1 w-10 rounded-full bg-gradient-to-r from-[hsl(38_70%_55%)] to-[hsl(270_70%_45%)] opacity-70 group-hover:w-16 transition-all" />
+                  <div className="flex gap-3 p-4 pb-3 items-start">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-display font-bold leading-tight text-foreground text-base">
+                        <span>{c.title}</span>
+                        <br />
+                        <span className={isPurple ? "text-[hsl(270_70%_40%)]" : "text-[hsl(38_70%_45%)]"}>
+                          {c.accent}
+                        </span>
+                      </h3>
+                      <p className="text-[11px] text-muted-foreground font-body mt-2 leading-snug">
+                        {c.sub}
+                      </p>
+                    </div>
+                    <img
+                      src={c.image}
+                      alt={`${c.title} ${c.accent}`}
+                      loading="lazy"
+                      width={1024}
+                      height={1024}
+                      className="w-20 h-24 rounded-xl object-cover flex-shrink-0"
+                    />
+                  </div>
+                  <div className="mx-4 mb-4 h-1 w-10 rounded-full bg-gradient-to-r from-[hsl(38_70%_55%)] to-[hsl(270_70%_45%)] opacity-70 group-hover:w-16 transition-all" />
                 </Link>
               </motion.div>
             );
