@@ -8,7 +8,23 @@ import tryOnImage from "@/assets/tryon-phone-face.jpg";
 
 const FaceScanPromo = () => {
   return (
-    <section className="py-20 bg-gradient-hero relative overflow-hidden">
+    <section
+      className="py-20 relative overflow-hidden"
+      style={{
+        backgroundColor: "hsl(270 65% 18%)",
+        backgroundImage:
+          "radial-gradient(ellipse at 20% 10%, hsl(280 70% 40% / 0.55), transparent 55%), radial-gradient(ellipse at 80% 90%, hsl(260 80% 25% / 0.7), transparent 60%), linear-gradient(135deg, hsl(270 70% 12%) 0%, hsl(275 65% 25%) 40%, hsl(268 60% 15%) 100%)",
+      }}
+    >
+      {/* Metallic sheen */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-40 mix-blend-overlay"
+        style={{
+          backgroundImage:
+            "linear-gradient(115deg, transparent 30%, hsl(285 80% 75% / 0.35) 48%, hsl(0 0% 100% / 0.15) 52%, transparent 70%)",
+        }}
+      />
+
       {/* Decorative glows */}
       <div className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-primary/8 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-[300px] h-[300px] rounded-full bg-accent/6 blur-[100px] pointer-events-none" />
