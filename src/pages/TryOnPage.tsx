@@ -27,7 +27,14 @@ const TryOnPage = () => {
   const currentStyle = filteredStyles[selectedStyle] || filteredStyles[0];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div
+      className="min-h-screen"
+      style={{
+        backgroundColor: "hsl(270 65% 18%)",
+        backgroundImage:
+          "radial-gradient(ellipse at 20% 10%, hsl(280 70% 40% / 0.55), transparent 55%), radial-gradient(ellipse at 80% 90%, hsl(260 80% 25% / 0.7), transparent 60%), linear-gradient(135deg, hsl(270 70% 12%) 0%, hsl(275 65% 25%) 40%, hsl(268 60% 15%) 100%)",
+      }}
+    >
       <SEO title="AI Virtual Try-On — Hair & Makeup | NEXTLOOK" description="See yourself in any hairstyle or makeup look instantly with AI-powered virtual try-on. Try before you book." path="/tryon" />
 
       {/* Intro splash — brand logo zoomed, click to get started */}
@@ -76,7 +83,7 @@ const TryOnPage = () => {
             <motion.img
               src={logo}
               alt="NextLook Beauty"
-              className="w-28 h-28 rounded-3xl shadow-elevated mb-6 object-contain"
+              className="w-14 h-14 rounded-2xl shadow-elevated mb-6 object-contain"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
