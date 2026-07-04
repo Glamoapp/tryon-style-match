@@ -508,6 +508,7 @@ export type Database = {
       provider_services: {
         Row: {
           created_at: string
+          deleted_at: string | null
           description: string | null
           discount_badge: string | null
           discount_price: number | null
@@ -521,6 +522,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          deleted_at?: string | null
           description?: string | null
           discount_badge?: string | null
           discount_price?: number | null
@@ -534,6 +536,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          deleted_at?: string | null
           description?: string | null
           discount_badge?: string | null
           discount_price?: number | null
