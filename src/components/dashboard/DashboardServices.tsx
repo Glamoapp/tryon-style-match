@@ -86,7 +86,6 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
       .from("service_photos")
       .select("*")
       .eq("provider_id", userId)
-      .is("deleted_at", null)
       .order("display_order", { ascending: true });
 
     const grouped: Record<string, ServicePhoto[]> = {};

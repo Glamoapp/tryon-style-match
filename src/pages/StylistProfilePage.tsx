@@ -121,7 +121,7 @@ const StylistProfilePage = () => {
 
       const [servicesRes, photosRes, reviewsRes] = await Promise.all([
         supabase.from("provider_services").select("*").eq("provider_id", id!).eq("is_active", true).is("deleted_at", null),
-        supabase.from("service_photos").select("*").eq("provider_id", id!).is("deleted_at", null).order("display_order"),
+        supabase.from("service_photos").select("*").eq("provider_id", id!).order("display_order"),
         supabase.from("reviews").select("rating").eq("provider_id", id!),
       ]);
 
