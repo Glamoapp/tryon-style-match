@@ -71,7 +71,8 @@ const AdminStylists = () => {
         .from("provider_services")
         .select("id, service_name, price, duration_minutes, description, discount_price, discount_badge")
         .eq("provider_id", stylist.id)
-        .eq("is_active", true),
+        .eq("is_active", true)
+        .is("deleted_at", null),
       supabase
         .from("service_photos")
         .select("service_id, photo_url, display_order")

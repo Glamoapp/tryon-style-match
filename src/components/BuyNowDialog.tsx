@@ -138,7 +138,8 @@ export const BuyNowDialog = ({ product, open, onOpenChange }: Props) => {
       .from("provider_services")
       .select("*")
       .eq("provider_id", stylistId)
-      .eq("is_active", true);
+      .eq("is_active", true)
+      .is("deleted_at", null);
     setServices(data || []);
     setLoadingServices(false);
   };

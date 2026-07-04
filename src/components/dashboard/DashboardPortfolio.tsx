@@ -38,6 +38,8 @@ export const DashboardPortfolio = ({ userId }: { userId: string }) => {
       .from("provider_services")
       .select("id")
       .eq("provider_id", userId)
+      .eq("is_active", true)
+      .is("deleted_at", null)
       .limit(1)
       .single();
     setDefaultServiceId(data?.id || null);

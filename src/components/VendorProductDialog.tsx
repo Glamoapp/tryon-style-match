@@ -210,7 +210,8 @@ export const VendorProductDialog = ({ product, open, onOpenChange }: Props) => {
       .from("provider_services")
       .select("*")
       .eq("provider_id", stylistId)
-      .eq("is_active", true);
+      .eq("is_active", true)
+      .is("deleted_at", null);
     setStylistServices(data || []);
     if (data && data.length > 0) setSelectedService(data[0]);
   }
