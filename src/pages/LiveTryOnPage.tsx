@@ -287,7 +287,14 @@ const LiveTryOnPage = () => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black flex flex-col z-50">
+    <div
+      className="fixed inset-0 flex flex-col z-50"
+      style={{
+        backgroundColor: "hsl(270 65% 18%)",
+        backgroundImage:
+          "radial-gradient(ellipse at 20% 10%, hsl(280 70% 40% / 0.55), transparent 55%), radial-gradient(ellipse at 80% 90%, hsl(260 80% 25% / 0.7), transparent 60%), linear-gradient(135deg, hsl(270 70% 12%) 0%, hsl(275 65% 25%) 40%, hsl(268 60% 15%) 100%)",
+      }}
+    >
       <canvas ref={canvasRef} className="hidden" />
       <input
         ref={fileInputRef}
