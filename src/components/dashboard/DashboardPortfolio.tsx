@@ -29,6 +29,7 @@ export const DashboardPortfolio = ({ userId }: { userId: string }) => {
       .from("service_photos")
       .select("*")
       .eq("provider_id", userId)
+      .is("deleted_at", null)
       .order("display_order", { ascending: true });
     setItems(data || []);
   };
@@ -38,6 +39,8 @@ export const DashboardPortfolio = ({ userId }: { userId: string }) => {
       .from("provider_services")
       .select("id")
       .eq("provider_id", userId)
+      .eq("is_active", true)
+      .is("deleted_at", null)
       .limit(1)
       .single();
     setDefaultServiceId(data?.id || null);

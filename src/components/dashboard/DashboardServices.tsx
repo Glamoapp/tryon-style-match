@@ -24,6 +24,7 @@ type Service = {
   duration_minutes: number;
   description: string | null;
   is_active: boolean;
+  deleted_at?: string | null;
 };
 
 type ServicePhoto = {
@@ -45,6 +46,17 @@ type ServiceForm = {
 const emptyForm: ServiceForm = { service_name: "", price: "", duration_minutes: "", description: "", discount_price: "", discount_badge: "" };
 const MAX_PHOTOS_PER_SERVICE = 5;
 
+const getStoragePathFromUrl = (url: string) => {
+  try {
+    const parsed = new URL(url);
+    const path = parsed.pathname.split("/service-photos/")[1];
+    return path ? decodeURIComponent(path) : null;
+  } catch {
+    const path = url.split("/service-photos/")[1];
+    return path ? decodeURIComponent(path) : null;
+  }
+};
+
 export const DashboardServices = ({ userId }: { userId: string }) => {
   const [services, setServices] = useState<Service[]>([]);
   const [photos, setPhotos] = useState<Record<string, ServicePhoto[]>>({});
@@ -65,6 +77,7 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
       .from("provider_services")
       .select("*")
       .eq("provider_id", userId)
+      .is("deleted_at", null)
       .order("created_at", { ascending: true });
     setServices(data || []);
 
@@ -73,6 +86,7 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
       .from("service_photos")
       .select("*")
       .eq("provider_id", userId)
+      .is("deleted_at", null)
       .order("display_order", { ascending: true });
 
     const grouped: Record<string, ServicePhoto[]> = {};
@@ -211,11 +225,17 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
       const id = deleteId;
       const servicePhotos = photos[id] || [];
       for (const photo of servicePhotos) {
-        const path = photo.photo_url.split("/service-photos/")[1];
+        const path = getStoragePathFromUrl(photo.photo_url);
         if (path) await supabase.storage.from("service-photos").remove([path]);
-        await supabase.from("service_photos").delete().eq("id", photo.id);
+        const { error: photoError } = await supabase.from("service_photos").delete().eq("id", photo.id);
+        if (photoError) throw photoError;
       }
-      const { error } = await supabase.from("provider_services").delete().eq("id", id);
+
+      const { error } = await supabase
+        .from("provider_services")
+        .update({ is_active: false, deleted_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+        .eq("id", id)
+        .eq("provider_id", userId);
       if (error) throw error;
       toast.success("Service deleted");
       setDeleteId(null);
@@ -228,18 +248,22 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
   };
 
   const handleToggleActive = async (svc: Service) => {
+    await supabase.auth.refreshSession();
     const { error } = await supabase
       .from("provider_services")
       .update({ is_active: !svc.is_active, updated_at: new Date().toISOString() })
-      .eq("id", svc.id);
+      .eq("id", svc.id)
+      .eq("provider_id", userId)
+      .is("deleted_at", null);
     if (error) toast.error("Failed to update service");
     else fetchServices();
   };
 
   const handleDeletePhoto = async (photo: ServicePhoto) => {
-    const path = photo.photo_url.split("/service-photos/")[1];
+    await supabase.auth.refreshSession();
+    const path = getStoragePathFromUrl(photo.photo_url);
     if (path) await supabase.storage.from("service-photos").remove([path]);
-    const { error } = await supabase.from("service_photos").delete().eq("id", photo.id);
+    const { error } = await supabase.from("service_photos").delete().eq("id", photo.id).eq("provider_id", userId);
     if (error) toast.error("Failed to delete photo");
     else { toast.success("Photo removed"); fetchServices(); }
   };

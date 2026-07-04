@@ -61,7 +61,8 @@ export function useProviders() {
           .from("provider_services")
           .select("id, provider_id, service_name, price, duration_minutes, description, discount_price, discount_badge")
           .in("provider_id", providerIds)
-          .eq("is_active", true),
+          .eq("is_active", true)
+          .is("deleted_at", null),
         supabase
           .from("service_photos")
           .select("service_id, provider_id, photo_url, display_order")
