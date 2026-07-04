@@ -177,7 +177,9 @@ export const DashboardServices = ({ userId }: { userId: string }) => {
             discount_badge: form.discount_badge.trim() || null,
             updated_at: new Date().toISOString(),
           } as any)
-          .eq("id", editingId);
+          .eq("id", editingId)
+          .eq("provider_id", userId)
+          .is("deleted_at", null);
         if (error) throw error;
         toast.success("Service updated!");
       } else {

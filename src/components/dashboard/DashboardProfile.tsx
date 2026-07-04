@@ -45,6 +45,9 @@ export const DashboardProfile = ({ userId }: { userId: string }) => {
 
     setUploading(true);
     try {
+      const { error: sessionError } = await supabase.auth.refreshSession();
+      if (sessionError) throw sessionError;
+
       const fileExt = file.name.split(".").pop();
       const filePath = `${userId}/avatar.${fileExt}`;
 
@@ -92,6 +95,9 @@ export const DashboardProfile = ({ userId }: { userId: string }) => {
     if (!profile) return;
     setSaving(true);
     try {
+      const { error: sessionError } = await supabase.auth.refreshSession();
+      if (sessionError) throw sessionError;
+
       const { error } = await supabase
         .from("profiles")
         .update({
@@ -105,8 +111,8 @@ export const DashboardProfile = ({ userId }: { userId: string }) => {
         .eq("id", userId);
       if (error) throw error;
       toast.success("Profile updated!");
-    } catch {
-      toast.error("Failed to save profile");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to save profile");
     } finally {
       setSaving(false);
     }
@@ -154,6 +160,12 @@ export const DashboardProfile = ({ userId }: { userId: string }) => {
           checked={profile.show_location}
           onCheckedChange={async (checked) => {
             setProfile((p) => p ? { ...p, show_location: checked } : p);
+            const { error: sessionError } = await supabase.auth.refreshSession();
+            if (sessionError) {
+              setProfile((p) => p ? { ...p, show_location: !checked } : p);
+              toast.error(sessionError.message || "Please sign in again to update your profile");
+              return;
+            }
             const { error } = await supabase
               .from("profiles")
               .update({ show_location: checked, updated_at: new Date().toISOString() } as any)
