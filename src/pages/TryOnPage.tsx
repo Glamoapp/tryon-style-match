@@ -81,7 +81,7 @@ const TryOnPage = () => {
             <motion.img
               src={logo}
               alt="NextLook Beauty"
-              className="w-14 h-14 rounded-2xl shadow-elevated mb-6 object-contain"
+              className="w-28 h-28 rounded-3xl shadow-elevated mb-6 object-contain"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
