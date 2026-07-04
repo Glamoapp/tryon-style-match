@@ -40,7 +40,12 @@ const TryOnPage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black cursor-pointer"
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center cursor-pointer"
+            style={{
+              backgroundColor: "hsl(270 65% 18%)",
+              backgroundImage:
+                "radial-gradient(ellipse at 20% 10%, hsl(280 70% 40% / 0.55), transparent 55%), radial-gradient(ellipse at 80% 90%, hsl(260 80% 25% / 0.7), transparent 60%), linear-gradient(135deg, hsl(270 70% 12%) 0%, hsl(275 65% 25%) 40%, hsl(268 60% 15%) 100%)",
+            }}
             aria-label="Get started"
           >
             <motion.img
@@ -49,7 +54,7 @@ const TryOnPage = () => {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1.15, opacity: 1 }}
               transition={{ duration: 1.2, ease: "easeOut" }}
-              className="w-[78vw] max-w-[520px] h-auto object-contain drop-shadow-[0_0_60px_rgba(197,165,90,0.35)]"
+              className="w-[39vw] max-w-[260px] h-auto object-contain drop-shadow-[0_0_60px_rgba(197,165,90,0.35)]"
             />
             <motion.p
               initial={{ opacity: 0, y: 10 }}
