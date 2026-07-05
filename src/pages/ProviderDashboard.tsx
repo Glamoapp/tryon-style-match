@@ -41,7 +41,7 @@ type Notification = {
   created_at: string;
 };
 
-type Tab = "bookings" | "calendar" | "services" | "portfolio" | "messages" | "ratings" | "cashout" | "profile" | "notifications";
+type Tab = "bookings" | "calendar" | "services" | "portfolio" | "messages" | "ratings" | "cashout" | "referrals" | "profile" | "notifications";
 
 const NAV_ITEMS: { key: Tab; label: string; icon: any }[] = [
   { key: "bookings", label: "Bookings", icon: Calendar },
@@ -51,6 +51,7 @@ const NAV_ITEMS: { key: Tab; label: string; icon: any }[] = [
   { key: "messages", label: "Messages", icon: MessageCircle },
   { key: "ratings", label: "Ratings", icon: Star },
   { key: "cashout", label: "Cash Out", icon: CreditCard },
+  { key: "referrals", label: "Refer & Earn", icon: Gift },
   { key: "profile", label: "Profile", icon: User },
   { key: "notifications", label: "Alerts", icon: Bell },
 ];
