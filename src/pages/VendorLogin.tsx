@@ -53,8 +53,9 @@ const VendorLogin = () => {
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-hero items-center justify-center p-12">
         <div className="max-w-md text-center">
           <img src={logoImg} alt="NEXTLOOK" className="w-20 h-20 object-contain mx-auto mb-6" />
-          <h1 className="font-display text-4xl font-bold text-primary-foreground mb-4">Vendor Portal</h1>
-          <p className="text-primary-foreground/70 text-lg">Manage your products, track sales, and grow your brand.</p>
+          <h1 className="font-display text-4xl font-bold text-white mb-4">Vendor Portal</h1>
+          <p className="text-white/80 text-lg">Manage your products, track sales, and grow your brand.</p>
+
         </div>
       </div>
 
