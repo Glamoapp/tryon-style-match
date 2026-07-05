@@ -23,7 +23,21 @@ const getTheme = (): Theme => {
   const m = now.getMonth() + 1;
   const d = now.getDate();
 
-  // Independence Day window
+  // GlowUp Monday — always featured. Sign up to unlock 10%–40% off services
+  // and products (40% off products $100 or less).
+  return {
+    key: "glowup-monday",
+    label: "GlowUp Monday",
+    headline: "Unlock 10–40% Off This Week",
+    sub: "Exclusive deals on services & products — 40% off any product $100 or less. Sign up to reveal the codes.",
+    cta: "Sign Up to Unlock Deals",
+    href: "/glowup-monday",
+    gradient: "from-[#1A0736] via-[#3D1A6E] to-[#C5A55A]",
+    accent: "bg-[#C5A55A] text-[#1A0736]",
+    emoji: "✨",
+  };
+
+  // Independence Day window (kept for future re-enable)
   if (m === 7 && d <= 7) {
     return {
       key: "july4",
