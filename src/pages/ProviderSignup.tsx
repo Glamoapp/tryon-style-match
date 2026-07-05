@@ -69,17 +69,17 @@ const ProviderSignup = () => {
       {/* Left panel */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-hero items-center justify-center p-12">
         <div className="max-w-md text-center">
-          <Scissors className="w-16 h-16 text-primary mx-auto mb-6" />
-          <h1 className="font-display text-4xl font-bold text-primary-foreground mb-4">
+          <Scissors className="w-16 h-16 text-white mx-auto mb-6" />
+          <h1 className="font-display text-4xl font-bold text-white mb-4">
             Join NEXTLOOK
           </h1>
-          <p className="text-primary-foreground/70 text-lg">
+          <p className="text-white/80 text-lg">
             Grow your beauty business. Set your schedule, list your services, and connect with clients in your area.
           </p>
           <div className="mt-8 space-y-3 text-left">
             {["Create your account", "Build your profile & storefront", "Set your schedule", "Submit for approval & start booking"].map((step, i) => (
-              <div key={i} className="flex items-center gap-3 text-primary-foreground/80">
-                <div className="w-7 h-7 rounded-full bg-primary-foreground/20 flex items-center justify-center text-xs font-bold">{i + 1}</div>
+              <div key={i} className="flex items-center gap-3 text-white/90">
+                <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold text-white">{i + 1}</div>
                 <span className="text-sm">{step}</span>
               </div>
             ))}
