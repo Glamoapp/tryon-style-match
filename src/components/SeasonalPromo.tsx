@@ -190,7 +190,7 @@ const SeasonalPromo = () => {
               </p>
             </div>
             <Link to={theme.href}>
-              <button className="inline-flex items-center gap-2 bg-white text-foreground font-body font-semibold px-6 py-3 rounded-full shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all">
+              <button className="inline-flex items-center gap-2 bg-[#3D1A6E] hover:bg-[#2A0F52] text-[#E8CF7A] font-body font-semibold px-6 py-3 rounded-full shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all ring-1 ring-[#C5A55A]/60">
                 {theme.cta}
                 <ArrowRight className="w-4 h-4" />
               </button>
