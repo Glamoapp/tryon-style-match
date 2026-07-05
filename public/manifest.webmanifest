@@ -1,0 +1,17 @@
+{
+  "name": "NEXTLOOK — Luxury Beauty That Comes to You",
+  "short_name": "NEXTLOOK",
+  "description": "Try on styles virtually, match with top-rated stylists, shop premium hair extensions, and get pampered at your doorstep.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FAF7F2",
+  "theme_color": "#3D1A6E",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
