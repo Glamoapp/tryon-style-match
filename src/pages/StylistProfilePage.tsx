@@ -238,7 +238,14 @@ const StylistProfilePage = () => {
                   )}
                 </div>
                 <div className="flex-1">
-                  <h1 className="text-2xl md:text-3xl font-display font-bold text-foreground">{provider.full_name}</h1>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h1 className="text-2xl md:text-3xl font-display font-bold text-foreground">{provider.full_name}</h1>
+                    {(provider as any).isFoundingStylist && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-primary/15 to-gold/15 border border-primary/30 text-[11px] font-body font-semibold text-primary uppercase tracking-wide">
+                        <Crown className="w-3 h-3" /> Founding Stylist
+                      </span>
+                    )}
+                  </div>
                   <div className="flex flex-wrap items-center gap-3 mt-2">
                     {provider.rating > 0 && (
                       <div className="flex items-center gap-1">
