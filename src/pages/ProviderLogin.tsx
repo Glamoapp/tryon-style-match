@@ -61,12 +61,13 @@ const ProviderLogin = () => {
       <div className="hidden lg:flex lg:w-1/2 bg-[hsl(270_60%_35%)] items-center justify-center p-12">
         <div className="max-w-md text-center">
           <img src={logoImg} alt="NEXTLOOK" className="w-20 h-20 object-contain mx-auto mb-6" />
-          <h1 className="font-display text-4xl font-bold text-primary-foreground mb-4">
+          <h1 className="font-display text-4xl font-bold text-white mb-4">
             Welcome Back
           </h1>
-          <p className="text-primary-foreground/70 text-lg">
+          <p className="text-white/80 text-lg">
             Manage your bookings, grow your clientele, and track your earnings.
           </p>
+
         </div>
       </div>
 
