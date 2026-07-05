@@ -58,7 +58,7 @@ const ProviderLogin = () => {
 
   return (
     <div className="min-h-screen bg-background flex">
-      <div className="hidden lg:flex lg:w-1/2 bg-[hsl(270_60%_35%)] items-center justify-center p-12">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-hero items-center justify-center p-12">
         <div className="max-w-md text-center">
           <img src={logoImg} alt="NEXTLOOK" className="w-20 h-20 object-contain mx-auto mb-6" />
           <h1 className="font-display text-4xl font-bold text-white mb-4">
