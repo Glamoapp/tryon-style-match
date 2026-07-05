@@ -490,25 +490,41 @@ const StylistDiscoveryPage = () => {
   const listRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
 
-  // Get user's location via browser geolocation + IP fallback
+  // Location strategy:
+  // 1. Immediately fetch a rough IP-based guess so the map isn't blank.
+  // 2. Actively ask for precise browser GPS permission and upgrade to it
+  //    when granted (high-accuracy, generous timeout).
   useEffect(() => {
+    let cancelled = false;
+    let gotPrecise = false;
+
+    // Rough IP guess right away (doesn't overwrite precise GPS if it arrives first)
+    fetch("https://ipapi.co/json/")
+      .then((r) => r.json())
+      .then((data) => {
+        if (cancelled || gotPrecise) return;
+        if (data.latitude && data.longitude) {
+          setUserLocation({ lat: data.latitude, lng: data.longitude });
+        }
+      })
+      .catch(() => {});
+
+    // Ask for precise location — this triggers the browser permission prompt.
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-        () => {
-          fetch("https://ipapi.co/json/")
-            .then((r) => r.json())
-            .then((data) => {
-              if (data.latitude && data.longitude) {
-                setUserLocation({ lat: data.latitude, lng: data.longitude });
-              }
-            })
-            .catch(() => {});
+        (pos) => {
+          if (cancelled) return;
+          gotPrecise = true;
+          setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
         },
-        { timeout: 5000 }
+        () => { /* user denied or timed out — IP fallback already handled */ },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
       );
     }
+
+    return () => { cancelled = true; };
   }, []);
+
 
   const allCards = useMemo(() => providers.map(mapProviderToCard), [providers]);
 
