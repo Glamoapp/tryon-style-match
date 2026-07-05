@@ -44,7 +44,7 @@ const HomepageHero = () => {
             transition={{ duration: 0.6 }}
           >
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-foreground leading-[1.05]">
-              BEAUTY MEETS <span className="text-gradient-purple">LUXURY.</span>
+              BEAUTY MEETS <span className="text-gradient-gold">LUXURY.</span>
               <br />
               <span className="text-foreground">ON </span>
               <span className="text-gradient-gold">DEMAND.</span>
