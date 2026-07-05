@@ -33,38 +33,58 @@ const TryOnPage = () => {
       {/* Intro splash — brand logo zoomed, click to get started */}
       <AnimatePresence>
         {showIntro && (
-          <motion.button
+          <motion.div
             key="intro"
-            type="button"
-            onClick={dismissIntro}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex flex-col items-center justify-center cursor-pointer"
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center px-6"
             style={{
               backgroundColor: "hsl(270 65% 18%)",
               backgroundImage:
                 "radial-gradient(ellipse at 20% 10%, hsl(280 70% 40% / 0.55), transparent 55%), radial-gradient(ellipse at 80% 90%, hsl(260 80% 25% / 0.7), transparent 60%), linear-gradient(135deg, hsl(270 70% 12%) 0%, hsl(275 65% 25%) 40%, hsl(268 60% 15%) 100%)",
             }}
-            aria-label="Get started"
           >
-            <motion.img
-              src={brandLogo}
-              alt="NEXTLOOK"
+            <motion.h1
               initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1.15, opacity: 1 }}
+              animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 1.2, ease: "easeOut" }}
-              className="w-[39vw] max-w-[260px] h-auto object-contain drop-shadow-[0_0_60px_rgba(197,165,90,0.35)]"
-            />
-            <motion.p
+              className="font-display font-bold tracking-[0.15em] text-center leading-none"
+              style={{
+                fontSize: "clamp(2.75rem, 12vw, 7rem)",
+                backgroundImage:
+                  "linear-gradient(135deg, #8A6A1F 0%, #E8CF7A 35%, #FFF3C4 50%, #C5A55A 65%, #8A6A1F 100%)",
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+                color: "transparent",
+                WebkitTextFillColor: "transparent",
+                filter: "drop-shadow(0 0 40px rgba(197,165,90,0.45))",
+              }}
+            >
+              NEXTLOOK
+            </motion.h1>
+            <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.9 }}
-              className="mt-8 font-body text-sm sm:text-base tracking-[0.35em] uppercase text-[hsl(38_70%_65%)]"
+              className="mt-10"
             >
-              Click to get started
-            </motion.p>
-          </motion.button>
+              <Button
+                onClick={dismissIntro}
+                size="lg"
+                className="text-base px-10 py-6 font-semibold tracking-widest uppercase"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(135deg, #8A6A1F 0%, #E8CF7A 50%, #B8892E 100%)",
+                  color: "#2A1150",
+                  border: "1px solid rgba(255,243,196,0.5)",
+                }}
+              >
+                Get Started
+              </Button>
+            </motion.div>
+          </motion.div>
+
         )}
       </AnimatePresence>
 
