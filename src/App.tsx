@@ -38,6 +38,8 @@ import MirrorPage from "./pages/MirrorPage.tsx";
 import MirrorPreorderPage from "./pages/MirrorPreorderPage.tsx";
 import MaintenancePage from "./pages/MaintenancePage.tsx";
 import MaintenanceDetailPage from "./pages/MaintenanceDetailPage.tsx";
+import JoinStylistPage from "./pages/JoinStylistPage.tsx";
+import QuickStylistSignup from "./pages/QuickStylistSignup.tsx";
 
 const queryClient = new QueryClient();
 
