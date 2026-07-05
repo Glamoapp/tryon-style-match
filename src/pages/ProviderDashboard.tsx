@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Calendar, DollarSign, Bell, LogOut, Clock, Star, Users, MessageCircle, User, CreditCard, Scissors } from "lucide-react";
+import { Calendar, DollarSign, Bell, LogOut, Clock, Star, Users, MessageCircle, User, CreditCard, Scissors, Gift } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
