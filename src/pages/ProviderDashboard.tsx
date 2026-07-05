@@ -263,6 +263,7 @@ const ProviderDashboard = () => {
         {activeTab === "messages" && userId && <DashboardMessages userId={userId} />}
         {activeTab === "ratings" && userId && <DashboardRatings userId={userId} />}
         {activeTab === "cashout" && userId && <DashboardCashout userId={userId} />}
+        {activeTab === "referrals" && userId && <DashboardReferrals userId={userId} />}
         {activeTab === "profile" && userId && <DashboardProfile userId={userId} />}
         {activeTab === "notifications" && (
           <div className="space-y-2">
