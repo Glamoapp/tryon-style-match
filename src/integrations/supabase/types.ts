@@ -408,15 +408,19 @@ export type Database = {
           avatar_url: string | null
           bio: string | null
           city: string | null
+          commission_free_until: string | null
           created_at: string
           email: string | null
           full_name: string
           id: string
           is_approved: boolean
+          is_founding_stylist: boolean
           is_onboarded: boolean
           latitude: number | null
           longitude: number | null
           phone: string | null
+          referral_code: string | null
+          referred_by_code: string | null
           role: string
           service_category: string | null
           show_location: boolean
@@ -426,15 +430,19 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           city?: string | null
+          commission_free_until?: string | null
           created_at?: string
           email?: string | null
           full_name: string
           id: string
           is_approved?: boolean
+          is_founding_stylist?: boolean
           is_onboarded?: boolean
           latitude?: number | null
           longitude?: number | null
           phone?: string | null
+          referral_code?: string | null
+          referred_by_code?: string | null
           role?: string
           service_category?: string | null
           show_location?: boolean
@@ -444,15 +452,19 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           city?: string | null
+          commission_free_until?: string | null
           created_at?: string
           email?: string | null
           full_name?: string
           id?: string
           is_approved?: boolean
+          is_founding_stylist?: boolean
           is_onboarded?: boolean
           latitude?: number | null
           longitude?: number | null
           phone?: string | null
+          referral_code?: string | null
+          referred_by_code?: string | null
           role?: string
           service_category?: string | null
           show_location?: boolean
@@ -791,6 +803,71 @@ export type Database = {
         }
         Relationships: []
       }
+      stylist_referrals: {
+        Row: {
+          created_at: string
+          id: string
+          paid_at: string | null
+          referral_code: string
+          referred_id: string
+          referrer_id: string
+          reward_amount: number
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          paid_at?: string | null
+          referral_code: string
+          referred_id: string
+          referrer_id: string
+          reward_amount?: number
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          paid_at?: string | null
+          referral_code?: string
+          referred_id?: string
+          referrer_id?: string
+          reward_amount?: number
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stylist_referrals_referred_id_fkey"
+            columns: ["referred_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stylist_referrals_referred_id_fkey"
+            columns: ["referred_id"]
+            isOneToOne: true
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stylist_referrals_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stylist_referrals_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       suppressed_emails: {
         Row: {
           created_at: string
@@ -1100,6 +1177,7 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      generate_stylist_referral_code: { Args: never; Returns: string }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       move_to_dlq: {
         Args: {
