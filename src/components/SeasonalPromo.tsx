@@ -32,8 +32,8 @@ const getTheme = (): Theme => {
     sub: "Exclusive deals on services & products — 40% off any product $100 or less. Sign up to reveal the codes.",
     cta: "Sign Up to Unlock Deals",
     href: "/glowup-monday",
-    gradient: "from-[#1A0736] via-[#3D1A6E] to-[#C5A55A]",
-    accent: "bg-[#C5A55A] text-[#1A0736]",
+    gradient: "from-[#8A6A1F] via-[#E8CF7A] to-[#B8892E]",
+    accent: "bg-[#1A0736] text-[#E8CF7A]",
     emoji: "✨",
   };
 
