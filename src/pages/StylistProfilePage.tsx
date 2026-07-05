@@ -149,7 +149,8 @@ const StylistProfilePage = () => {
         services: servicesWithPhotos,
         specialties: [...new Set(services.map((s) => s.service_name))],
         coverPhoto: photos[0]?.photo_url || null,
-      });
+        isFoundingStylist: !!(profile as any).is_founding_stylist,
+      } as any);
     } catch (err) {
       console.error(err);
     } finally {
