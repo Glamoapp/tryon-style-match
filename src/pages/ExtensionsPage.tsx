@@ -4,7 +4,6 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ShoppingCart, Loader2, ArrowLeft, Package, Zap, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
