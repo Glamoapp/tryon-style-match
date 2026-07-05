@@ -80,6 +80,8 @@ const AppContent = () => {
         <Route path="/mirror/preorder" element={<PageTransition><MirrorPreorderPage /></PageTransition>} />
         <Route path="/maintenance" element={<PageTransition><MaintenancePage /></PageTransition>} />
         <Route path="/maintenance/:slug" element={<PageTransition><MaintenanceDetailPage /></PageTransition>} />
+        <Route path="/join-stylist" element={<PageTransition><JoinStylistPage /></PageTransition>} />
+        <Route path="/join-stylist/signup" element={<PageTransition><QuickStylistSignup /></PageTransition>} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
