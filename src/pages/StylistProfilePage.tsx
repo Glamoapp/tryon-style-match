@@ -113,7 +113,7 @@ const StylistProfilePage = () => {
     try {
       const { data: profile } = await supabase
         .from("profiles")
-        .select("id, full_name, avatar_url, bio, city, phone")
+        .select("id, full_name, avatar_url, bio, city, phone, is_founding_stylist")
         .eq("id", id!)
         .single();
 
