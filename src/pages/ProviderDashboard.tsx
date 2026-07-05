@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Calendar, DollarSign, Bell, LogOut, Clock, Star, Users, MessageCircle, User, CreditCard, Scissors } from "lucide-react";
+import { Calendar, DollarSign, Bell, LogOut, Clock, Star, Users, MessageCircle, User, CreditCard, Scissors, Gift } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
@@ -15,6 +15,7 @@ import { DashboardRatings } from "@/components/dashboard/DashboardRatings";
 import { DashboardCashout } from "@/components/dashboard/DashboardCashout";
 import { DashboardServices } from "@/components/dashboard/DashboardServices";
 import { DashboardPortfolio } from "@/components/dashboard/DashboardPortfolio";
+import { DashboardReferrals } from "@/components/dashboard/DashboardReferrals";
 
 type Booking = {
   id: string;
@@ -40,7 +41,7 @@ type Notification = {
   created_at: string;
 };
 
-type Tab = "bookings" | "calendar" | "services" | "portfolio" | "messages" | "ratings" | "cashout" | "profile" | "notifications";
+type Tab = "bookings" | "calendar" | "services" | "portfolio" | "messages" | "ratings" | "cashout" | "referrals" | "profile" | "notifications";
 
 const NAV_ITEMS: { key: Tab; label: string; icon: any }[] = [
   { key: "bookings", label: "Bookings", icon: Calendar },
@@ -50,6 +51,7 @@ const NAV_ITEMS: { key: Tab; label: string; icon: any }[] = [
   { key: "messages", label: "Messages", icon: MessageCircle },
   { key: "ratings", label: "Ratings", icon: Star },
   { key: "cashout", label: "Cash Out", icon: CreditCard },
+  { key: "referrals", label: "Refer & Earn", icon: Gift },
   { key: "profile", label: "Profile", icon: User },
   { key: "notifications", label: "Alerts", icon: Bell },
 ];
@@ -261,6 +263,7 @@ const ProviderDashboard = () => {
         {activeTab === "messages" && userId && <DashboardMessages userId={userId} />}
         {activeTab === "ratings" && userId && <DashboardRatings userId={userId} />}
         {activeTab === "cashout" && userId && <DashboardCashout userId={userId} />}
+        {activeTab === "referrals" && userId && <DashboardReferrals userId={userId} />}
         {activeTab === "profile" && userId && <DashboardProfile userId={userId} />}
         {activeTab === "notifications" && (
           <div className="space-y-2">

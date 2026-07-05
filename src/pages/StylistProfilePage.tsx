@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Star, MapPin, ArrowLeft, Clock, Camera, ChevronRight, MessageCircle, Share2, Check, Link2 } from "lucide-react";
+import { Star, MapPin, ArrowLeft, Clock, Camera, ChevronRight, MessageCircle, Share2, Check, Link2, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import BookingDialog from "@/components/BookingDialog";
@@ -113,7 +113,7 @@ const StylistProfilePage = () => {
     try {
       const { data: profile } = await supabase
         .from("profiles")
-        .select("id, full_name, avatar_url, bio, city, phone")
+        .select("id, full_name, avatar_url, bio, city, phone, is_founding_stylist")
         .eq("id", id!)
         .single();
 
@@ -149,7 +149,8 @@ const StylistProfilePage = () => {
         services: servicesWithPhotos,
         specialties: [...new Set(services.map((s) => s.service_name))],
         coverPhoto: photos[0]?.photo_url || null,
-      });
+        isFoundingStylist: !!(profile as any).is_founding_stylist,
+      } as any);
     } catch (err) {
       console.error(err);
     } finally {
@@ -237,7 +238,14 @@ const StylistProfilePage = () => {
                   )}
                 </div>
                 <div className="flex-1">
-                  <h1 className="text-2xl md:text-3xl font-display font-bold text-foreground">{provider.full_name}</h1>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h1 className="text-2xl md:text-3xl font-display font-bold text-foreground">{provider.full_name}</h1>
+                    {(provider as any).isFoundingStylist && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-primary/15 to-gold/15 border border-primary/30 text-[11px] font-body font-semibold text-primary uppercase tracking-wide">
+                        <Crown className="w-3 h-3" /> Founding Stylist
+                      </span>
+                    )}
+                  </div>
                   <div className="flex flex-wrap items-center gap-3 mt-2">
                     {provider.rating > 0 && (
                       <div className="flex items-center gap-1">
