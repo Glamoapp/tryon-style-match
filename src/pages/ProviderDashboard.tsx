@@ -15,6 +15,7 @@ import { DashboardRatings } from "@/components/dashboard/DashboardRatings";
 import { DashboardCashout } from "@/components/dashboard/DashboardCashout";
 import { DashboardServices } from "@/components/dashboard/DashboardServices";
 import { DashboardPortfolio } from "@/components/dashboard/DashboardPortfolio";
+import { DashboardReferrals } from "@/components/dashboard/DashboardReferrals";
 
 type Booking = {
   id: string;
