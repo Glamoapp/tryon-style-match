@@ -115,7 +115,7 @@ const ProductsNearYou = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.05 }}
-                className="snap-start flex-shrink-0 w-[calc(50%-8px)] md:w-[calc(25%-12px)]"
+                className="snap-start flex-shrink-0 w-[70%] sm:w-[calc(50%-8px)] md:w-[calc(25%-12px)]"
               >
                 <div className="group block bg-card rounded-2xl border border-border/50 overflow-hidden shadow-card hover:shadow-elevated transition-all duration-300">
                   <div className="aspect-square bg-muted overflow-hidden relative">
