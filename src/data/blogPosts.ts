@@ -1,4 +1,5 @@
-import founderImg from "@/assets/blog/founder-rishielle.jpg";
+import founderAsset from "@/assets/blog/founder-rishielle.jpg.asset.json";
+const founderImg = founderAsset.url;
 
 export type BlogCategory = "Founder's Letter" | "Stylist Spotlight" | "New Products" | "Behind the Brand";
 
