@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Scissors, Sparkles, Search, ShoppingBag, Star, CalendarDays, UserCog, LogOut, LogIn, User, Store, Info, Monitor } from "lucide-react";
+import { Menu, X, Scissors, Sparkles, Search, ShoppingBag, Star, CalendarDays, UserCog, LogOut, LogIn, User, Store, Info, Monitor, BookOpen } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { CartDrawer } from "@/components/CartDrawer";
 import MessageNotification from "@/components/MessageNotification";
@@ -16,6 +16,7 @@ const navLinks = [
   { label: "Find Stylists", href: "/stylists", icon: Search },
   { label: "Shop Extensions", href: "/extensions", icon: ShoppingBag },
   { label: "GlowUp Monday", href: "/glowup-monday", icon: Star },
+  { label: "Blog", href: "/blog", icon: BookOpen },
   { label: "My Bookings", href: "/dashboard", icon: CalendarDays },
   { label: "For Providers", href: "/provider/login", icon: UserCog },
   { label: "For Vendors", href: "/vendor/login", icon: Store },

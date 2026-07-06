@@ -17,6 +17,7 @@ const BlogPage = () => {
       <SEO
         title="Blog — NEXTLOOK"
         description="Stylist spotlights, new product drops, and letters from our founder. The stories behind the beauty platform built for your phone and your mirror."
+        path="/blog"
       />
       <Navbar />
 

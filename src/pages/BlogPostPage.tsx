@@ -45,7 +45,7 @@ const BlogPostPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <SEO title={`${post.title} — NEXTLOOK`} description={post.excerpt} />
+      <SEO title={`${post.title} — NEXTLOOK`} description={post.excerpt} path={`/blog/${post.slug}`} />
       <Navbar />
 
       <main className="pt-24 pb-24">
