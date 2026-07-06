@@ -49,7 +49,7 @@ export const blogPosts: BlogPost[] = [
       ],
       [
         "## What God's way looks like in a tech company",
-        "Doing this God's way has meant a few very unpopular things. It has meant being honest even when a rounder number would raise more money. It has meant paying stylists fairly instead of squeezing them for margin. It has meant refusing to sell anyone a fantasy. No filters that lie about your face, no reviews we quietly buy, no promises we can't keep on Sunday morning.",
+        "Doing this God's way has meant a few very unpopular things. It has meant being honest even when a rounder number would raise more money.",
         "It has also meant patience. NEXTLOOK is the fruit of almost a decade of iteration. Every feature you see today, the AI virtual try on, the map of stylists near you, the extensions delivered to your door, the GlowUp Monday rewards, the founding stylist program. Every single one of them was prayed over before it was coded.",
         "## From your phone to your mirror",
         "Today, NEXTLOOK is accessible in two places most people never imagined a beauty platform could live at the same time: your smart phone, and your smart mirror.",
