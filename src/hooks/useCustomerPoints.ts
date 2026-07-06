@@ -14,12 +14,32 @@ export interface PointTransaction {
   created_at: string;
 }
 
-// Points tiers based on spending
+// Points tiers based on spending (kept for UI previews only; server is source of truth)
 export function calculatePoints(amount: number): number {
   if (amount >= 2000) return 100;
   if (amount >= 1000) return 50;
   if (amount >= 500) return 20;
   return 10;
+}
+
+async function refreshBalanceAndTxns(userId: string) {
+  const [{ data: pts }, { data: txns }] = await Promise.all([
+    supabase
+      .from("customer_points")
+      .select("total_points, lifetime_points")
+      .eq("user_id", userId)
+      .maybeSingle(),
+    supabase
+      .from("point_transactions")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(50),
+  ]);
+  return {
+    balance: (pts as PointBalance) || { total_points: 0, lifetime_points: 0 },
+    transactions: (txns as PointTransaction[]) || [],
+  };
 }
 
 export function useCustomerPoints() {
@@ -34,30 +54,14 @@ export function useCustomerPoints() {
       if (!user) { setLoading(false); return; }
       setUserId(user.id);
 
-      // Get or create points balance
-      const { data: pts } = await supabase
-        .from("customer_points")
-        .select("total_points, lifetime_points")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      // Ensure a balance row exists (server-side, service role)
+      await supabase.functions.invoke("award-customer-points", {
+        body: { action: "ensure_balance" },
+      });
 
-      if (pts) {
-        setBalance(pts);
-      } else {
-        // Create initial record
-        await supabase.from("customer_points").insert({ user_id: user.id, total_points: 0, lifetime_points: 0 });
-        setBalance({ total_points: 0, lifetime_points: 0 });
-      }
-
-      // Get transaction history
-      const { data: txns } = await supabase
-        .from("point_transactions")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(50);
-
-      setTransactions((txns as PointTransaction[]) || []);
+      const { balance, transactions } = await refreshBalanceAndTxns(user.id);
+      setBalance(balance);
+      setTransactions(transactions);
       setLoading(false);
     };
     load();
@@ -65,46 +69,26 @@ export function useCustomerPoints() {
 
   const awardPoints = useCallback(async (amount: number, description: string, bookingId?: string) => {
     if (!userId) return;
-    const points = calculatePoints(amount);
-
-    await supabase.from("point_transactions").insert({
-      user_id: userId,
-      points,
-      transaction_type: "earned",
-      description,
-      booking_id: bookingId || null,
+    const { error } = await supabase.functions.invoke("award-customer-points", {
+      body: { action: "award", amount, description, bookingId: bookingId || null },
     });
-
-    const newTotal = (balance?.total_points || 0) + points;
-    const newLifetime = (balance?.lifetime_points || 0) + points;
-
-    await supabase
-      .from("customer_points")
-      .update({ total_points: newTotal, lifetime_points: newLifetime, updated_at: new Date().toISOString() })
-      .eq("user_id", userId);
-
-    setBalance({ total_points: newTotal, lifetime_points: newLifetime });
-  }, [userId, balance]);
+    if (error) return;
+    const refreshed = await refreshBalanceAndTxns(userId);
+    setBalance(refreshed.balance);
+    setTransactions(refreshed.transactions);
+  }, [userId]);
 
   const redeemPoints = useCallback(async (points: number, description: string) => {
-    if (!userId || !balance || balance.total_points < points) return false;
-
-    await supabase.from("point_transactions").insert({
-      user_id: userId,
-      points: -points,
-      transaction_type: "redeemed",
-      description,
+    if (!userId) return false;
+    const { data, error } = await supabase.functions.invoke("award-customer-points", {
+      body: { action: "redeem", points, description },
     });
-
-    const newTotal = balance.total_points - points;
-    await supabase
-      .from("customer_points")
-      .update({ total_points: newTotal, updated_at: new Date().toISOString() })
-      .eq("user_id", userId);
-
-    setBalance({ ...balance, total_points: newTotal });
+    if (error || !data?.ok) return false;
+    const refreshed = await refreshBalanceAndTxns(userId);
+    setBalance(refreshed.balance);
+    setTransactions(refreshed.transactions);
     return true;
-  }, [userId, balance]);
+  }, [userId]);
 
   return { balance, transactions, loading, awardPoints, redeemPoints, userId };
 }
