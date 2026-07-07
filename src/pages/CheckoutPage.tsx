@@ -18,7 +18,14 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
 // Initialize Stripe — publishable key is public by design
-const stripePromise = loadStripe("pk_live_51T2JfLQlVcGfb7QcE0VcBubT0L3Ec5adnh0WCNK42XntTYktt5T1lQ9vfBNTXUfGr6pAgFrJHwcaIo4RaDkH2V8Q00jL1h0Ega");
+// Wrap in a catch so ad-blockers / network failures don't become an unhandled
+// promise rejection that blanks the whole app.
+const stripePromise = loadStripe(
+  "pk_live_51T2JfLQlVcGfb7QcE0VcBubT0L3Ec5adnh0WCNK42XntTYktt5T1lQ9vfBNTXUfGr6pAgFrJHwcaIo4RaDkH2V8Q00jL1h0Ega"
+).catch((err) => {
+  console.error("Failed to load Stripe.js — likely blocked by an ad-blocker or network issue:", err);
+  return null;
+});
 
 interface CheckoutProduct {
   title: string;
