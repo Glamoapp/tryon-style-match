@@ -141,7 +141,7 @@ const StylistProfilePage = () => {
         avatar_url: profile.avatar_url,
         bio: profile.bio,
         city: profile.city,
-        phone: profile.phone,
+        phone: null,
         latitude: null,
         longitude: null,
         rating: avgRating,
