@@ -1148,6 +1148,7 @@ export type Database = {
           full_name: string | null
           id: string | null
           is_approved: boolean | null
+          is_founding_stylist: boolean | null
           is_onboarded: boolean | null
           latitude: number | null
           longitude: number | null
@@ -1163,6 +1164,7 @@ export type Database = {
           full_name?: string | null
           id?: string | null
           is_approved?: boolean | null
+          is_founding_stylist?: boolean | null
           is_onboarded?: boolean | null
           latitude?: never
           longitude?: never
@@ -1178,6 +1180,7 @@ export type Database = {
           full_name?: string | null
           id?: string | null
           is_approved?: boolean | null
+          is_founding_stylist?: boolean | null
           is_onboarded?: boolean | null
           latitude?: never
           longitude?: never
@@ -1199,14 +1202,6 @@ export type Database = {
         Returns: number
       }
       generate_stylist_referral_code: { Args: never; Returns: string }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
-      is_admin: { Args: { _user_id: string }; Returns: boolean }
       move_to_dlq: {
         Args: {
           dlq_name: string
