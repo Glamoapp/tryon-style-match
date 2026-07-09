@@ -111,11 +111,11 @@ const StylistProfilePage = () => {
   const fetchProvider = async () => {
     setLoading(true);
     try {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("id, full_name, avatar_url, bio, city, phone, is_founding_stylist")
+      const { data: profile } = await (supabase as any)
+        .from("public_profiles")
+        .select("id, full_name, avatar_url, bio, city, is_founding_stylist")
         .eq("id", id!)
-        .single();
+        .maybeSingle();
 
       if (!profile) { setLoading(false); return; }
 
@@ -141,7 +141,7 @@ const StylistProfilePage = () => {
         avatar_url: profile.avatar_url,
         bio: profile.bio,
         city: profile.city,
-        phone: profile.phone,
+        phone: null,
         latitude: null,
         longitude: null,
         rating: avgRating,
