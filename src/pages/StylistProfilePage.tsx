@@ -111,7 +111,7 @@ const StylistProfilePage = () => {
   const fetchProvider = async () => {
     setLoading(true);
     try {
-      const { data: profile } = await supabase
+      const { data: profile } = await (supabase as any)
         .from("public_profiles")
         .select("id, full_name, avatar_url, bio, city, is_founding_stylist")
         .eq("id", id!)
