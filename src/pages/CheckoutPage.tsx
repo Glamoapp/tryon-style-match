@@ -187,6 +187,8 @@ const CheckoutPage = () => {
   const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
   const [paymentReady, setPaymentReady] = useState(false);
   const [loadingPayment, setLoadingPayment] = useState(false);
+  const [promoInput, setPromoInput] = useState("");
+  const [promoApplied, setPromoApplied] = useState(false);
 
   const hasPhysicalProducts = products.length > 0;
   const hasServices = services.length > 0;
