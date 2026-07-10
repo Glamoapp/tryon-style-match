@@ -802,7 +802,57 @@ const CheckoutPage = () => {
                       <span>${bookingFee.toFixed(2)}</span>
                     </div>
                   )}
+                  {promoApplied && freeServicePrice > 0 && (
+                    <div className="flex justify-between text-primary font-semibold">
+                      <span>Promo (REPENTNOW)</span>
+                      <span>−${freeServicePrice.toFixed(2)}</span>
+                    </div>
+                  )}
                 </div>
+
+                {/* Promo code */}
+                <div className="mb-4">
+                  {!promoApplied ? (
+                    <div className="flex gap-2">
+                      <Input
+                        value={promoInput}
+                        onChange={(e) => setPromoInput(e.target.value)}
+                        placeholder="Promo code"
+                        className="h-9 text-sm"
+                        disabled={paymentReady}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={applyPromo}
+                        disabled={paymentReady || !promoInput.trim()}
+                      >
+                        Apply
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between bg-primary/5 border border-primary/20 rounded-lg px-3 py-2 text-sm">
+                      <span className="font-body text-primary flex items-center gap-1">
+                        <CheckCircle className="w-4 h-4" /> REPENTNOW applied
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => { setPromoApplied(false); setPromoInput(""); }}
+                        className="text-xs text-muted-foreground hover:text-foreground"
+                        disabled={paymentReady}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  )}
+                  {!promoApplied && promoQualifies && (
+                    <p className="text-[11px] text-muted-foreground font-body mt-1">
+                      Try <span className="font-semibold">REPENTNOW</span> — free install with your extensions.
+                    </p>
+                  )}
+                </div>
+
 
                 <div className="flex justify-between items-center font-display font-bold text-lg text-foreground pt-4 border-t border-border mb-6">
                   <span>Total</span>
