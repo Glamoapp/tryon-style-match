@@ -260,6 +260,20 @@ const CheckoutPage = () => {
     toast.success("Promo applied — installation is free!");
   };
 
+  // Zero out the cheapest eligible service when the promo is applied
+  const buildDiscountedServices = () => {
+    if (!promoApplied || !promoQualifies) return services;
+    let discounted = false;
+    return services.map(s => {
+      if (!discounted && isEligibleInstallService(s.serviceName) && s.price === freeServicePrice) {
+        discounted = true;
+        return { ...s, price: 0, serviceName: `${s.serviceName} (FREE — REPENTNOW)` };
+      }
+      return s;
+    });
+  };
+
+
 
   /** Create PaymentIntent and get client secret */
   const initializePayment = async () => {
