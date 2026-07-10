@@ -220,11 +220,46 @@ const CheckoutPage = () => {
   const expressFee = hasPhysicalProducts ? 9.99 : 0;
   const deliveryFee = hasPhysicalProducts && deliveryType === "express" ? expressFee : 0;
   const productSubtotal = products.reduce((sum, p) => sum + parseFloat(p.price) * p.quantity, 0);
+
+  // Promo: REPENTNOW — free sew-in or wig installation WITH a hair extensions purchase.
+  const isEligibleInstallService = (name: string) => {
+    const n = name.toLowerCase();
+    return (
+      n.includes("sew-in") || n.includes("sew in") || n.includes("sewin") ||
+      (n.includes("wig") && (n.includes("install") || n.includes("installation")))
+    );
+  };
+  const promoQualifies = hasPhysicalProducts && services.some(s => isEligibleInstallService(s.serviceName));
+  // Cheapest eligible service becomes free when the promo is applied
+  const freeServicePrice = promoApplied && promoQualifies
+    ? Math.min(...services.filter(s => isEligibleInstallService(s.serviceName)).map(s => s.price))
+    : 0;
+
   const serviceSubtotal = services.reduce((sum, s) => sum + s.price, 0);
-  // 10% booking fee applied to services only
-  const bookingFee = +(serviceSubtotal * 0.10).toFixed(2);
-  const subtotal = productSubtotal + serviceSubtotal;
+  const discountedServiceSubtotal = Math.max(0, serviceSubtotal - freeServicePrice);
+  // 10% booking fee applied to services only (after discount)
+  const bookingFee = +(discountedServiceSubtotal * 0.10).toFixed(2);
+  const subtotal = productSubtotal + discountedServiceSubtotal;
   const total = subtotal + deliveryFee + bookingFee;
+
+  const applyPromo = () => {
+    const code = promoInput.trim().toUpperCase();
+    if (code !== "REPENTNOW") {
+      toast.error("Invalid promo code");
+      return;
+    }
+    if (!hasPhysicalProducts) {
+      toast.error("Add hair extensions to your cart to use this code");
+      return;
+    }
+    if (!services.some(s => isEligibleInstallService(s.serviceName))) {
+      toast.error("Add a sew-in or wig installation service to use this code");
+      return;
+    }
+    setPromoApplied(true);
+    toast.success("Promo applied — installation is free!");
+  };
+
 
   /** Create PaymentIntent and get client secret */
   const initializePayment = async () => {
