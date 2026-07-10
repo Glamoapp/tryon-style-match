@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { SEO } from "@/components/SEO";
 import { Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ShoppingCart, Loader2, ArrowLeft, Package, Zap, Tag } from "lucide-react";
+import { ShoppingCart, Loader2, ArrowLeft, Package, Zap, Tag, Gift, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -101,6 +101,27 @@ const ExtensionsPage = () => {
               </p>
             </motion.div>
           </div>
+
+          <Link
+            to="/promo/free-install"
+            className="mb-10 flex flex-col gap-5 rounded-lg border border-primary/20 bg-primary/10 p-5 transition-colors hover:bg-primary/15 md:flex-row md:items-center md:justify-between"
+          >
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                <Gift className="h-6 w-6" />
+              </div>
+              <div>
+                <p className="font-body text-xs font-semibold uppercase tracking-widest text-primary">Limited Promotion</p>
+                <h2 className="mt-1 font-display text-2xl font-bold text-foreground">Buy hair extensions, get sew-in or wig installation free</h2>
+                <p className="mt-2 max-w-2xl font-body text-sm text-muted-foreground">
+                  Purchase eligible bundles or wigs from NEXTLOOK and book a vetted stylist installation at no extra cost.
+                </p>
+              </div>
+            </div>
+            <span className="inline-flex items-center gap-2 font-body text-sm font-semibold text-primary">
+              View Promo <ArrowRight className="h-4 w-4" />
+            </span>
+          </Link>
 
           {filterQuery && !loading && (
             <div className="mb-6 flex items-center gap-2">
