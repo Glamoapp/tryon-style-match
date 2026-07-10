@@ -187,6 +187,8 @@ const CheckoutPage = () => {
   const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
   const [paymentReady, setPaymentReady] = useState(false);
   const [loadingPayment, setLoadingPayment] = useState(false);
+  const [promoInput, setPromoInput] = useState("");
+  const [promoApplied, setPromoApplied] = useState(false);
 
   const hasPhysicalProducts = products.length > 0;
   const hasServices = services.length > 0;
@@ -218,11 +220,60 @@ const CheckoutPage = () => {
   const expressFee = hasPhysicalProducts ? 9.99 : 0;
   const deliveryFee = hasPhysicalProducts && deliveryType === "express" ? expressFee : 0;
   const productSubtotal = products.reduce((sum, p) => sum + parseFloat(p.price) * p.quantity, 0);
+
+  // Promo: REPENTNOW — free sew-in or wig installation WITH a hair extensions purchase.
+  const isEligibleInstallService = (name: string) => {
+    const n = name.toLowerCase();
+    return (
+      n.includes("sew-in") || n.includes("sew in") || n.includes("sewin") ||
+      (n.includes("wig") && (n.includes("install") || n.includes("installation")))
+    );
+  };
+  const promoQualifies = hasPhysicalProducts && services.some(s => isEligibleInstallService(s.serviceName));
+  // Cheapest eligible service becomes free when the promo is applied
+  const freeServicePrice = promoApplied && promoQualifies
+    ? Math.min(...services.filter(s => isEligibleInstallService(s.serviceName)).map(s => s.price))
+    : 0;
+
   const serviceSubtotal = services.reduce((sum, s) => sum + s.price, 0);
-  // 10% booking fee applied to services only
-  const bookingFee = +(serviceSubtotal * 0.10).toFixed(2);
-  const subtotal = productSubtotal + serviceSubtotal;
+  const discountedServiceSubtotal = Math.max(0, serviceSubtotal - freeServicePrice);
+  // 10% booking fee applied to services only (after discount)
+  const bookingFee = +(discountedServiceSubtotal * 0.10).toFixed(2);
+  const subtotal = productSubtotal + discountedServiceSubtotal;
   const total = subtotal + deliveryFee + bookingFee;
+
+  const applyPromo = () => {
+    const code = promoInput.trim().toUpperCase();
+    if (code !== "REPENTNOW") {
+      toast.error("Invalid promo code");
+      return;
+    }
+    if (!hasPhysicalProducts) {
+      toast.error("Add hair extensions to your cart to use this code");
+      return;
+    }
+    if (!services.some(s => isEligibleInstallService(s.serviceName))) {
+      toast.error("Add a sew-in or wig installation service to use this code");
+      return;
+    }
+    setPromoApplied(true);
+    toast.success("Promo applied — installation is free!");
+  };
+
+  // Zero out the cheapest eligible service when the promo is applied
+  const buildDiscountedServices = () => {
+    if (!promoApplied || !promoQualifies) return services;
+    let discounted = false;
+    return services.map(s => {
+      if (!discounted && isEligibleInstallService(s.serviceName) && s.price === freeServicePrice) {
+        discounted = true;
+        return { ...s, price: 0, serviceName: `${s.serviceName} (FREE — REPENTNOW)` };
+      }
+      return s;
+    });
+  };
+
+
 
   /** Create PaymentIntent and get client secret */
   const initializePayment = async () => {
@@ -264,7 +315,7 @@ const CheckoutPage = () => {
       const { data, error } = await supabase.functions.invoke("create-payment-intent", {
         body: {
           products: allProducts.length > 0 ? allProducts : undefined,
-          services: services.length > 0 ? services : undefined,
+          services: services.length > 0 ? buildDiscountedServices() : undefined,
           customerEmail: email,
           customerName: fullName,
           customerPhone: phone || undefined,
@@ -335,7 +386,7 @@ const CheckoutPage = () => {
       const { data, error } = await supabase.functions.invoke("unified-checkout", {
         body: {
           products: allProducts.length > 0 ? allProducts : undefined,
-          services: services.length > 0 ? services : undefined,
+          services: services.length > 0 ? buildDiscountedServices() : undefined,
           customerEmail: email,
           customerName: fullName,
           customerPhone: phone || undefined,
@@ -751,7 +802,57 @@ const CheckoutPage = () => {
                       <span>${bookingFee.toFixed(2)}</span>
                     </div>
                   )}
+                  {promoApplied && freeServicePrice > 0 && (
+                    <div className="flex justify-between text-primary font-semibold">
+                      <span>Promo (REPENTNOW)</span>
+                      <span>−${freeServicePrice.toFixed(2)}</span>
+                    </div>
+                  )}
                 </div>
+
+                {/* Promo code */}
+                <div className="mb-4">
+                  {!promoApplied ? (
+                    <div className="flex gap-2">
+                      <Input
+                        value={promoInput}
+                        onChange={(e) => setPromoInput(e.target.value)}
+                        placeholder="Promo code"
+                        className="h-9 text-sm"
+                        disabled={paymentReady}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={applyPromo}
+                        disabled={paymentReady || !promoInput.trim()}
+                      >
+                        Apply
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between bg-primary/5 border border-primary/20 rounded-lg px-3 py-2 text-sm">
+                      <span className="font-body text-primary flex items-center gap-1">
+                        <CheckCircle className="w-4 h-4" /> REPENTNOW applied
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => { setPromoApplied(false); setPromoInput(""); }}
+                        className="text-xs text-muted-foreground hover:text-foreground"
+                        disabled={paymentReady}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  )}
+                  {!promoApplied && promoQualifies && (
+                    <p className="text-[11px] text-muted-foreground font-body mt-1">
+                      Try <span className="font-semibold">REPENTNOW</span> — free install with your extensions.
+                    </p>
+                  )}
+                </div>
+
 
                 <div className="flex justify-between items-center font-display font-bold text-lg text-foreground pt-4 border-t border-border mb-6">
                   <span>Total</span>
