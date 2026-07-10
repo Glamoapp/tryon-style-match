@@ -43,6 +43,7 @@ import QuickStylistSignup from "./pages/QuickStylistSignup.tsx";
 import BlogPage from "./pages/BlogPage.tsx";
 import BlogPostPage from "./pages/BlogPostPage.tsx";
 import FreeInstallPromoPage from "./pages/FreeInstallPromoPage.tsx";
+import AdminBeautyVideoPage from "./pages/AdminBeautyVideoPage.tsx";
 
 const queryClient = new QueryClient();
 
