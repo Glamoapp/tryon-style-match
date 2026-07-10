@@ -84,16 +84,25 @@ const AdminDashboard = () => {
                 NEXTLOOK Dashboard
               </h1>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={async () => {
-                await supabase.auth.signOut();
-                navigate("/");
-              }}
-            >
-              <LogOut className="w-4 h-4 mr-1" /> Sign Out
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate("/admin/beauty-video")}
+              >
+                Beauty Video
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={async () => {
+                  await supabase.auth.signOut();
+                  navigate("/");
+                }}
+              >
+                <LogOut className="w-4 h-4 mr-1" /> Sign Out
+              </Button>
+            </div>
           </div>
 
           {/* Tabs */}
