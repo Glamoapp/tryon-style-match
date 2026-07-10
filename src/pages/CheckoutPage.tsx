@@ -315,7 +315,7 @@ const CheckoutPage = () => {
       const { data, error } = await supabase.functions.invoke("create-payment-intent", {
         body: {
           products: allProducts.length > 0 ? allProducts : undefined,
-          services: services.length > 0 ? services : undefined,
+          services: services.length > 0 ? buildDiscountedServices() : undefined,
           customerEmail: email,
           customerName: fullName,
           customerPhone: phone || undefined,
@@ -386,7 +386,7 @@ const CheckoutPage = () => {
       const { data, error } = await supabase.functions.invoke("unified-checkout", {
         body: {
           products: allProducts.length > 0 ? allProducts : undefined,
-          services: services.length > 0 ? services : undefined,
+          services: services.length > 0 ? buildDiscountedServices() : undefined,
           customerEmail: email,
           customerName: fullName,
           customerPhone: phone || undefined,
