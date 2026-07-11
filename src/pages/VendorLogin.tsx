@@ -90,6 +90,26 @@ const VendorLogin = () => {
               </div>
             </div>
 
+            <div className="text-right">
+              <button
+                type="button"
+                onClick={async () => {
+                  if (!email) {
+                    toast.error("Enter your email above first");
+                    return;
+                  }
+                  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: `${window.location.origin}/reset-password`,
+                  });
+                  if (error) toast.error(error.message);
+                  else toast.success("Password reset email sent. Check your inbox.");
+                }}
+                className="text-sm text-primary hover:underline font-medium"
+              >
+                Forgot password?
+              </button>
+            </div>
+
             <Button type="submit" variant="hero" className="w-full" size="lg" disabled={loading}>
               {loading ? "Signing In..." : "Sign In"}
             </Button>
