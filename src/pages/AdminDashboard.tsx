@@ -14,6 +14,9 @@ import AdminDeals from "@/components/admin/AdminDeals";
 import AdminRewards from "@/components/admin/AdminRewards";
 import AdminAlerts from "@/components/admin/AdminAlerts";
 import AdminVisitors from "@/components/admin/AdminVisitors";
+import { VendorProducts } from "@/components/vendor/VendorProducts";
+import { VendorDeals } from "@/components/vendor/VendorDeals";
+import { VendorPayouts } from "@/components/vendor/VendorPayouts";
 
 const ADMIN_EMAIL = "nextlookbeauty@gmail.com";
 
@@ -21,12 +24,14 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [adminUserId, setAdminUserId] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAdmin = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user?.email === ADMIN_EMAIL) {
         setIsAdmin(true);
+        setAdminUserId(user.id);
       } else {
         setIsAdmin(false);
       }
@@ -117,6 +122,9 @@ const AdminDashboard = () => {
               <TabsTrigger value="rewards" className="font-body text-sm">GlowUp Monday</TabsTrigger>
               <TabsTrigger value="alerts" className="font-body text-sm">Admin Alerts</TabsTrigger>
               <TabsTrigger value="visitors" className="font-body text-sm">Visitors</TabsTrigger>
+              <TabsTrigger value="products" className="font-body text-sm">Products</TabsTrigger>
+              <TabsTrigger value="vendor-deals" className="font-body text-sm">Vendor Deals</TabsTrigger>
+              <TabsTrigger value="payouts" className="font-body text-sm">Payouts</TabsTrigger>
             </TabsList>
 
             <TabsContent value="commissions"><AdminCommissions /></TabsContent>
@@ -128,6 +136,15 @@ const AdminDashboard = () => {
             <TabsContent value="rewards"><AdminRewards /></TabsContent>
             <TabsContent value="alerts"><AdminAlerts /></TabsContent>
             <TabsContent value="visitors"><AdminVisitors /></TabsContent>
+            <TabsContent value="products">
+              {adminUserId && <VendorProducts vendorId={adminUserId} isApproved={true} />}
+            </TabsContent>
+            <TabsContent value="vendor-deals">
+              {adminUserId && <VendorDeals vendorId={adminUserId} isApproved={true} />}
+            </TabsContent>
+            <TabsContent value="payouts">
+              {adminUserId && <VendorPayouts vendorId={adminUserId} />}
+            </TabsContent>
           </Tabs>
         </div>
       </div>
