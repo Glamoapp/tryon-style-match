@@ -122,6 +122,9 @@ const AdminDashboard = () => {
               <TabsTrigger value="rewards" className="font-body text-sm">GlowUp Monday</TabsTrigger>
               <TabsTrigger value="alerts" className="font-body text-sm">Admin Alerts</TabsTrigger>
               <TabsTrigger value="visitors" className="font-body text-sm">Visitors</TabsTrigger>
+              <TabsTrigger value="products" className="font-body text-sm">Products</TabsTrigger>
+              <TabsTrigger value="vendor-deals" className="font-body text-sm">Vendor Deals</TabsTrigger>
+              <TabsTrigger value="payouts" className="font-body text-sm">Payouts</TabsTrigger>
             </TabsList>
 
             <TabsContent value="commissions"><AdminCommissions /></TabsContent>
@@ -133,6 +136,15 @@ const AdminDashboard = () => {
             <TabsContent value="rewards"><AdminRewards /></TabsContent>
             <TabsContent value="alerts"><AdminAlerts /></TabsContent>
             <TabsContent value="visitors"><AdminVisitors /></TabsContent>
+            <TabsContent value="products">
+              {adminUserId && <VendorProducts vendorId={adminUserId} isApproved={true} />}
+            </TabsContent>
+            <TabsContent value="vendor-deals">
+              {adminUserId && <VendorDeals vendorId={adminUserId} isApproved={true} />}
+            </TabsContent>
+            <TabsContent value="payouts">
+              {adminUserId && <VendorPayouts vendorId={adminUserId} />}
+            </TabsContent>
           </Tabs>
         </div>
       </div>
