@@ -31,6 +31,7 @@ const AdminDashboard = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user?.email === ADMIN_EMAIL) {
         setIsAdmin(true);
+        setAdminUserId(user.id);
       } else {
         setIsAdmin(false);
       }
