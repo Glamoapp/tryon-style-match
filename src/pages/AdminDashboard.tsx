@@ -24,6 +24,7 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [adminUserId, setAdminUserId] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAdmin = async () => {
