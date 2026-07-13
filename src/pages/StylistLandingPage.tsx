@@ -114,9 +114,30 @@ const StylistLandingPage = () => {
             <p className="mt-4 text-xs text-muted-foreground font-body">
               Free to join · No contracts · Get your first booking this week
             </p>
+
+            {/* 60-day no commission banner */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 }}
+              className="mt-8 mx-auto max-w-2xl rounded-2xl border border-[#C5A55A]/50 bg-gradient-to-r from-[#C5A55A]/10 via-primary/10 to-[#C5A55A]/10 p-5 flex items-center gap-4 text-left"
+            >
+              <div className="w-12 h-12 shrink-0 rounded-full bg-gradient-to-br from-[#F4E29A] to-[#C5A55A] flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-[#3D1A6E]" />
+              </div>
+              <div>
+                <div className="font-display font-bold text-foreground text-base md:text-lg">
+                  First 60 days — 0% commission
+                </div>
+                <div className="text-sm text-muted-foreground font-body">
+                  New stylists keep <span className="font-semibold text-foreground">100%</span> of every booking for the first 60 days. No fees. No split. Just pure earnings.
+                </div>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
+
 
       {/* Benefits */}
       <section className="py-16">
