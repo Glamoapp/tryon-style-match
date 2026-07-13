@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Star, ChevronRight, Crown } from "lucide-react";
 import { useProviders } from "@/hooks/useProviders";
+import GoldenCrownBadge from "@/components/GoldenCrownBadge";
 
 const TopRatedStylists = () => {
   const { providers, loading } = useProviders();
@@ -62,7 +63,7 @@ const TopRatedStylists = () => {
                 <div className="bg-card rounded-2xl p-5 shadow-card hover:shadow-elevated transition-all duration-300 border border-border/50">
                   {/* Header */}
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-14 h-14 rounded-full overflow-hidden ring-2 ring-gold/30 bg-muted flex-shrink-0">
+                    <div className="relative w-14 h-14 rounded-full overflow-hidden ring-2 ring-gold/30 bg-muted flex-shrink-0">
                       {stylist.avatar_url ? (
                         <img src={stylist.avatar_url} alt={stylist.full_name} className="w-full h-full object-cover" />
                       ) : (
@@ -71,8 +72,11 @@ const TopRatedStylists = () => {
                         </div>
                       )}
                     </div>
-                    <div className="min-w-0">
-                      <h3 className="font-display font-bold text-foreground truncate">{stylist.full_name}</h3>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5">
+                        <h3 className="font-display font-bold text-foreground truncate">{stylist.full_name}</h3>
+                        <GoldenCrownBadge size={20} animate={false} />
+                      </div>
                       <div className="flex items-center gap-1">
                         <div className="flex">
                           {[...Array(5)].map((_, i) => (
