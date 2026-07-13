@@ -44,6 +44,7 @@ import BlogPage from "./pages/BlogPage.tsx";
 import BlogPostPage from "./pages/BlogPostPage.tsx";
 import FreeInstallPromoPage from "./pages/FreeInstallPromoPage.tsx";
 import AdminBeautyVideoPage from "./pages/AdminBeautyVideoPage.tsx";
+import StylistLandingPage from "./pages/StylistLandingPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -90,6 +91,7 @@ const AppContent = () => {
         <Route path="/blog/:slug" element={<PageTransition><BlogPostPage /></PageTransition>} />
         <Route path="/promo/free-install" element={<PageTransition><FreeInstallPromoPage /></PageTransition>} />
         <Route path="/admin/beauty-video" element={<PageTransition><AdminBeautyVideoPage /></PageTransition>} />
+        <Route path="/stylist" element={<PageTransition><StylistLandingPage /></PageTransition>} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
