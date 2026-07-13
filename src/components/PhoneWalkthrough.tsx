@@ -1,6 +1,22 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Sparkles, User, Camera, Calendar, DollarSign } from "lucide-react";
+import portfolioBraids from "@/assets/portfolio-braids.jpg";
+import portfolioSilkpress from "@/assets/portfolio-silkpress.jpg";
+import portfolioSewin from "@/assets/portfolio-sewin.jpg";
+import portfolioBlonde from "@/assets/portfolio-blonde.jpg";
+import portfolioLocs from "@/assets/portfolio-locs.jpg";
+import portfolioPonytail from "@/assets/portfolio-ponytail.jpg";
+
+const portfolioPhotos = [
+  portfolioBraids,
+  portfolioSilkpress,
+  portfolioSewin,
+  portfolioBlonde,
+  portfolioLocs,
+  portfolioPonytail,
+];
+
 
 // Animated phone mockup that cycles through the stylist signup steps.
 const steps = [
@@ -62,14 +78,16 @@ const steps = [
       <div className="w-full h-full flex flex-col">
         <div className="text-sm font-display font-bold text-cream mb-2">Portfolio</div>
         <div className="grid grid-cols-3 gap-1.5 flex-1">
-          {[...Array(6)].map((_, i) => (
+          {portfolioPhotos.map((src, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: i * 0.08 }}
-              className="rounded-md bg-gradient-to-br from-primary/40 via-secondary/30 to-accent/40 border border-cream/20"
-            />
+              className="rounded-md overflow-hidden border border-cream/20 aspect-square"
+            >
+              <img src={src} alt="Stylist portfolio" loading="lazy" className="w-full h-full object-cover" />
+            </motion.div>
           ))}
         </div>
         <div className="mt-2 h-8 rounded-full bg-cream/15 border border-cream/25 flex items-center justify-center text-[10px] text-cream">
