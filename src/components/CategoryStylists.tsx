@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Star, MapPin, ChevronRight } from "lucide-react";
 import { useProviders, ProviderListing } from "@/hooks/useProviders";
+import GoldenCrownBadge from "@/components/GoldenCrownBadge";
 
 const CATEGORIES = [
   { label: "Weaves", match: ["weave", "sew-in", "sew in", "sewin"] },
@@ -100,7 +101,10 @@ const CategoryStylists = () => {
                         )}
 
                         <div className="absolute bottom-0 left-0 right-0 p-3">
-                          <h3 className="font-display font-bold text-cream text-sm truncate">{p.full_name}</h3>
+                          <div className="flex items-center gap-1.5">
+                            <h3 className="font-display font-bold text-cream text-sm truncate">{p.full_name}</h3>
+                            <GoldenCrownBadge size={16} animate={false} />
+                          </div>
                           <div className="flex items-center gap-1 mt-0.5">
                             <Star className="w-3 h-3 fill-gold text-gold" />
                             <span className="text-xs font-semibold text-cream font-body">{p.rating}</span>
