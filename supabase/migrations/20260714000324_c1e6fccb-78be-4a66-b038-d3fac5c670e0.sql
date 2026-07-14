@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.grant_signup_credit_on_referral() FROM PUBLIC, anon, authenticated;
