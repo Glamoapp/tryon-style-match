@@ -102,16 +102,16 @@ const QuickStylistSignup = () => {
   return (
     <div className="min-h-screen bg-background flex">
       {/* Left promo */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-hero items-center justify-center p-12">
+      <div className="hidden lg:flex lg:w-1/2 bg-background items-center justify-center p-12 border-r border-border">
         <div className="max-w-md">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-foreground/15 mb-6">
-            <Crown className="w-3.5 h-3.5 text-primary-foreground" />
-            <span className="text-xs font-body font-semibold text-primary-foreground uppercase tracking-wider">Founding Stylist Program</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 mb-6">
+            <Crown className="w-3.5 h-3.5 text-primary" />
+            <span className="text-xs font-body font-semibold text-primary uppercase tracking-wider">Founding Stylist Program</span>
           </div>
-          <h1 className="font-display text-4xl font-bold text-primary-foreground mb-4 leading-tight">
+          <h1 className="font-display text-4xl font-bold text-foreground mb-4 leading-tight">
             60 seconds to your first booking.
           </h1>
-          <p className="text-primary-foreground/80 font-body mb-8">
+          <p className="text-muted-foreground font-body mb-8">
             Just the basics — you can finish your full profile from your dashboard whenever you're ready.
           </p>
           <ul className="space-y-3">
@@ -121,8 +121,8 @@ const QuickStylistSignup = () => {
               "$25 for every stylist you refer",
               "Cancel anytime, keep your clients",
             ].map((line) => (
-              <li key={line} className="flex items-start gap-3 text-primary-foreground/90">
-                <Check className="w-5 h-5 text-primary-foreground shrink-0 mt-0.5" />
+              <li key={line} className="flex items-start gap-3 text-muted-foreground">
+                <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                 <span className="text-sm font-body">{line}</span>
               </li>
             ))}
