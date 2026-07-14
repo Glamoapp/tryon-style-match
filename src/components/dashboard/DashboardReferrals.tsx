@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Copy, Crown, Users, DollarSign, Share2, Check, Clock } from "lucide-react";
+import { Copy, Crown, Users, DollarSign, Share2, Check, Clock, Mail, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import logoImg from "@/assets/logo.png";
 
 type Props = { userId: string };
 
