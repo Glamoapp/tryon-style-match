@@ -168,8 +168,8 @@ export const VendorProductDialog = ({ product, open, onOpenChange }: Props) => {
   async function fetchMatchingStylists() {
     setLoadingStylists(true);
     const categories = getMatchingServiceCategories(product?.category);
-    const { data } = await supabase
-      .from("profiles")
+    const { data } = await (supabase as any)
+      .from("public_profiles")
       .select("id, full_name, avatar_url, city, service_category")
       .eq("role", "provider")
       .eq("is_approved", true)
