@@ -424,6 +424,8 @@ export type Database = {
           role: string
           service_category: string | null
           show_location: boolean
+          signup_credit: number
+          signup_credit_unlocks_at: string | null
           updated_at: string
         }
         Insert: {
@@ -446,6 +448,8 @@ export type Database = {
           role?: string
           service_category?: string | null
           show_location?: boolean
+          signup_credit?: number
+          signup_credit_unlocks_at?: string | null
           updated_at?: string
         }
         Update: {
@@ -468,6 +472,8 @@ export type Database = {
           role?: string
           service_category?: string | null
           show_location?: boolean
+          signup_credit?: number
+          signup_credit_unlocks_at?: string | null
           updated_at?: string
         }
         Relationships: []
