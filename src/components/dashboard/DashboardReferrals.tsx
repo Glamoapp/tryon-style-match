@@ -73,12 +73,39 @@ export const DashboardReferrals = ({ userId }: Props) => {
     }
   };
 
+  const inviteLink = profile?.referral_code
+    ? `${window.location.origin}/stylist/invite?ref=${profile.referral_code}`
+    : "";
+
+  const copyInvite = async () => {
+    if (!inviteLink) return;
+    await navigator.clipboard.writeText(inviteLink);
+    setCopiedInvite(true);
+    toast.success("Golden invitation link copied!");
+    setTimeout(() => setCopiedInvite(false), 2000);
+  };
+
+  const shareInvite = async () => {
+    if (!inviteLink) return;
+    const text = `You've been selected — a golden invitation to join the NEXTLOOK Luxury Beauty Professional Stylist Team. Open it: ${inviteLink}`;
+    if (navigator.share) {
+      try { await navigator.share({ title: "You're invited to NEXTLOOK", text, url: inviteLink }); } catch {}
+    } else {
+      copyInvite();
+    }
+  };
+
   const earned = referrals.reduce((sum, r) => sum + Number(r.reward_amount || 0), 0);
   const paid = referrals.filter((r) => r.paid_at).reduce((s, r) => s + Number(r.reward_amount), 0);
   const pending = earned - paid;
 
   const commissionDaysLeft = profile?.commission_free_until
     ? Math.max(0, Math.ceil((new Date(profile.commission_free_until).getTime() - Date.now()) / 86400000))
+    : 0;
+
+  const signupCredit = Number(profile?.signup_credit || 0);
+  const creditUnlockDays = profile?.signup_credit_unlocks_at
+    ? Math.max(0, Math.ceil((new Date(profile.signup_credit_unlocks_at).getTime() - Date.now()) / 86400000))
     : 0;
 
   if (loading) return <div className="py-16 text-center text-muted-foreground">Loading…</div>;
