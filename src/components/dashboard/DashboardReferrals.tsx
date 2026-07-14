@@ -36,7 +36,7 @@ export const DashboardReferrals = ({ userId }: Props) => {
       const [{ data: p }, { data: r }] = await Promise.all([
         supabase
           .from("profiles")
-          .select("referral_code, is_founding_stylist, commission_free_until")
+          .select("referral_code, is_founding_stylist, commission_free_until, signup_credit, signup_credit_unlocks_at")
           .eq("id", userId)
           .maybeSingle(),
         supabase
