@@ -146,6 +146,79 @@ export const DashboardReferrals = ({ userId }: Props) => {
         )}
       </div>
 
+      {/* Signup credit (for stylists who joined via invite) */}
+      {signupCredit > 0 && (
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+          className="p-5 rounded-2xl border border-[#C5A55A]/40"
+          style={{ background: "linear-gradient(135deg, rgba(197,165,90,0.12), transparent)" }}>
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-xl flex items-center justify-center"
+              style={{ background: "linear-gradient(135deg, #E8C878, #8B6F2E)" }}>
+              <Sparkles className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex-1">
+              <p className="font-display font-semibold text-foreground">
+                ${signupCredit.toFixed(0)} welcome credit
+              </p>
+              <p className="text-xs text-muted-foreground font-body">
+                {creditUnlockDays > 0
+                  ? `Cashable in ${creditUnlockDays} ${creditUnlockDays === 1 ? "day" : "days"} · Unlocks after 60 days with NEXTLOOK`
+                  : "Unlocked — ready to cash out"}
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Golden Invitation */}
+      <div
+        className="relative p-6 rounded-2xl overflow-hidden border"
+        style={{
+          borderColor: "rgba(197,165,90,0.5)",
+          background:
+            "linear-gradient(135deg, rgba(61,26,110,0.08), rgba(197,165,90,0.10))",
+        }}
+      >
+        <div className="flex items-start gap-4 mb-4">
+          <div
+            className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 relative"
+            style={{ background: "linear-gradient(135deg, #E8C878, #8B6F2E)", boxShadow: "0 8px 24px rgba(197,165,90,0.4)" }}
+          >
+            <Mail className="w-6 h-6 text-white" />
+            <Crown className="w-3.5 h-3.5 absolute -top-1 -right-1 text-white" fill="#3D1A6E" />
+          </div>
+          <div className="flex-1">
+            <h2 className="font-display text-xl font-bold text-foreground flex items-center gap-2">
+              Send a Golden Invitation
+              <img src={logoImg} alt="" className="w-5 h-5 object-contain" />
+            </h2>
+            <p className="text-sm text-muted-foreground font-body">
+              Invite another stylist with a personalized golden envelope. They receive a{" "}
+              <span className="font-semibold text-foreground">$5 signup credit</span> (cashable after 60 days) once they complete signup & get verified.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row items-stretch gap-2">
+          <div className="flex-1 px-3 py-2.5 rounded-lg bg-background/60 border border-[#C5A55A]/30 text-sm font-mono truncate">
+            {inviteLink || "—"}
+          </div>
+          <Button variant="outline" onClick={copyInvite} disabled={!inviteLink}
+            className="border-[#C5A55A]/50 hover:bg-[#C5A55A]/10">
+            {copiedInvite ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+            {copiedInvite ? "Copied" : "Copy"}
+          </Button>
+          <Button onClick={shareInvite} disabled={!inviteLink}
+            className="text-white"
+            style={{ background: "linear-gradient(135deg, #C5A55A, #8B6F2E)" }}>
+            <Share2 className="w-4 h-4" /> Send Invitation
+          </Button>
+        </div>
+        <p className="mt-3 text-xs text-muted-foreground font-body">
+          Recipient must complete their profile and pass verification for the credit to activate.
+        </p>
+      </div>
+
       {/* Referral hero */}
       <div className="p-6 rounded-2xl border border-border bg-card">
         <div className="flex items-start gap-3 mb-4">
