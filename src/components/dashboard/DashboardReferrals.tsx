@@ -24,9 +24,12 @@ export const DashboardReferrals = ({ userId }: Props) => {
     referral_code: string | null;
     is_founding_stylist: boolean | null;
     commission_free_until: string | null;
+    signup_credit: number | null;
+    signup_credit_unlocks_at: string | null;
   } | null>(null);
   const [referrals, setReferrals] = useState<Referral[]>([]);
   const [copied, setCopied] = useState(false);
+  const [copiedInvite, setCopiedInvite] = useState(false);
 
   useEffect(() => {
     (async () => {
