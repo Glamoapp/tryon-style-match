@@ -101,8 +101,8 @@ export const BuyNowDialog = ({ product, open, onOpenChange }: Props) => {
 
   const fetchStylists = async () => {
     setLoadingStylists(true);
-    const { data: providers } = await supabase
-      .from("profiles")
+    const { data: providers } = await (supabase as any)
+      .from("public_profiles")
       .select("id, full_name, avatar_url, city, service_category")
       .eq("role", "provider")
       .eq("is_approved", true)
