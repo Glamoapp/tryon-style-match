@@ -93,6 +93,7 @@ const AppContent = () => {
         <Route path="/promo/free-install" element={<PageTransition><FreeInstallPromoPage /></PageTransition>} />
         <Route path="/admin/beauty-video" element={<PageTransition><AdminBeautyVideoPage /></PageTransition>} />
         <Route path="/stylist" element={<PageTransition><StylistLandingPage /></PageTransition>} />
+        <Route path="/stylist/invite" element={<PageTransition><StylistInvitePage /></PageTransition>} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
