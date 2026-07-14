@@ -45,6 +45,7 @@ import BlogPostPage from "./pages/BlogPostPage.tsx";
 import FreeInstallPromoPage from "./pages/FreeInstallPromoPage.tsx";
 import AdminBeautyVideoPage from "./pages/AdminBeautyVideoPage.tsx";
 import StylistLandingPage from "./pages/StylistLandingPage.tsx";
+import StylistInvitePage from "./pages/StylistInvitePage.tsx";
 
 const queryClient = new QueryClient();
 
