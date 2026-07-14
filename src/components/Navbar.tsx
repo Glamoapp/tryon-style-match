@@ -101,6 +101,7 @@ const Navbar = () => {
         <SheetContent side="left" className="w-72 sm:w-80 p-0 bg-background border-r border-border">
           <SheetHeader className="p-6 pb-4 border-b border-border">
             <SheetTitle className="flex items-center gap-2">
+              <img src={logoImg} alt="NEXTLOOK" className="w-7 h-7 object-contain" />
               <span className="font-display text-xl font-bold text-foreground">NEXTLOOK</span>
             </SheetTitle>
           </SheetHeader>
