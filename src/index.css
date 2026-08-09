@@ -6,59 +6,59 @@
 
 @layer base {
   :root {
-    /* Royal purple canvas + metallic gold accents. Limit white. */
-    --background: 270 55% 8%;
-    --foreground: 42 45% 92%;
+    /* White canvas + metallic gold + amethyst purple accents. */
+    --background: 42 40% 99%;
+    --foreground: 270 45% 14%;
 
-    --card: 270 50% 12%;
-    --card-foreground: 42 45% 92%;
+    --card: 0 0% 100%;
+    --card-foreground: 270 45% 14%;
 
-    --popover: 270 55% 10%;
-    --popover-foreground: 42 45% 92%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 270 45% 14%;
 
-    --primary: 42 65% 55%;
+    --primary: 40 72% 48%;
     --primary-foreground: 270 55% 10%;
 
-    --secondary: 270 45% 18%;
-    --secondary-foreground: 42 45% 92%;
+    --secondary: 270 40% 96%;
+    --secondary-foreground: 270 45% 18%;
 
-    --muted: 270 40% 16%;
-    --muted-foreground: 42 25% 75%;
+    --muted: 270 30% 95%;
+    --muted-foreground: 270 25% 42%;
 
-    --accent: 42 70% 60%;
-    --accent-foreground: 270 55% 10%;
+    --accent: 270 55% 42%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 270 40% 22%;
-    --input: 270 40% 20%;
-    --ring: 42 65% 55%;
+    --border: 42 35% 90%;
+    --input: 270 25% 92%;
+    --ring: 40 72% 48%;
 
     --radius: 0.75rem;
 
-    --pink: 42 65% 55%;
-    --pink-light: 270 40% 18%;
-    --pink-glow: 45 80% 65%;
-    --purple: 270 65% 30%;
-    --purple-deep: 270 70% 15%;
-    --purple-light: 270 40% 22%;
-    --gold: 42 70% 58%;
+    --pink: 40 72% 48%;
+    --pink-light: 270 40% 96%;
+    --pink-glow: 45 85% 62%;
+    --purple: 270 55% 38%;
+    --purple-deep: 270 60% 22%;
+    --purple-light: 270 45% 94%;
+    --gold: 40 80% 52%;
     --gold-foreground: 270 55% 10%;
-    --charcoal: 270 55% 8%;
-    --cream: 42 45% 92%;
-    --warm-gray: 42 15% 70%;
+    --charcoal: 270 45% 14%;
+    --cream: 42 40% 98%;
+    --warm-gray: 270 15% 55%;
 
-    --gradient-rose: linear-gradient(135deg, hsl(45 85% 68%), hsl(38 62% 42%));
-    --gradient-gold: linear-gradient(135deg, hsl(46 85% 70%), hsl(38 62% 42%));
-    --gradient-warm: linear-gradient(135deg, hsl(270 55% 12%), hsl(270 50% 18%));
-    --gradient-hero: linear-gradient(160deg, hsl(270 70% 10%) 0%, hsl(270 60% 16%) 50%, hsl(272 55% 22%) 100%);
-    --gradient-purple: linear-gradient(135deg, hsl(272 70% 22%), hsl(268 75% 12%));
+    --gradient-rose: linear-gradient(135deg, hsl(45 85% 62%), hsl(38 72% 42%));
+    --gradient-gold: linear-gradient(135deg, hsl(46 85% 62%), hsl(38 70% 42%));
+    --gradient-warm: linear-gradient(135deg, hsl(270 50% 98%), hsl(270 40% 94%));
+    --gradient-hero: linear-gradient(160deg, hsl(270 55% 99%) 0%, hsl(270 40% 96%) 50%, hsl(270 35% 93%) 100%);
+    --gradient-purple: linear-gradient(135deg, hsl(272 55% 38%), hsl(268 60% 24%));
 
-    --shadow-soft: 0 4px 20px -4px hsl(270 70% 6% / 0.5);
-    --shadow-card: 0 8px 30px -8px hsl(270 70% 4% / 0.55);
-    --shadow-elevated: 0 20px 60px -15px hsl(270 80% 4% / 0.65);
-    --shadow-glow: 0 0 40px hsl(46 85% 60% / 0.35);
+    --shadow-soft: 0 4px 20px -4px hsl(270 40% 70% / 0.25);
+    --shadow-card: 0 8px 30px -8px hsl(270 40% 60% / 0.18);
+    --shadow-elevated: 0 20px 60px -15px hsl(270 45% 50% / 0.22);
+    --shadow-glow: 0 0 40px hsl(44 85% 60% / 0.30);
 
 
     --sidebar-background: 0 0% 98%;
