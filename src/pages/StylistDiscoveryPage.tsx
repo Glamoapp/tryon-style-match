@@ -528,6 +528,8 @@ const StylistDiscoveryPage = () => {
 
   const allCards = useMemo(() => providers.map(mapProviderToCard), [providers]);
 
+  const locationParam = searchParams.get("location") || "";
+
   const filtered = useMemo(() => {
     let list = allCards;
     if (search) {
@@ -536,13 +538,19 @@ const StylistDiscoveryPage = () => {
         (s) => s.name.toLowerCase().includes(q) || s.specialties.some((sp) => sp.toLowerCase().includes(q))
       );
     }
+    if (locationParam.trim()) {
+      const loc = locationParam.trim().toLowerCase().split(",")[0].trim();
+      const byCity = list.filter((s) => ((s as any).city || "").toLowerCase().includes(loc));
+      if (byCity.length) list = byCity;
+    }
     if (activeFilter !== "All") {
       list = list.filter((s) =>
         s.specialties.some((sp) => sp.toLowerCase().includes(activeFilter.toLowerCase()))
       );
     }
     return list.sort((a, b) => b.rating - a.rating);
-  }, [search, activeFilter, allCards]);
+  }, [search, activeFilter, allCards, locationParam]);
+
 
   const handleSelectStylist = useCallback((id: string) => {
     setSelectedStylist((prev) => (prev === id ? null : id));
