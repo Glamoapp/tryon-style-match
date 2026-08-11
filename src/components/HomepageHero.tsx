@@ -1,19 +1,77 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { motion } from "framer-motion";
-import { Search, MapPin, ShieldCheck, Zap, Lock, Star, Sparkles } from "lucide-react";
+import { format } from "date-fns";
+import { Search, MapPin, ShieldCheck, Zap, Lock, Star, Sparkles, LocateFixed, CalendarDays } from "lucide-react";
 import { useState } from "react";
 import heroImage from "@/assets/hero-beauty.jpg";
+
+const SERVICE_OPTIONS = [
+  "All",
+  "Braids",
+  "Weave",
+  "Wigs",
+  "Locs",
+  "K-Tips",
+  "Makeup",
+  "Natural Hair",
+  "Frontals",
+];
 
 const HomepageHero = () => {
   const navigate = useNavigate();
   const [tab, setTab] = useState<"services" | "stylists" | "products">("services");
+  const [location, setLocation] = useState("");
+  const [service, setService] = useState("All");
+  const [date, setDate] = useState<Date | undefined>();
+  const [locating, setLocating] = useState(false);
+  const [serviceOpen, setServiceOpen] = useState(false);
+  const [dateOpen, setDateOpen] = useState(false);
+
+  const useMyLocation = () => {
+    if (!navigator.geolocation) return;
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`
+          );
+          const data = await res.json();
+          const a = data?.address || {};
+          const city = a.city || a.town || a.village || a.county || "";
+          const state = a.state_code || a.state || "";
+          setLocation([city, state].filter(Boolean).join(", ") || "My location");
+        } catch {
+          setLocation("My location");
+        } finally {
+          setLocating(false);
+        }
+      },
+      () => setLocating(false),
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (tab === "products") navigate("/extensions");
-    else if (tab === "stylists") navigate("/stylists");
-    else navigate("/discover");
+    const params = new URLSearchParams();
+    if (location.trim()) params.set("location", location.trim());
+    if (date) params.set("date", format(date, "yyyy-MM-dd"));
+
+    if (tab === "products") {
+      if (service !== "All") params.set("q", service);
+      navigate(`/extensions?${params.toString()}`);
+    } else if (tab === "stylists") {
+      if (service !== "All") params.set("specialty", service);
+      navigate(`/stylists?${params.toString()}`);
+    } else {
+      if (service !== "All") params.set("service", service);
+      navigate(`/discover?${params.toString()}`);
+    }
   };
 
   const tabs = [
@@ -28,6 +86,7 @@ const HomepageHero = () => {
     { icon: Lock, label: "Secure Payments" },
     { icon: Star, label: "Top Rated" },
   ];
+
 
   return (
     <section className="relative pt-24 pb-12 bg-background overflow-hidden">
