@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { SEO } from "@/components/SEO";
 import { Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Star, MapPin, Clock, ChevronRight, Search, ArrowLeft } from "lucide-react";
+import { Star, MapPin, Clock, ChevronRight, Search, ArrowLeft, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Navbar from "@/components/Navbar";
