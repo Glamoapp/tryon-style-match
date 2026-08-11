@@ -36,6 +36,8 @@ const StylistsPage = () => {
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState(initialSpecialty);
   const [sortBy, setSortBy] = useState<"rating" | "price">("rating");
+  const [locationFilter, setLocationFilter] = useState(searchParams.get("location") || "");
+  const dateFilter = searchParams.get("date") || "";
 
   const allCards = useMemo(() => providers.map(mapProviderToCard), [providers]);
 
@@ -44,6 +46,10 @@ const StylistsPage = () => {
     if (search) {
       const q = search.toLowerCase();
       list = list.filter(s => s.name.toLowerCase().includes(q) || s.specialties.some(sp => sp.toLowerCase().includes(q)));
+    }
+    if (locationFilter.trim()) {
+      const loc = locationFilter.trim().toLowerCase().split(",")[0].trim();
+      list = list.filter(s => (s.city || "").toLowerCase().includes(loc));
     }
     if (activeFilter !== "All") {
       list = list.filter(s => s.specialties.some(sp => sp.toLowerCase().includes(activeFilter.toLowerCase())));
@@ -54,7 +60,8 @@ const StylistsPage = () => {
       return 0;
     });
     return list;
-  }, [search, activeFilter, sortBy, allCards]);
+  }, [search, activeFilter, sortBy, allCards, locationFilter]);
+
 
   return (
     <div className="min-h-screen bg-background">
