@@ -132,25 +132,90 @@ const HomepageHero = () => {
               </div>
               <form onSubmit={handleSearch} className="grid grid-cols-1 sm:grid-cols-[1.1fr_1.1fr_1fr_auto] gap-2 p-2">
                 <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border bg-background">
-                  <MapPin className="w-4 h-4 text-[hsl(38_70%_50%)]" />
-                  <div className="min-w-0">
+                  <MapPin className="w-4 h-4 text-[hsl(38_70%_50%)] shrink-0" />
+                  <div className="min-w-0 flex-1">
                     <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-body">Location</p>
-                    <p className="text-sm font-body text-foreground truncate">Fort Lauderdale, FL</p>
+                    <Input
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      placeholder="City or ZIP"
+                      className="h-6 px-0 border-0 shadow-none focus-visible:ring-0 text-sm font-body bg-transparent"
+                    />
                   </div>
+                  <button
+                    type="button"
+                    onClick={useMyLocation}
+                    aria-label="Use my location"
+                    className="shrink-0 text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    <LocateFixed className={`w-4 h-4 ${locating ? "animate-pulse" : ""}`} />
+                  </button>
                 </div>
-                <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border bg-background">
-                  <Sparkles className="w-4 h-4 text-[hsl(42_65%_50%)]" />
-                  <div className="min-w-0">
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-body">Service</p>
-                    <p className="text-sm font-body text-foreground truncate">Select a service</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border bg-background">
-                  <div className="min-w-0">
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-body">Date</p>
-                    <p className="text-sm font-body text-foreground truncate">Select date</p>
-                  </div>
-                </div>
+
+                <Popover open={serviceOpen} onOpenChange={setServiceOpen}>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border bg-background text-left"
+                    >
+                      <Sparkles className="w-4 h-4 text-[hsl(42_65%_50%)] shrink-0" />
+                      <div className="min-w-0">
+                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-body">Service</p>
+                        <p className="text-sm font-body text-foreground truncate">
+                          {service === "All" ? "Select a service" : service}
+                        </p>
+                      </div>
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent align="start" className="w-56 p-1 bg-popover z-50">
+                    {SERVICE_OPTIONS.map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => {
+                          setService(s);
+                          setServiceOpen(false);
+                        }}
+                        className={`w-full text-left px-3 py-2 rounded-lg text-sm font-body hover:bg-secondary transition-colors ${
+                          service === s ? "text-primary font-semibold" : "text-foreground"
+                        }`}
+                      >
+                        {s === "All" ? "All services" : s}
+                      </button>
+                    ))}
+                  </PopoverContent>
+                </Popover>
+
+                <Popover open={dateOpen} onOpenChange={setDateOpen}>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border bg-background text-left"
+                    >
+                      <CalendarDays className="w-4 h-4 text-[hsl(42_65%_50%)] shrink-0" />
+                      <div className="min-w-0">
+                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-body">Date</p>
+                        <p className="text-sm font-body text-foreground truncate">
+                          {date ? format(date, "MMM d, yyyy") : "Select date"}
+                        </p>
+                      </div>
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent align="start" className="w-auto p-0 bg-popover z-50">
+                    <Calendar
+                      mode="single"
+                      selected={date}
+                      onSelect={(d) => {
+                        setDate(d);
+                        setDateOpen(false);
+                      }}
+                      disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0))}
+                      initialFocus
+                      className="p-3 pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+
                 <Button type="submit" className="rounded-xl bg-[hsl(270_60%_35%)] hover:bg-[hsl(270_65%_28%)] text-white h-full px-6">
                   <Search className="w-5 h-5" />
                 </Button>
