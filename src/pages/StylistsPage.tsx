@@ -88,6 +88,17 @@ const StylistsPage = () => {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input placeholder="Search by name or specialty..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10 bg-card border-border" />
               </div>
+              <div className="relative sm:w-56">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input placeholder="City or ZIP" value={locationFilter} onChange={(e) => setLocationFilter(e.target.value)} className="pl-10 bg-card border-border" />
+              </div>
+              {dateFilter && (
+                <div className="flex items-center gap-2 px-4 rounded-md bg-card border border-border text-sm font-body text-foreground">
+                  <CalendarDays className="w-4 h-4 text-primary" />
+                  {new Date(`${dateFilter}T00:00:00`).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
+                </div>
+              )}
+
               <div className="flex gap-2">
                 {(["rating", "price"] as const).map(s => (
                   <button key={s} onClick={() => setSortBy(s)}
