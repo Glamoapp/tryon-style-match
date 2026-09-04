@@ -436,10 +436,9 @@ const CheckoutPage = () => {
     // Send booking confirmation email(s) for each service
     if (email) {
       for (const s of services) {
-        await supabase.functions.invoke("send-transactional-email", {
+        await supabase.functions.invoke("send-booking-confirmation-email", {
           body: {
-            templateName: "booking-confirmation",
-            recipientEmail: email,
+                        recipientEmail: email,
             idempotencyKey: `booking-confirm-${paymentIntentId || crypto.randomUUID()}-${s.serviceName}`,
             templateData: {
               customerName: fullName,
@@ -456,10 +455,9 @@ const CheckoutPage = () => {
 
       // Send for products-only checkout too
       if (services.length === 0 && products.length > 0) {
-        await supabase.functions.invoke("send-transactional-email", {
+        await supabase.functions.invoke("send-booking-confirmation-email", {
           body: {
-            templateName: "booking-confirmation",
-            recipientEmail: email,
+                        recipientEmail: email,
             idempotencyKey: `purchase-confirm-${paymentIntentId || crypto.randomUUID()}`,
             templateData: {
               customerName: fullName,

@@ -1,3 +1,4 @@
+import { sendTemplateEmail } from "../_shared/transactional-email-templates/send-email.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const GATEWAY_URL = "https://connector-gateway.lovable.dev/twilio";
@@ -95,27 +96,22 @@ Deno.serve(async (req) => {
 
     // Send admin email notification via transactional email system
     try {
-      const { error: emailErr } = await supabase.functions.invoke("send-transactional-email", {
-        body: {
-          templateName: "admin-booking-alert",
-          recipientEmail: "nextlookbeauty@gmail.com",
-          idempotencyKey: `admin-booking-alert-${booking.id}`,
-          templateData: {
-            customerName: customer?.full_name,
-            customerEmail: customer?.email,
-            customerPhone: customer?.phone,
-            customerAddress: booking.customer_address,
-            stylistName: provider?.full_name,
-            serviceName: service?.service_name,
-            bookingDate: booking.booking_date,
-            bookingTime: booking.booking_time,
-            totalPrice: String(booking.total_price ?? ""),
-            bookingId: booking.id,
-          },
+      await sendTemplateEmail("admin-booking-alert", "nextlookbeauty@gmail.com", {
+        idempotencyKey: `admin-booking-alert-${booking.id}`,
+        templateData: {
+          customerName: customer?.full_name,
+          customerEmail: customer?.email,
+          customerPhone: customer?.phone,
+          customerAddress: booking.customer_address,
+          stylistName: provider?.full_name,
+          serviceName: service?.service_name,
+          bookingDate: booking.booking_date,
+          bookingTime: booking.booking_time,
+          totalPrice: String(booking.total_price ?? ""),
+          bookingId: booking.id,
         },
       });
-      if (emailErr) console.error("Admin email invoke error:", emailErr);
-      else console.log("Admin booking email queued");
+      console.log("Admin booking email sent");
     } catch (emailErr) {
       console.error("Admin email error:", emailErr);
     }

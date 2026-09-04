@@ -387,10 +387,9 @@ const ProviderOnboarding = () => {
 
       // Send confirmation email
       if (userEmail) {
-        await supabase.functions.invoke("send-transactional-email", {
+        await supabase.functions.invoke("send-stylist-signup-email", {
           body: {
-            templateName: "stylist-signup-confirmation",
-            recipientEmail: userEmail,
+                        recipientEmail: userEmail,
             idempotencyKey: `stylist-signup-${userId}`,
             templateData: { name: fullName || "Stylist" },
           },

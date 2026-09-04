@@ -9,7 +9,6 @@ import {
   Head,
   Heading,
   Html,
-  Img,
   Link,
   Preview,
   Text,
@@ -17,30 +16,34 @@ import {
 
 interface EmailChangeEmailProps {
   siteName: string
+  // oldEmail is the user's current address (HookData.OldEmail). For the
+  // NEW-recipient half of a secure email_change fanout, `email` equals the
+  // recipient (NEW), so the "from" line must render oldEmail to read
+  // "from OLD to NEW" instead of "from NEW to NEW".
+  oldEmail: string
   email: string
   newEmail: string
   confirmationUrl: string
 }
 
-const LOGO_URL = 'https://wmumnlhzjvscoyuqljyj.supabase.co/storage/v1/object/public/email-assets/logo.png'
-
 export const EmailChangeEmail = ({
   siteName,
-  email,
+  oldEmail,
   newEmail,
   confirmationUrl,
 }: EmailChangeEmailProps) => (
   <Html lang="en" dir="ltr">
-    <Head />
-    <Preview>Confirm your email change for NextLook Beauty</Preview>
+    <Head>
+      <style>{darkModeCss}</style>
+    </Head>
+    <Preview>Confirm your email change for {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Img src={LOGO_URL} alt="NextLook Beauty" width="140" height="auto" style={logo} />
         <Heading style={h1}>Confirm your email change</Heading>
         <Text style={text}>
-          You requested to change your email address for NextLook Beauty from{' '}
-          <Link href={`mailto:${email}`} style={link}>
-            {email}
+          You requested to change your email address for {siteName} from{' '}
+          <Link href={`mailto:${oldEmail}`} style={link}>
+            {oldEmail}
           </Link>{' '}
           to{' '}
           <Link href={`mailto:${newEmail}`} style={link}>
@@ -51,7 +54,7 @@ export const EmailChangeEmail = ({
         <Text style={text}>
           Click the button below to confirm this change:
         </Text>
-        <Button style={button} href={confirmationUrl}>
+        <Button className="dm-btn" style={button} href={confirmationUrl}>
           Confirm Email Change
         </Button>
         <Text style={footer}>
@@ -65,28 +68,36 @@ export const EmailChangeEmail = ({
 
 export default EmailChangeEmail
 
-const main = { backgroundColor: '#ffffff', fontFamily: "'Inter', Arial, sans-serif" }
+const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
 const container = { padding: '20px 25px' }
-const logo = { margin: '0 0 24px' }
 const h1 = {
   fontSize: '22px',
   fontWeight: 'bold' as const,
-  color: 'hsl(270, 30%, 10%)',
+  color: '#000000',
   margin: '0 0 20px',
 }
 const text = {
   fontSize: '14px',
-  color: 'hsl(270, 10%, 45%)',
+  color: '#55575d',
   lineHeight: '1.5',
   margin: '0 0 25px',
 }
-const link = { color: 'hsl(320, 70%, 55%)', textDecoration: 'underline' }
+const link = { color: 'inherit', textDecoration: 'underline' }
 const button = {
-  backgroundColor: 'hsl(320, 70%, 55%)',
+  backgroundColor: '#000000',
   color: '#ffffff',
   fontSize: '14px',
-  borderRadius: '12px',
-  padding: '12px 24px',
+  border: '1px solid #000000',
+  borderRadius: '8px',
+  padding: '12px 20px',
   textDecoration: 'none',
 }
 const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
+// Rendered as a text child, which React may HTML-escape: keep this CSS free of >, &, and quotes.
+const darkModeCss = `
+  @media (prefers-color-scheme: dark) {
+    .dm-btn { background-color: #ffffff !important; color: #000000 !important; }
+  }
+  [data-ogsc] .dm-btn { background-color: #ffffff !important; color: #000000 !important; }
+  [data-ogsb] .dm-btn { background-color: #ffffff !important; color: #000000 !important; }
+`

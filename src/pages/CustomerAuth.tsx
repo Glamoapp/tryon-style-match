@@ -40,10 +40,9 @@ const CustomerAuth = () => {
 
         // Send welcome email (fire-and-forget)
         if (data?.user) {
-          supabase.functions.invoke("send-transactional-email", {
+          supabase.functions.invoke("send-signup-welcome-email", {
             body: {
-              templateName: "signup-welcome",
-              recipientEmail: email,
+                            recipientEmail: email,
               idempotencyKey: `signup-welcome-${data.user.id}`,
               templateData: { name: fullName },
             },
