@@ -8,6 +8,7 @@ import { Send, ShieldAlert } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { containsContactInfo, CONTACT_INFO_WARNING } from "@/lib/messageFilter";
+import { notifyNewMessage } from "@/lib/notifyMessage";
 
 type Message = {
   id: string;
@@ -104,13 +105,14 @@ const MessageDialog = ({ recipientId, recipientName, recipientAvatar, trigger }:
     setSending(true);
     try {
       const conversationId = [userId, recipientId].sort().join("_");
-      const { error } = await supabase.from("messages").insert({
+      const { data: inserted, error } = await supabase.from("messages").insert({
         conversation_id: conversationId,
         sender_id: userId,
         receiver_id: recipientId,
         content: newMessage.trim(),
-      });
+      }).select("id").single();
       if (error) throw error;
+      if (inserted?.id) notifyNewMessage(inserted.id);
       setNewMessage("");
     } catch {
       toast.error("Failed to send message");
