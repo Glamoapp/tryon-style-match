@@ -77,7 +77,7 @@ const AppContent = () => {
         <Route path="/terms" element={<PageTransition><TermsPage /></PageTransition>} />
         <Route path="/vendor/signup" element={<PageTransition><VendorSignup /></PageTransition>} />
         <Route path="/vendor/login" element={<PageTransition><VendorLogin /></PageTransition>} />
-        <Route path="/vendor/dashboard" element={<PageTransition><VendorDashboard /></PageTransition>} /></PageTransition>} />
+        <Route path="/vendor/dashboard" element={<PageTransition><VendorDashboard /></PageTransition>} />
         <Route path="/about" element={<PageTransition><AboutPage /></PageTransition>} />
         <Route path="/reset-password" element={<PageTransition><ResetPasswordPage /></PageTransition>} />
         <Route path="/mirror" element={<PageTransition><MirrorPage /></PageTransition>} />
