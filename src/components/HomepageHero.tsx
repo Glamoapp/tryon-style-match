@@ -93,7 +93,7 @@ const HomepageHero = () => {
       {/* Celestial ivory radial glow */}
       <div className="absolute inset-0 bg-gradient-celestial pointer-events-none" />
       <div className="absolute -top-24 -right-24 w-[520px] h-[520px] rounded-full bg-purple/5 blur-[120px] pointer-events-none" />
-      <div className="absolute -bottom-24 -left-24 w-[480px] h-[480px] rounded-full bg-gold/8 blur-[120px] pointer-events-none" />
+      <div className="absolute -bottom-24 -left-24 w-[480px] h-[480px] rounded-full bg-gold/10 blur-[120px] pointer-events-none" />
 
       <div className="container mx-auto px-6 relative z-10">
         <div className="grid lg:grid-cols-[1.1fr_1fr] gap-12 items-center">
@@ -118,7 +118,7 @@ const HomepageHero = () => {
             </p>
 
             {/* Booking widget card */}
-            <div className="mt-8 bg-card/80 backdrop-blur-sm rounded-2xl shadow-elevated border border-primary/15 p-2">
+            <div className="mt-8 bg-card/80 backdrop-blur-sm rounded-2xl shadow-elevated border border-primary/20 p-2">
               <div className="flex gap-1 p-1">
                 {tabs.map((t) => (
                   <button
@@ -230,8 +230,8 @@ const HomepageHero = () => {
             <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
               {trust.map((t) => (
                 <div key={t.label} className="flex items-center gap-2 text-xs font-body text-muted-foreground">
-                  <span className="w-7 h-7 rounded-full bg-primary/12 flex items-center justify-center">
-                    <t.icon className="w-3.5 h-3.5 text-primary/80" />
+                  <span className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
+                    <t.icon className="w-3.5 h-3.5 text-primary" />
                   </span>
                   <span className="font-medium text-foreground/80">{t.label}</span>
                 </div>
@@ -248,7 +248,7 @@ const HomepageHero = () => {
           >
             <div className="relative aspect-square max-w-[520px] ml-auto rounded-full overflow-hidden shadow-elevated bg-gradient-warm">
               <img src={heroImage} alt="Luxury beauty client" className="w-full h-full object-cover" />
-              <div className="absolute inset-0 ring-1 ring-primary/35 rounded-full pointer-events-none" />
+              <div className="absolute inset-0 ring-1 ring-primary/30 rounded-full pointer-events-none" />
             </div>
 
             {/* AI Smart Mirror floating card */}
@@ -257,7 +257,7 @@ const HomepageHero = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="absolute -bottom-4 left-2 sm:left-6 bg-card/90 backdrop-blur-sm rounded-2xl shadow-elevated border border-primary/15 p-4 w-[260px] sm:w-[300px] hover:shadow-glow transition-shadow"
+                className="absolute -bottom-4 left-2 sm:left-6 bg-card/90 backdrop-blur-sm rounded-2xl shadow-elevated border border-primary/20 p-4 w-[260px] sm:w-[300px] hover:shadow-glow transition-shadow"
               >
                 <div className="flex items-center gap-1.5 mb-2">
                   <Sparkles className="w-3.5 h-3.5 text-primary" />
