@@ -142,13 +142,14 @@ export const DashboardMessages = ({ userId }: { userId: string }) => {
     setSending(true);
     try {
       const conversationId = [userId, selectedConvo].sort().join("_");
-      const { error } = await supabase.from("messages").insert({
+      const { data: inserted, error } = await supabase.from("messages").insert({
         conversation_id: conversationId,
         sender_id: userId,
         receiver_id: selectedConvo,
         content: newMessage.trim(),
-      });
+      }).select("id").single();
       if (error) throw error;
+      if (inserted?.id) notifyNewMessage(inserted.id);
       setNewMessage("");
     } catch {
       toast.error("Failed to send message");
