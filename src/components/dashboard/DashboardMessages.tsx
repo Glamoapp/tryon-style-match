@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { containsContactInfo, CONTACT_INFO_WARNING } from "@/lib/messageFilter";
+import { notifyNewMessage } from "@/lib/notifyMessage";
 
 type Conversation = {
   id: string;
