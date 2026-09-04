@@ -1,3 +1,4 @@
+import { sendTemplateEmail } from "../_shared/transactional-email-templates/send-email.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const GATEWAY_URL = "https://connector-gateway.lovable.dev/twilio";
@@ -87,20 +88,15 @@ Deno.serve(async (req) => {
     // Email
     if (receiver.email) {
       try {
-        const { error: emailErr } = await supabase.functions.invoke("send-transactional-email", {
-          body: {
-            templateName: "new-message-alert",
-            recipientEmail: receiver.email,
-            idempotencyKey: `new-message-${message.id}`,
-            templateData: {
-              recipientName: receiver.full_name,
-              senderName,
-              messagePreview: preview,
-              inboxUrl: `${SITE_URL}/messages`,
-            },
+        await sendTemplateEmail("new-message-alert", receiver.email, {
+          idempotencyKey: `new-message-${message.id}`,
+          templateData: {
+            recipientName: receiver.full_name,
+            senderName,
+            messagePreview: preview,
+            inboxUrl: `${SITE_URL}/messages`,
           },
         });
-        if (emailErr) console.error("Message email invoke error:", emailErr);
       } catch (e) {
         console.error("Message email error:", e);
       }
