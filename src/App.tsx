@@ -31,7 +31,6 @@ import VendorSignup from "./pages/VendorSignup.tsx";
 import VendorLogin from "./pages/VendorLogin.tsx";
 import VendorDashboard from "./pages/VendorDashboard.tsx";
 import NotFound from "./pages/NotFound.tsx";
-import UnsubscribePage from "./pages/UnsubscribePage.tsx";
 import AboutPage from "./pages/AboutPage.tsx";
 import ResetPasswordPage from "./pages/ResetPasswordPage.tsx";
 import MirrorPage from "./pages/MirrorPage.tsx";
@@ -78,8 +77,7 @@ const AppContent = () => {
         <Route path="/terms" element={<PageTransition><TermsPage /></PageTransition>} />
         <Route path="/vendor/signup" element={<PageTransition><VendorSignup /></PageTransition>} />
         <Route path="/vendor/login" element={<PageTransition><VendorLogin /></PageTransition>} />
-        <Route path="/vendor/dashboard" element={<PageTransition><VendorDashboard /></PageTransition>} />
-        <Route path="/unsubscribe" element={<PageTransition><UnsubscribePage /></PageTransition>} />
+        <Route path="/vendor/dashboard" element={<PageTransition><VendorDashboard /></PageTransition>} /></PageTransition>} />
         <Route path="/about" element={<PageTransition><AboutPage /></PageTransition>} />
         <Route path="/reset-password" element={<PageTransition><ResetPasswordPage /></PageTransition>} />
         <Route path="/mirror" element={<PageTransition><MirrorPage /></PageTransition>} />
