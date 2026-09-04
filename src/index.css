@@ -6,24 +6,24 @@
 
 @layer base {
   :root {
-    /* Celestial Ivory — warm ivory canvas + metallic gold + amethyst purple accents. */
-    --background: 42 60% 98%;
-    --foreground: 270 30% 18%;
+    /* Lavender & Light Purple — soft purple canvas + metallic gold + amethyst accents. */
+    --background: 270 45% 94%;
+    --foreground: 270 35% 18%;
 
-    --card: 42 50% 99%;
-    --card-foreground: 270 30% 18%;
+    --card: 270 40% 96%;
+    --card-foreground: 270 35% 18%;
 
-    --popover: 42 50% 99%;
-    --popover-foreground: 270 30% 18%;
+    --popover: 270 40% 96%;
+    --popover-foreground: 270 35% 18%;
 
     --primary: 45 65% 52%;
     --primary-foreground: 270 40% 12%;
 
-    --secondary: 270 35% 96%;
+    --secondary: 270 35% 92%;
     --secondary-foreground: 270 40% 18%;
 
-    --muted: 42 40% 95%;
-    --muted-foreground: 270 18% 42%;
+    --muted: 270 30% 90%;
+    --muted-foreground: 270 25% 38%;
 
     --accent: 270 43% 44%;
     --accent-foreground: 0 0% 100%;
@@ -31,44 +31,44 @@
     --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 42 35% 88%;
-    --input: 42 30% 92%;
+    --border: 270 30% 85%;
+    --input: 270 30% 88%;
     --ring: 45 65% 52%;
 
     --radius: 0.75rem;
 
     --pink: 45 65% 52%;
-    --pink-light: 270 35% 96%;
+    --pink-light: 270 35% 92%;
     --pink-glow: 45 85% 62%;
     --purple: 270 43% 44%;
     --purple-deep: 270 50% 26%;
-    --purple-light: 270 40% 95%;
+    --purple-light: 270 40% 93%;
     --gold: 45 65% 52%;
     --gold-foreground: 270 40% 12%;
-    --charcoal: 270 30% 18%;
-    --cream: 42 60% 98%;
-    --warm-gray: 270 12% 48%;
+    --charcoal: 270 35% 18%;
+    --cream: 270 45% 94%;
+    --warm-gray: 270 18% 45%;
 
     --gradient-rose: linear-gradient(135deg, hsl(45 85% 62%), hsl(38 72% 42%));
     --gradient-gold: linear-gradient(135deg, hsl(46 85% 62%), hsl(38 70% 42%));
-    --gradient-warm: linear-gradient(135deg, hsl(42 50% 99%), hsl(270 35% 96%));
-    --gradient-hero: radial-gradient(circle at 30% 20%, hsl(42 60% 99%) 0%, hsl(42 50% 97%) 40%, hsl(270 30% 95%) 100%);
+    --gradient-warm: linear-gradient(135deg, hsl(270 40% 96%), hsl(270 35% 90%));
+    --gradient-hero: radial-gradient(circle at 30% 20%, hsl(270 50% 97%) 0%, hsl(270 45% 94%) 45%, hsl(270 40% 90%) 100%);
     --gradient-purple: linear-gradient(135deg, hsl(272 50% 44%), hsl(268 55% 30%));
-    --gradient-celestial: radial-gradient(circle at 80% 10%, hsl(45 70% 88% / 0.35) 0%, transparent 45%), radial-gradient(circle at 10% 90%, hsl(270 40% 88% / 0.30) 0%, transparent 45%);
+    --gradient-celestial: radial-gradient(circle at 80% 10%, hsl(270 60% 92% / 0.55) 0%, transparent 45%), radial-gradient(circle at 10% 90%, hsl(280 50% 90% / 0.50) 0%, transparent 45%);
 
-    --shadow-soft: 0 4px 20px -4px hsl(270 30% 60% / 0.18);
-    --shadow-card: 0 8px 30px -8px hsl(270 30% 50% / 0.14);
-    --shadow-elevated: 0 20px 60px -15px hsl(270 35% 45% / 0.18);
+    --shadow-soft: 0 4px 20px -4px hsl(270 35% 55% / 0.18);
+    --shadow-card: 0 8px 30px -8px hsl(270 35% 50% / 0.14);
+    --shadow-elevated: 0 20px 60px -15px hsl(270 40% 45% / 0.18);
     --shadow-glow: 0 0 40px hsl(45 85% 60% / 0.28);
 
 
-    --sidebar-background: 42 50% 99%;
-    --sidebar-foreground: 270 30% 18%;
+    --sidebar-background: 270 40% 96%;
+    --sidebar-foreground: 270 35% 18%;
     --sidebar-primary: 270 40% 18%;
-    --sidebar-primary-foreground: 42 60% 98%;
-    --sidebar-accent: 42 40% 95%;
+    --sidebar-primary-foreground: 270 40% 96%;
+    --sidebar-accent: 270 30% 90%;
     --sidebar-accent-foreground: 270 40% 18%;
-    --sidebar-border: 42 30% 90%;
+    --sidebar-border: 270 30% 86%;
     --sidebar-ring: 45 65% 52%;
   }
 }
