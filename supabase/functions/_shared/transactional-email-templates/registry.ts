@@ -28,4 +28,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'stylist-signup-confirmation': stylistSignupConfirmation,
   'complete-setup-reminder': completeSetupReminder,
   'admin-booking-alert': adminBookingAlert,
+  'new-message-alert': newMessageAlert,
 }
