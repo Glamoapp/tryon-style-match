@@ -6,23 +6,23 @@
 
 @layer base {
   :root {
-    /* Lavender & Light Purple — soft purple canvas + metallic gold + amethyst accents. */
-    --background: 270 45% 94%;
+    /* White, gold and amethyst — clean canvas with purple accents. */
+    --background: 0 0% 100%;
     --foreground: 270 35% 18%;
 
-    --card: 270 40% 96%;
+    --card: 0 0% 100%;
     --card-foreground: 270 35% 18%;
 
-    --popover: 270 40% 96%;
+    --popover: 0 0% 100%;
     --popover-foreground: 270 35% 18%;
 
     --primary: 45 65% 52%;
     --primary-foreground: 270 40% 12%;
 
-    --secondary: 270 35% 92%;
+    --secondary: 270 30% 96%;
     --secondary-foreground: 270 40% 18%;
 
-    --muted: 270 30% 90%;
+    --muted: 270 20% 96%;
     --muted-foreground: 270 25% 38%;
 
     --accent: 270 43% 44%;
@@ -31,44 +31,44 @@
     --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 270 30% 85%;
-    --input: 270 30% 88%;
+    --border: 270 20% 90%;
+    --input: 270 20% 92%;
     --ring: 45 65% 52%;
 
     --radius: 0.75rem;
 
     --pink: 45 65% 52%;
-    --pink-light: 270 35% 92%;
+    --pink-light: 270 30% 96%;
     --pink-glow: 45 85% 62%;
     --purple: 270 43% 44%;
     --purple-deep: 270 50% 26%;
-    --purple-light: 270 40% 93%;
+    --purple-light: 270 40% 96%;
     --gold: 45 65% 52%;
     --gold-foreground: 270 40% 12%;
     --charcoal: 270 35% 18%;
-    --cream: 270 45% 94%;
+    --cream: 0 0% 100%;
     --warm-gray: 270 18% 45%;
 
     --gradient-rose: linear-gradient(135deg, hsl(45 85% 62%), hsl(38 72% 42%));
     --gradient-gold: linear-gradient(135deg, hsl(46 85% 62%), hsl(38 70% 42%));
-    --gradient-warm: linear-gradient(135deg, hsl(270 40% 96%), hsl(270 35% 90%));
-    --gradient-hero: radial-gradient(circle at 30% 20%, hsl(270 50% 97%) 0%, hsl(270 45% 94%) 45%, hsl(270 40% 90%) 100%);
+    --gradient-warm: linear-gradient(135deg, hsl(0 0% 100%), hsl(270 30% 96%));
+    --gradient-hero: radial-gradient(circle at 30% 20%, hsl(0 0% 100%) 0%, hsl(270 30% 98%) 45%, hsl(270 30% 94%) 100%);
     --gradient-purple: linear-gradient(135deg, hsl(272 50% 44%), hsl(268 55% 30%));
-    --gradient-celestial: radial-gradient(circle at 80% 10%, hsl(270 60% 92% / 0.55) 0%, transparent 45%), radial-gradient(circle at 10% 90%, hsl(280 50% 90% / 0.50) 0%, transparent 45%);
+    --gradient-celestial: radial-gradient(circle at 80% 10%, hsl(270 40% 92% / 0.35) 0%, transparent 45%), radial-gradient(circle at 10% 90%, hsl(280 30% 92% / 0.30) 0%, transparent 45%);
 
-    --shadow-soft: 0 4px 20px -4px hsl(270 35% 55% / 0.18);
-    --shadow-card: 0 8px 30px -8px hsl(270 35% 50% / 0.14);
-    --shadow-elevated: 0 20px 60px -15px hsl(270 40% 45% / 0.18);
+    --shadow-soft: 0 4px 20px -4px hsl(270 25% 55% / 0.12);
+    --shadow-card: 0 8px 30px -8px hsl(270 25% 50% / 0.10);
+    --shadow-elevated: 0 20px 60px -15px hsl(270 30% 45% / 0.12);
     --shadow-glow: 0 0 40px hsl(45 85% 60% / 0.28);
 
 
-    --sidebar-background: 270 40% 96%;
+    --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 270 35% 18%;
     --sidebar-primary: 270 40% 18%;
     --sidebar-primary-foreground: 270 40% 96%;
-    --sidebar-accent: 270 30% 90%;
+    --sidebar-accent: 270 30% 96%;
     --sidebar-accent-foreground: 270 40% 18%;
-    --sidebar-border: 270 30% 86%;
+    --sidebar-border: 270 20% 90%;
     --sidebar-ring: 45 65% 52%;
   }
 }
