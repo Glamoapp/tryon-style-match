@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ['"Playfair Display"', 'serif'],
-        body: ['Inter', 'sans-serif'],
+        display: ['"Italiana"', 'serif'],
+        body: ['"Lora"', 'serif'],
         canva: ['Quicksand', 'Inter', 'sans-serif'],
       },
       colors: {
