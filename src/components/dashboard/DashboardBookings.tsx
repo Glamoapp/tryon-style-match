@@ -106,10 +106,9 @@ export const DashboardBookings = ({
           .single();
 
         if (customerProfile?.email) {
-          await supabase.functions.invoke("send-transactional-email", {
+          await supabase.functions.invoke("send-booking-confirmed-email", {
             body: {
-              templateName: "booking-confirmed",
-              recipientEmail: customerProfile.email,
+                            recipientEmail: customerProfile.email,
               idempotencyKey: `booking-confirmed-${booking.id}`,
               templateData: {
                 customerName: customerProfile.full_name,
@@ -219,10 +218,9 @@ export const DashboardBookings = ({
             .single();
           if (pointsData) totalPoints = pointsData.total_points;
 
-          await supabase.functions.invoke("send-transactional-email", {
+          await supabase.functions.invoke("send-service-completed-email", {
             body: {
-              templateName: "service-completed",
-              recipientEmail: customerProfile.email,
+                            recipientEmail: customerProfile.email,
               idempotencyKey: `service-completed-${bookingId}`,
               templateData: {
                 customerName: customerProfile.full_name,

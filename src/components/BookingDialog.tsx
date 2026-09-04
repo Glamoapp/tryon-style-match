@@ -254,10 +254,9 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
 
           // Send booking confirmation email for guest booking
           const guestPoints = (servicePrice ?? 0) >= 200 ? 100 : (servicePrice ?? 0) >= 100 ? 50 : (servicePrice ?? 0) >= 50 ? 20 : 10;
-          supabase.functions.invoke("send-transactional-email", {
+          supabase.functions.invoke("send-booking-confirmation-email", {
             body: {
-              templateName: "booking-confirmation",
-              recipientEmail: email,
+                            recipientEmail: email,
               idempotencyKey: `booking-confirm-${createdId}`,
               templateData: {
                 customerName: name,
@@ -299,10 +298,9 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
 
       // Send booking confirmation email to customer
       const pointsEarned = (servicePrice ?? 0) >= 200 ? 100 : (servicePrice ?? 0) >= 100 ? 50 : (servicePrice ?? 0) >= 50 ? 20 : 10;
-      supabase.functions.invoke("send-transactional-email", {
+      supabase.functions.invoke("send-booking-confirmation-email", {
         body: {
-          templateName: "booking-confirmation",
-          recipientEmail: email,
+                    recipientEmail: email,
           idempotencyKey: `booking-confirm-${createdId}`,
           templateData: {
             customerName: name,
@@ -327,10 +325,9 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
             .eq("customer_id", user.id)
             .limit(2);
           if (allBookings && allBookings.length === 1) {
-            await supabase.functions.invoke("send-transactional-email", {
+            await supabase.functions.invoke("send-first-booking-welcome-email", {
               body: {
-                templateName: "first-booking-welcome",
-                recipientEmail: email,
+                                recipientEmail: email,
                 idempotencyKey: `first-booking-welcome-${user.id}`,
                 templateData: {
                   customerName: name,
@@ -374,10 +371,9 @@ const BookingDialog = ({ trigger, stylistName, styleName, servicePrice, stylistP
 
       // Send booking confirmation email for guest booking
       const guestPoints2 = (servicePrice ?? 0) >= 200 ? 100 : (servicePrice ?? 0) >= 100 ? 50 : (servicePrice ?? 0) >= 50 ? 20 : 10;
-      supabase.functions.invoke("send-transactional-email", {
+      supabase.functions.invoke("send-booking-confirmation-email", {
         body: {
-          templateName: "booking-confirmation",
-          recipientEmail: email,
+                    recipientEmail: email,
           idempotencyKey: `booking-confirm-${createdId}`,
           templateData: {
             customerName: name,

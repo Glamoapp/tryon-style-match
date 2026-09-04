@@ -369,10 +369,9 @@ export const VendorProductDialog = ({ product, open, onOpenChange }: Props) => {
           .eq("customer_id", user.id)
           .limit(2);
         if (allBookings && allBookings.length === 1) {
-          await supabase.functions.invoke("send-transactional-email", {
+          await supabase.functions.invoke("send-first-booking-welcome-email", {
             body: {
-              templateName: "first-booking-welcome",
-              recipientEmail: email,
+                            recipientEmail: email,
               idempotencyKey: `first-booking-welcome-${user.id}`,
               templateData: {
                 customerName: name,
@@ -399,10 +398,9 @@ export const VendorProductDialog = ({ product, open, onOpenChange }: Props) => {
     else if (totalAmount > 300) rewardPoints = 10;
 
     // Send booking confirmation email with receipt
-    supabase.functions.invoke("send-transactional-email", {
+    supabase.functions.invoke("send-booking-confirmation-email", {
       body: {
-        templateName: "booking-confirmation",
-        recipientEmail: email,
+                recipientEmail: email,
         idempotencyKey: `booking-confirm-${createdBooking.id}`,
         templateData: {
           customerName: name,
