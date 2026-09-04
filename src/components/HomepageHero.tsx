@@ -89,32 +89,36 @@ const HomepageHero = () => {
 
 
   return (
-    <section className="relative pt-24 pb-12 bg-background overflow-hidden">
-      {/* Soft gold + purple ambient glows */}
-      <div className="absolute -top-32 -left-32 w-[520px] h-[520px] rounded-full bg-[hsl(38_70%_55%/0.10)] blur-[120px] pointer-events-none" />
-      <div className="absolute top-1/3 -right-32 w-[480px] h-[480px] rounded-full bg-[hsl(42_65%_55%/0.15)] blur-[120px] pointer-events-none" />
+    <section className="relative pt-28 pb-16 overflow-hidden bg-background">
+      {/* Celestial ivory radial glow */}
+      <div className="absolute inset-0 bg-gradient-celestial pointer-events-none" />
+      <div className="absolute -top-24 -right-24 w-[520px] h-[520px] rounded-full bg-purple/5 blur-[120px] pointer-events-none" />
+      <div className="absolute -bottom-24 -left-24 w-[480px] h-[480px] rounded-full bg-gold/8 blur-[120px] pointer-events-none" />
 
       <div className="container mx-auto px-6 relative z-10">
-        <div className="grid lg:grid-cols-[1.1fr_1fr] gap-10 items-center">
+        <div className="grid lg:grid-cols-[1.1fr_1fr] gap-12 items-center">
           {/* Left: copy + booking widget */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-foreground leading-[1.05]">
-              BEAUTY MEETS <span className="text-gradient-gold">LUXURY.</span>
+            <span className="inline-block mb-4 text-xs font-body font-semibold tracking-[0.3em] text-primary uppercase">
+              Established in Grace
+            </span>
+
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-normal text-foreground leading-[1.05]">
+              Beauty That
               <br />
-              <span className="text-foreground">ON </span>
-              <span className="text-gradient-gold">DEMAND.</span>
+              <span className="text-gradient-gold">Comes to You</span>
             </h1>
-            <p className="text-muted-foreground font-body mt-5 max-w-lg text-base">
+            <p className="text-muted-foreground font-body mt-5 max-w-lg text-base italic leading-relaxed">
               Book beauty services, shop premium products, and try your look with AI —
               all in one place.
             </p>
 
             {/* Booking widget card */}
-            <div className="mt-8 bg-card rounded-2xl shadow-elevated border border-border/60 p-2">
+            <div className="mt-8 bg-card/80 backdrop-blur-sm rounded-2xl shadow-elevated border border-primary/15 p-2">
               <div className="flex gap-1 p-1">
                 {tabs.map((t) => (
                   <button
@@ -122,7 +126,7 @@ const HomepageHero = () => {
                     onClick={() => setTab(t.id)}
                     className={`px-4 py-2 rounded-xl text-sm font-body font-semibold transition-all ${
                       tab === t.id
-                        ? "bg-[hsl(270_60%_35%)] text-white shadow-soft"
+                        ? "bg-accent text-white shadow-soft"
                         : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
@@ -131,8 +135,8 @@ const HomepageHero = () => {
                 ))}
               </div>
               <form onSubmit={handleSearch} className="grid grid-cols-1 sm:grid-cols-[1.1fr_1.1fr_1fr_auto] gap-2 p-2">
-                <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border bg-background">
-                  <MapPin className="w-4 h-4 text-[hsl(38_70%_50%)] shrink-0" />
+                <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border bg-background/80">
+                  <MapPin className="w-4 h-4 text-primary shrink-0" />
                   <div className="min-w-0 flex-1">
                     <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-body">Location</p>
                     <Input
@@ -156,9 +160,9 @@ const HomepageHero = () => {
                   <PopoverTrigger asChild>
                     <button
                       type="button"
-                      className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border bg-background text-left"
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border bg-background/80 text-left"
                     >
-                      <Sparkles className="w-4 h-4 text-[hsl(42_65%_50%)] shrink-0" />
+                      <Sparkles className="w-4 h-4 text-primary shrink-0" />
                       <div className="min-w-0">
                         <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-body">Service</p>
                         <p className="text-sm font-body text-foreground truncate">
@@ -190,9 +194,9 @@ const HomepageHero = () => {
                   <PopoverTrigger asChild>
                     <button
                       type="button"
-                      className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border bg-background text-left"
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border bg-background/80 text-left"
                     >
-                      <CalendarDays className="w-4 h-4 text-[hsl(42_65%_50%)] shrink-0" />
+                      <CalendarDays className="w-4 h-4 text-primary shrink-0" />
                       <div className="min-w-0">
                         <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-body">Date</p>
                         <p className="text-sm font-body text-foreground truncate">
@@ -216,7 +220,7 @@ const HomepageHero = () => {
                   </PopoverContent>
                 </Popover>
 
-                <Button type="submit" className="rounded-xl bg-[hsl(270_60%_35%)] hover:bg-[hsl(270_65%_28%)] text-white h-full px-6">
+                <Button type="submit" className="rounded-xl bg-accent hover:bg-purple-deep text-white h-full px-6">
                   <Search className="w-5 h-5" />
                 </Button>
               </form>
@@ -226,8 +230,8 @@ const HomepageHero = () => {
             <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
               {trust.map((t) => (
                 <div key={t.label} className="flex items-center gap-2 text-xs font-body text-muted-foreground">
-                  <span className="w-7 h-7 rounded-full bg-[hsl(38_70%_55%/0.15)] flex items-center justify-center">
-                    <t.icon className="w-3.5 h-3.5 text-[hsl(38_70%_45%)]" />
+                  <span className="w-7 h-7 rounded-full bg-primary/12 flex items-center justify-center">
+                    <t.icon className="w-3.5 h-3.5 text-primary/80" />
                   </span>
                   <span className="font-medium text-foreground/80">{t.label}</span>
                 </div>
@@ -244,7 +248,7 @@ const HomepageHero = () => {
           >
             <div className="relative aspect-square max-w-[520px] ml-auto rounded-full overflow-hidden shadow-elevated bg-gradient-warm">
               <img src={heroImage} alt="Luxury beauty client" className="w-full h-full object-cover" />
-              <div className="absolute inset-0 ring-1 ring-[hsl(38_70%_55%/0.35)] rounded-full pointer-events-none" />
+              <div className="absolute inset-0 ring-1 ring-primary/35 rounded-full pointer-events-none" />
             </div>
 
             {/* AI Smart Mirror floating card */}
@@ -253,18 +257,18 @@ const HomepageHero = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="absolute -bottom-4 left-2 sm:left-6 bg-card rounded-2xl shadow-elevated border border-border/70 p-4 w-[260px] sm:w-[300px] hover:shadow-glow transition-shadow"
+                className="absolute -bottom-4 left-2 sm:left-6 bg-card/90 backdrop-blur-sm rounded-2xl shadow-elevated border border-primary/15 p-4 w-[260px] sm:w-[300px] hover:shadow-glow transition-shadow"
               >
                 <div className="flex items-center gap-1.5 mb-2">
-                  <Sparkles className="w-3.5 h-3.5 text-[hsl(38_70%_50%)]" />
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[hsl(38_70%_45%)] font-body">
+                  <Sparkles className="w-3.5 h-3.5 text-primary" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-primary font-body">
                     AI Smart Mirror
                   </span>
                 </div>
                 <p className="text-xs font-body text-muted-foreground mb-3 leading-snug">
                   Try on hairstyles, colors and looks in real-time with our AI technology.
                 </p>
-                <Button size="sm" className="rounded-full bg-[hsl(270_60%_35%)] hover:bg-[hsl(270_65%_28%)] text-white h-8 px-4 text-xs">
+                <Button size="sm" className="rounded-full bg-accent hover:bg-purple-deep text-white h-8 px-4 text-xs">
                   Try it Now
                 </Button>
               </motion.div>
@@ -272,6 +276,9 @@ const HomepageHero = () => {
           </motion.div>
         </div>
       </div>
+
+      {/* Subtle gold section divider */}
+      <div className="absolute bottom-0 left-1/2 w-40 h-px -translate-x-1/2 bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
     </section>
   );
 };
