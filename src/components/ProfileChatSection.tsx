@@ -7,6 +7,7 @@ import { Send, MessageCircle, ShieldAlert } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { containsContactInfo, CONTACT_INFO_WARNING } from "@/lib/messageFilter";
+import { notifyNewMessage } from "@/lib/notifyMessage";
 
 type Message = {
   id: string;
