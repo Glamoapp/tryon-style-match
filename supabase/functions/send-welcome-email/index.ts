@@ -1,4 +1,8 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
+import { EmailAPIError, sendLovableEmail } from "npm:@lovable.dev/email-js@0.1.0";
+
+const SENDER_DOMAIN = "notify.nextlookbeauty.com";
+const FROM_DOMAIN = "notify.nextlookbeauty.com";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -261,20 +265,39 @@ Deno.serve(async (req) => {
     console.log(`Welcome email prepared for ${stylistName} at ${stylistEmail}`);
     console.log(`Handbook URL: ${HANDBOOK_URL}`);
 
-    // Try to send via the email queue if available
+    // Send through Lovable's managed email API (HTML is composed above)
     try {
-      await supabaseAdmin.rpc("enqueue_email", {
-        queue_name: "transactional_emails",
-        payload: {
+      await sendLovableEmail(
+        {
           to: stylistEmail,
-          subject: `🎉 Welcome to NEXTLOOK, ${stylistName}! You're Approved!`,
+          from: `NEXTLOOK <noreply@${FROM_DOMAIN}>`,
+          sender_domain: SENDER_DOMAIN,
+          subject: `\u{1F389} Welcome to NEXTLOOK, ${stylistName}! You're Approved!`,
           html: htmlContent,
-          template_name: "welcome-stylist",
+          text: htmlContent.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim(),
+          purpose: "transactional",
+          label: "welcome-stylist",
+          idempotency_key: `welcome-stylist-${stylistId ?? stylistEmail}`,
         },
+        { apiKey: Deno.env.get("LOVABLE_API_KEY")!, sendUrl: Deno.env.get("LOVABLE_SEND_URL") }
+      );
+      await supabaseAdmin.from("email_send_log").insert({
+        template_name: "welcome-stylist",
+        recipient_email: stylistEmail,
+        status: "sent",
       });
-      console.log("Email enqueued successfully");
+      console.log("Welcome email sent");
     } catch (emailErr) {
-      console.log("Email queue not available, logging email content:", emailErr);
+      const suppressed =
+        emailErr instanceof EmailAPIError && emailErr.code === "recipient_suppressed";
+      const { error: logErr } = await supabaseAdmin.from("email_send_log").insert({
+        template_name: "welcome-stylist",
+        recipient_email: stylistEmail,
+        status: suppressed ? "suppressed" : "failed",
+        error_message: suppressed ? null : String((emailErr as Error)?.message ?? emailErr),
+      });
+      if (logErr) console.error("Failed to write email_send_log", { code: logErr.code, message: logErr.message });
+      console.log("Welcome email not delivered:", suppressed ? "recipient_suppressed" : emailErr);
     }
 
     return new Response(
