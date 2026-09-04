@@ -103,16 +103,16 @@ const HomepageHero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <span className="inline-block mb-4 text-xs font-body font-semibold tracking-[0.3em] text-primary uppercase">
+            <span className="inline-block mb-4 text-xs font-body font-bold tracking-[0.3em] text-primary uppercase">
               Established in Grace
             </span>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-normal text-foreground leading-[1.05]">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-foreground leading-[1.05]">
               Beauty That
               <br />
               <span className="text-gradient-gold">Comes to You</span>
             </h1>
-            <p className="text-muted-foreground font-body mt-5 max-w-lg text-base italic leading-relaxed">
+            <p className="text-foreground/80 font-body font-semibold mt-5 max-w-lg text-base leading-relaxed">
               Book beauty services, shop premium products, and try your look with AI —
               all in one place.
             </p>
