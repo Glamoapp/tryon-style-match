@@ -45,12 +45,12 @@ const CategoryStylists = () => {
           <div className="container mx-auto px-6">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <span className="text-sm font-semibold text-primary uppercase tracking-widest font-body">
-                  In Your Area
-                </span>
-                <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground">
-                  {section.label} Near You
-                </h2>
+              <span className="text-sm font-semibold text-primary uppercase tracking-widest font-body">
+                In Your Area
+              </span>
+              <h2 className="text-2xl md:text-3xl font-logo font-bold text-foreground uppercase tracking-wide">
+                {section.label} Near You
+              </h2>
               </div>
               <Link to={`/stylists?specialty=${encodeURIComponent(section.label)}`}>
                 <Button variant="ghost" size="sm" className="text-primary font-body">

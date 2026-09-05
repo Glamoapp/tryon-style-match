@@ -41,10 +41,10 @@ const ServicesNearYou = () => {
       <div className="container mx-auto px-6">
         <div className="flex items-end justify-between mb-6">
           <div>
-            <span className="text-lg md:text-xl font-logo font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
-              <MapPin className="w-5 h-5" /> Services Near You
+            <span className="text-sm font-semibold text-primary uppercase tracking-widest font-body flex items-center gap-1.5">
+              <MapPin className="w-4 h-4" /> Services Near You
             </span>
-            <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground mt-1">
+            <h2 className="text-2xl md:text-3xl font-logo font-bold text-foreground mt-1 uppercase tracking-wide">
               What we offer in your area
             </h2>
           </div>
