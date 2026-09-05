@@ -107,16 +107,16 @@ const HomepageHero = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="w-full max-w-4xl text-center"
+          className="w-full max-w-3xl text-center"
         >
           {/* Booking widget card — centered like DoorDash search */}
-          <div className="bg-white rounded-2xl shadow-elevated border border-white/20 p-2 mx-auto">
-            <div className="flex gap-1 p-1 justify-center">
+          <div className="bg-white/55 backdrop-blur-xl rounded-2xl shadow-elevated border border-white/60 p-1.5 mx-auto">
+            <div className="flex gap-1 p-0.5 justify-center">
               {tabs.map((t) => (
                 <button
                   key={t.id}
                   onClick={() => setTab(t.id)}
-                  className={`px-4 py-2 rounded-full text-sm font-body font-semibold transition-all ${
+                  className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-body font-semibold transition-all ${
                     tab === t.id
                       ? "bg-accent text-white shadow-soft"
                       : "text-muted-foreground hover:text-foreground"
@@ -126,7 +126,7 @@ const HomepageHero = () => {
                 </button>
               ))}
             </div>
-            <form onSubmit={handleSearch} className="grid grid-cols-1 sm:grid-cols-[1.1fr_1.1fr_1fr_auto] gap-2 p-2">
+            <form onSubmit={handleSearch} className="grid grid-cols-1 sm:grid-cols-[1.1fr_1.1fr_1fr_auto] gap-1.5 p-1.5">
               <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border bg-background/80">
                 <MapPin className="w-4 h-4 text-primary shrink-0" />
                 <div className="min-w-0 flex-1">
@@ -212,7 +212,7 @@ const HomepageHero = () => {
                 </PopoverContent>
               </Popover>
 
-              <Button type="submit" className="rounded-xl bg-accent hover:bg-purple-deep text-white h-full px-6">
+              <Button type="submit" className="rounded-xl bg-accent hover:bg-purple-deep text-white h-full px-4">
                 <Search className="w-5 h-5" />
               </Button>
             </form>
