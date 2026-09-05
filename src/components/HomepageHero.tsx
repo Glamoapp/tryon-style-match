@@ -103,10 +103,6 @@ const HomepageHero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <span className="inline-block mb-4 text-xs font-body font-bold tracking-[0.3em] text-primary uppercase">
-              Established in Grace
-            </span>
-
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-foreground leading-[1.05]">
               Beauty That
               <br />
