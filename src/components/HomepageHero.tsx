@@ -89,14 +89,12 @@ const HomepageHero = () => {
 
 
   return (
-    <section className="relative pt-32 pb-16 overflow-hidden bg-background">
-      {/* Celestial ivory radial glow */}
-      <div className="absolute inset-0 bg-gradient-celestial pointer-events-none" />
-      <div className="absolute -top-24 -right-24 w-[520px] h-[520px] rounded-full bg-purple/5 blur-[120px] pointer-events-none" />
-      <div className="absolute -bottom-24 -left-24 w-[480px] h-[480px] rounded-full bg-gold/10 blur-[120px] pointer-events-none" />
+    <section className="relative pt-48 pb-24 overflow-hidden bg-background">
+      {/* Subtle clean background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white via-background to-purple/5 pointer-events-none" />
 
       <div className="container mx-auto px-6 relative z-10">
-        <div className="grid lg:grid-cols-[1fr_1.15fr] gap-12 items-end">
+        <div className="grid lg:grid-cols-[1fr_1.15fr] gap-12 items-center">
           {/* Left: copy + booking widget */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -104,13 +102,13 @@ const HomepageHero = () => {
             transition={{ duration: 0.6 }}
           >
             {/* Booking widget card */}
-            <div className="mt-8 bg-card/80 backdrop-blur-sm rounded-2xl shadow-elevated border border-primary/20 p-2">
+            <div className="bg-white rounded-2xl shadow-soft border border-border/60 p-2">
               <div className="flex gap-1 p-1">
                 {tabs.map((t) => (
                   <button
                     key={t.id}
                     onClick={() => setTab(t.id)}
-                    className={`px-4 py-2 rounded-xl text-sm font-body font-semibold transition-all ${
+                    className={`px-4 py-2 rounded-full text-sm font-body font-semibold transition-all ${
                       tab === t.id
                         ? "bg-accent text-white shadow-soft"
                         : "text-muted-foreground hover:text-foreground"
@@ -225,16 +223,16 @@ const HomepageHero = () => {
             </div>
           </motion.div>
 
-          {/* Right: hero portrait + AI mirror card */}
+          {/* Right: hero portrait */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
             className="relative"
           >
-            <div className="relative max-w-[720px] ml-auto rounded-2xl overflow-hidden shadow-elevated bg-gradient-warm min-h-[480px] lg:min-h-[620px]">
+            <div className="relative max-w-[760px] ml-auto rounded-2xl overflow-hidden shadow-elevated bg-gradient-warm min-h-[500px] lg:min-h-[640px]">
               <img src={heroImage} alt="Luxury beauty client" className="w-full h-full object-cover" />
-              <div className="absolute inset-0 ring-1 ring-primary/30 rounded-2xl pointer-events-none" />
+              <div className="absolute inset-0 ring-1 ring-primary/20 rounded-2xl pointer-events-none" />
             </div>
 
           </motion.div>
