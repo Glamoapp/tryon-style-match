@@ -218,12 +218,8 @@ const HomepageHero = () => {
             </form>
           </div>
 
-          {/* Subheadline + trust badges grouped under the bar */}
+          {/* Trust badges + subheadline under the bar */}
           <div className="mt-5 inline-flex flex-col items-center">
-            <p className="text-white/90 text-lg sm:text-xl font-body drop-shadow-md mb-4">
-              Book stylists, shop products, and try your look with AI.
-            </p>
-
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 justify-center">
               {trust.map((t) => (
                 <div key={t.label} className="flex items-center justify-center gap-2 text-xs font-body">
@@ -234,6 +230,10 @@ const HomepageHero = () => {
                 </div>
               ))}
             </div>
+
+            <p className="text-white/90 text-lg sm:text-xl font-body drop-shadow-md mt-4">
+              Book stylists, shop products, and try your look with AI.
+            </p>
           </div>
         </motion.div>
       </div>
