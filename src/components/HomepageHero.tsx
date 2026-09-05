@@ -218,21 +218,22 @@ const HomepageHero = () => {
             </form>
           </div>
 
-          {/* Subheadline under the bar */}
-          <p className="text-white/90 text-lg sm:text-xl font-body mt-6 drop-shadow-md">
-            Book stylists, shop products, and try your look with AI.
-          </p>
+          {/* Subheadline + trust badges grouped under the bar */}
+          <div className="mt-5 inline-flex flex-col items-center">
+            <p className="text-white/90 text-lg sm:text-xl font-body drop-shadow-md mb-4">
+              Book stylists, shop products, and try your look with AI.
+            </p>
 
-          {/* Trust strip */}
-          <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 justify-center">
-            {trust.map((t) => (
-              <div key={t.label} className="flex items-center justify-center gap-2 text-xs font-body">
-                <span className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center">
-                  <t.icon className="w-3.5 h-3.5 text-primary" />
-                </span>
-                <span className="font-medium text-white/90">{t.label}</span>
-              </div>
-            ))}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 justify-center">
+              {trust.map((t) => (
+                <div key={t.label} className="flex items-center justify-center gap-2 text-xs font-body">
+                  <span className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center">
+                    <t.icon className="w-3.5 h-3.5 text-primary" />
+                  </span>
+                  <span className="font-medium text-white/90">{t.label}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </motion.div>
       </div>
