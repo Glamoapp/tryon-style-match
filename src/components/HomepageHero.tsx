@@ -94,7 +94,7 @@ const HomepageHero = () => {
       <div className="absolute inset-0 bg-gradient-to-br from-white via-background to-purple/5 pointer-events-none" />
 
       <div className="container mx-auto px-6 relative z-10">
-        <div className="grid lg:grid-cols-[1fr_1.15fr] gap-12 items-center">
+        <div className="grid lg:grid-cols-[1fr_1.15fr] gap-12 items-stretch">
           {/* Left: copy + booking widget */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
