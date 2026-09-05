@@ -228,9 +228,9 @@ const HomepageHero = () => {
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="relative"
+            className="relative h-full flex"
           >
-            <div className="relative max-w-[760px] ml-auto rounded-2xl overflow-hidden shadow-elevated bg-gradient-warm min-h-[500px] lg:min-h-[640px]">
+            <div className="relative w-full max-w-[760px] ml-auto rounded-2xl overflow-hidden shadow-elevated bg-gradient-warm min-h-[520px] lg:min-h-full">
               <img src={heroImage} alt="Luxury beauty client" className="w-full h-full object-cover" />
               <div className="absolute inset-0 ring-1 ring-primary/20 rounded-2xl pointer-events-none" />
             </div>
