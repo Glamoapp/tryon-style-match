@@ -101,8 +101,8 @@ const HomepageHero = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-purple-deep/70 via-purple-deep/50 to-purple-deep/80" />
       </div>
 
-      {/* Centered content, pushed to the lower part of the photo */}
-      <div className="relative z-10 container mx-auto px-6 h-full flex flex-col items-center justify-end pb-28 lg:pb-44 pt-24">
+      {/* Content anchored to the bottom of the photo */}
+      <div className="relative z-10 container mx-auto px-6 h-full flex flex-col items-center justify-end pb-6 lg:pb-10 pt-24">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
