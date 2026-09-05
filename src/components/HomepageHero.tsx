@@ -232,8 +232,8 @@ const HomepageHero = () => {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="relative"
           >
-            <div className="relative max-w-[520px] ml-auto rounded-2xl overflow-hidden shadow-elevated bg-gradient-warm">
-              <img src={heroImage} alt="Luxury beauty client" className="w-full h-full object-cover" />
+            <div className="relative max-w-[560px] ml-auto rounded-2xl overflow-hidden shadow-elevated bg-gradient-warm min-h-[420px] lg:min-h-[560px]">
+              <img src={heroImage} alt="Luxury beauty client" className="w-full h-full object-cover absolute inset-0" />
               <div className="absolute inset-0 ring-1 ring-primary/30 rounded-2xl pointer-events-none" />
             </div>
 
