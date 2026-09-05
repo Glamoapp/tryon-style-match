@@ -69,9 +69,9 @@ const Navbar = () => {
   return (
     <>
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border/50">
-        <div className="container mx-auto px-6 h-16 flex items-center justify-between">
-          {/* Left: hamburger + logo */}
-          <div className="flex items-center gap-3">
+        <div className="container mx-auto px-6 h-20 flex items-center justify-between relative">
+          {/* Left: hamburger */}
+          <div className="flex items-center">
             <button
               className="text-foreground hover:text-primary transition-colors p-1"
               onClick={() => setIsOpen(true)}
@@ -79,10 +79,15 @@ const Navbar = () => {
             >
               <Menu className="w-6 h-6" />
             </button>
-            <Link to="/" className="flex items-center">
-              <span className="font-logo text-2xl tracking-[0.04em] text-foreground">NEXTLOOK</span>
-            </Link>
           </div>
+
+          {/* Center: logo + slogan */}
+          <Link to="/" className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center leading-none">
+            <span className="font-logo text-4xl sm:text-5xl tracking-[0.04em] text-foreground">NEXTLOOK</span>
+            <span className="text-[10px] sm:text-xs font-body font-semibold uppercase tracking-[0.25em] text-primary/80 mt-0.5">
+              small beauty on demand
+            </span>
+          </Link>
 
           {/* Right: actions */}
           <div className="flex items-center gap-2 sm:gap-3">
