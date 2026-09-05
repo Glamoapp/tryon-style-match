@@ -23,7 +23,6 @@ const Index = () => {
       <Navbar />
       <HomepageHero />
       <SeasonalPromo />
-      <ExploreNextlook />
       <NearbyStylists />
       <CategoryStylists />
       <BestDeals />
