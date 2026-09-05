@@ -101,8 +101,8 @@ const HomepageHero = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-purple-deep/70 via-purple-deep/50 to-purple-deep/80" />
       </div>
 
-      {/* Centered content */}
-      <div className="relative z-10 container mx-auto px-6 h-full flex flex-col items-center justify-center py-24">
+      {/* Centered content, lowered so the bar doesn't cover the face */}
+      <div className="relative z-10 container mx-auto px-6 h-full flex flex-col items-center justify-end pb-16 lg:pb-24 pt-32">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
