@@ -102,7 +102,7 @@ const HomepageHero = () => {
       </div>
 
       {/* Content anchored to the bottom of the photo */}
-      <div className="relative z-10 container mx-auto px-6 h-full flex flex-col items-center justify-end pb-6 lg:pb-10 pt-24">
+      <div className="absolute inset-0 z-10 container mx-auto px-6 flex flex-col items-center justify-end pb-3 lg:pb-5 pt-24">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
