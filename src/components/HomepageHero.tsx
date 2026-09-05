@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
@@ -237,28 +237,6 @@ const HomepageHero = () => {
               <div className="absolute inset-0 ring-1 ring-primary/30 rounded-2xl pointer-events-none" />
             </div>
 
-            {/* AI Smart Mirror floating card */}
-            <Link to="/tryon" className="block">
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="absolute -bottom-4 left-2 sm:left-6 bg-card/90 backdrop-blur-sm rounded-2xl shadow-elevated border border-primary/20 p-4 w-[260px] sm:w-[300px] hover:shadow-glow transition-shadow"
-              >
-                <div className="flex items-center gap-1.5 mb-2">
-                  <Sparkles className="w-3.5 h-3.5 text-primary" />
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-primary font-body">
-                    AI Smart Mirror
-                  </span>
-                </div>
-                <p className="text-xs font-body text-muted-foreground mb-3 leading-snug">
-                  Try on hairstyles, colors and looks in real-time with our AI technology.
-                </p>
-                <Button size="sm" className="rounded-full bg-accent hover:bg-purple-deep text-white h-8 px-4 text-xs">
-                  Try it Now
-                </Button>
-              </motion.div>
-            </Link>
           </motion.div>
         </div>
       </div>
