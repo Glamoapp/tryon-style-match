@@ -89,7 +89,7 @@ const HomepageHero = () => {
 
 
   return (
-    <section className="relative pt-40 pb-20 overflow-hidden bg-background">
+    <section className="relative pt-48 pb-24 overflow-hidden bg-background">
       {/* Subtle clean background */}
       <div className="absolute inset-0 bg-gradient-to-br from-white via-background to-purple/5 pointer-events-none" />
 
