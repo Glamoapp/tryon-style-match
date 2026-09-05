@@ -18,9 +18,9 @@ const SERVICES = [
   { label: "Wigs", image: serviceWigs, match: ["wig", "frontal", "closure", "lace front", "glueless"], from: 180 },
   { label: "Locs", image: serviceLocs, match: ["loc", "dreadlock", "faux loc", "goddess loc"], from: 200 },
   { label: "Extensions", image: serviceKtips, match: ["extension", "k-tip", "ktip", "i-tip", "nano", "fusion", "tape-in"], from: 250 },
+  { label: "Natural", image: serviceNatural, match: ["natural", "silk press", "twist out", "wash"], from: 95 },
   { label: "Makeup", image: serviceMakeup, match: ["makeup", "make up", "glam", "beat", "bridal makeup"], from: 85 },
   { label: "Barber", image: serviceBarber, match: ["barber", "fade", "lineup", "line up", "taper", "beard trim", "haircut", "cut"], from: 45 },
-  { label: "Natural", image: serviceNatural, match: ["natural", "silk press", "twist out", "wash"], from: 95 },
 ];
 
 const countProviders = (providers: ProviderListing[], matchTerms: string[]) =>
