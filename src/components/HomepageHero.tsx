@@ -109,14 +109,6 @@ const HomepageHero = () => {
           transition={{ duration: 0.6 }}
           className="w-full max-w-4xl text-center"
         >
-          {/* Headline */}
-          <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl text-white mb-3 drop-shadow-lg">
-            Beauty On Demand
-          </h1>
-          <p className="text-white/90 text-lg sm:text-xl font-body mb-8 drop-shadow-md">
-            Book stylists, shop products, and try your look with AI.
-          </p>
-
           {/* Booking widget card — centered like DoorDash search */}
           <div className="bg-white rounded-2xl shadow-elevated border border-white/20 p-2 mx-auto">
             <div className="flex gap-1 p-1 justify-center">
@@ -225,6 +217,11 @@ const HomepageHero = () => {
               </Button>
             </form>
           </div>
+
+          {/* Subheadline under the bar */}
+          <p className="text-white/90 text-lg sm:text-xl font-body mt-6 drop-shadow-md">
+            Book stylists, shop products, and try your look with AI.
+          </p>
 
           {/* Trust strip */}
           <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 justify-center">
