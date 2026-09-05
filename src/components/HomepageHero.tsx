@@ -94,7 +94,7 @@ const HomepageHero = () => {
       <div className="absolute inset-0 bg-gradient-to-br from-white via-background to-purple/5 pointer-events-none" />
 
       <div className="container mx-auto px-6 relative z-10">
-        <div className="grid lg:grid-cols-[1fr_1.15fr] gap-12 items-center">
+        <div className="grid lg:grid-cols-[1fr_1.15fr] gap-12 items-stretch">
           {/* Left: copy + booking widget */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -228,9 +228,9 @@ const HomepageHero = () => {
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="relative"
+            className="relative h-full flex"
           >
-            <div className="relative max-w-[760px] ml-auto rounded-2xl overflow-hidden shadow-elevated bg-gradient-warm min-h-[500px] lg:min-h-[640px]">
+            <div className="relative w-full max-w-[760px] ml-auto rounded-2xl overflow-hidden shadow-elevated bg-gradient-warm min-h-[680px] lg:min-h-[860px]">
               <img src={heroImage} alt="Luxury beauty client" className="w-full h-full object-cover" />
               <div className="absolute inset-0 ring-1 ring-primary/20 rounded-2xl pointer-events-none" />
             </div>
