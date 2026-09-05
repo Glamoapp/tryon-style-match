@@ -89,14 +89,14 @@ const HomepageHero = () => {
 
 
   return (
-    <section className="relative pt-28 pb-16 overflow-hidden bg-background">
+    <section className="relative min-h-screen pt-28 pb-24 overflow-hidden bg-background flex flex-col justify-center">
       {/* Celestial ivory radial glow */}
       <div className="absolute inset-0 bg-gradient-celestial pointer-events-none" />
       <div className="absolute -top-24 -right-24 w-[520px] h-[520px] rounded-full bg-purple/5 blur-[120px] pointer-events-none" />
       <div className="absolute -bottom-24 -left-24 w-[480px] h-[480px] rounded-full bg-gold/10 blur-[120px] pointer-events-none" />
 
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="grid lg:grid-cols-[1.1fr_1fr] gap-12 items-center">
+      <div className="container mx-auto px-6 relative z-10 py-12">
+        <div className="grid lg:grid-cols-[1.1fr_1fr] gap-16 items-center">
           {/* Left: copy + booking widget */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
