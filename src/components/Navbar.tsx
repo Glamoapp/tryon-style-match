@@ -84,7 +84,7 @@ const Navbar = () => {
           {/* Center: logo + slogan */}
           <Link to="/" className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center leading-none">
             <span className="font-logo text-4xl sm:text-5xl tracking-[0.04em] text-foreground">NEXTLOOK</span>
-            <span className="text-[10px] sm:text-xs font-body font-bold uppercase tracking-[0.25em] text-purple-600 mt-0.5">
+            <span className="text-[10px] sm:text-xs font-body font-bold uppercase tracking-[0.25em] text-purple-900 mt-0.5">
               Beauty On demand
             </span>
           </Link>
