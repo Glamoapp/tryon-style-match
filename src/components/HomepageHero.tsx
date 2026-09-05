@@ -89,7 +89,7 @@ const HomepageHero = () => {
 
 
   return (
-    <section className="relative pt-28 pb-8 overflow-hidden bg-background">
+    <section className="relative pt-32 pb-16 overflow-hidden bg-background">
       {/* Celestial ivory radial glow */}
       <div className="absolute inset-0 bg-gradient-celestial pointer-events-none" />
       <div className="absolute -top-24 -right-24 w-[520px] h-[520px] rounded-full bg-purple/5 blur-[120px] pointer-events-none" />
