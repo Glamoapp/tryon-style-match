@@ -93,8 +93,8 @@ const ExtensionsPage = () => {
             </Link>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <span className="text-sm font-semibold text-primary uppercase tracking-widest font-body">Shop</span>
-              <h1 className="text-4xl md:text-5xl font-display font-bold text-foreground mt-2">
-                Hair <span className="text-gradient-rose">Extensions</span> & Products
+              <h1 className="text-4xl md:text-5xl font-logo font-bold uppercase tracking-wide text-foreground mt-2">
+                Hair Extensions & Products
               </h1>
               <p className="text-muted-foreground mt-4 max-w-lg font-body">
                 Premium hair extensions and beauty products from our verified vendors.
