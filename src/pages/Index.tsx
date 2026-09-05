@@ -1,7 +1,7 @@
 import Navbar from "@/components/Navbar";
 import { SEO } from "@/components/SEO";
 import HomepageHero from "@/components/HomepageHero";
-import ExploreNextlook from "@/components/ExploreNextlook";
+
 import SeasonalPromo from "@/components/SeasonalPromo";
 import NearbyStylists from "@/components/NearbyStylists";
 
