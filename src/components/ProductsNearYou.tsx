@@ -91,7 +91,7 @@ const ProductsNearYou = () => {
                 Shop
               </span>
             </div>
-            <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground">
+            <h2 className="text-2xl md:text-3xl font-logo font-bold text-foreground uppercase tracking-wide">
               Hair Extensions Near You
             </h2>
           </div>

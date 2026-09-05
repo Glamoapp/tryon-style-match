@@ -24,7 +24,7 @@ const TopRatedStylists = () => {
                 Highest Rated
               </span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground">
+            <h2 className="text-3xl md:text-4xl font-logo font-bold text-foreground uppercase tracking-wide">
               Top Rated Stylists
             </h2>
           </div>
