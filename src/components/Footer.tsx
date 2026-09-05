@@ -9,7 +9,7 @@ const Footer = () => {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <img src={logoImg} alt="NEXTLOOK" className="w-7 h-7 object-contain" />
-              <span className="font-display text-lg font-bold text-cream">NEXTLOOK</span>
+              <span className="font-logo text-2xl tracking-[0.04em] text-cream">NEXTLOOK</span>
             </div>
             <p className="text-cream/50 text-sm font-body leading-relaxed">
               Beauty that comes to you. Try on styles, match with stylists, and get pampered at your doorstep.
