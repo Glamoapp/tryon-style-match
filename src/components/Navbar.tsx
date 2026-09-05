@@ -80,7 +80,7 @@ const Navbar = () => {
               <Menu className="w-6 h-6" />
             </button>
             <Link to="/" className="flex items-center">
-              <span className="font-display text-xl font-bold text-foreground">NEXTLOOK</span>
+              <span className="font-logo text-2xl tracking-[0.04em] text-foreground">NEXTLOOK</span>
             </Link>
           </div>
 
@@ -101,7 +101,7 @@ const Navbar = () => {
           <SheetHeader className="p-6 pb-4 border-b border-border">
             <SheetTitle className="flex items-center gap-2">
               <img src={logoImg} alt="NEXTLOOK" className="w-7 h-7 object-contain" />
-              <span className="font-display text-xl font-bold text-foreground">NEXTLOOK</span>
+              <span className="font-logo text-2xl tracking-[0.04em] text-foreground">NEXTLOOK</span>
             </SheetTitle>
           </SheetHeader>
 

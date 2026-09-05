@@ -17,6 +17,7 @@ export default {
         display: ['"Italiana"', 'serif'],
         body: ['"Lora"', 'serif'],
         canva: ['Quicksand', 'Inter', 'sans-serif'],
+        logo: ['"Bebas Neue"', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
