@@ -22,8 +22,8 @@ const Index = () => {
       <SEO title="NEXTLOOK — Luxury Beauty That Comes to You" description="Match with top-rated stylists, try on hairstyles virtually, shop premium hair extensions, and book at-home beauty services." path="/" />
       <Navbar />
       <HomepageHero />
-      <SeasonalPromo />
       <NearbyStylists />
+      <SeasonalPromo />
       <CategoryStylists />
       <BestDeals />
       <ProductsNearYou />
