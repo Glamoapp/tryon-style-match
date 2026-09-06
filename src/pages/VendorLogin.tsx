@@ -33,10 +33,14 @@ const VendorLogin = () => {
         .eq("id", data.user.id)
         .single();
 
-      const { data: isAdmin } = await supabase.rpc("has_role", {
-        _user_id: data.user.id,
-        _role: "admin",
-      });
+      const { data: adminRole } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", data.user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+      const isAdmin = !!adminRole;
+
 
       if (profile?.role !== "vendor" && !isAdmin) {
         toast.error("This login is for vendors only");
