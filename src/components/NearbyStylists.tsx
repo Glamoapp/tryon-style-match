@@ -40,11 +40,11 @@ const NearbyStylists = () => {
           <div>
             <div className="flex items-center gap-2 mb-1">
               <Navigation className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold text-primary uppercase tracking-widest font-body">
+              <span className="text-sm md:text-base font-logo font-bold text-primary uppercase tracking-[0.25em]">
                 Near You
               </span>
             </div>
-            <h2 className="text-2xl md:text-3xl font-logo font-bold text-foreground uppercase tracking-wide">
+            <h2 className="text-2xl md:text-3xl font-logo font-bold text-foreground uppercase tracking-[0.15em]">
               Services Near You
             </h2>
           </div>
