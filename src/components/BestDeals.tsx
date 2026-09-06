@@ -126,11 +126,11 @@ const BestDeals = () => {
           <div>
             <div className="flex items-center gap-2 mb-1">
               <Scissors className="w-4 h-4 text-primary" />
-              <span className="text-sm md:text-base font-logo font-bold text-primary uppercase tracking-[0.25em]">
+              <span className="text-sm md:text-base font-logo font-bold text-primary uppercase tracking-[0.08em]">
                 Services
               </span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-logo font-bold text-foreground uppercase tracking-[0.15em]">
+            <h2 className="text-3xl md:text-4xl font-logo font-bold text-foreground uppercase tracking-[0.03em]">
               Best Deals in Services
             </h2>
           </div>
