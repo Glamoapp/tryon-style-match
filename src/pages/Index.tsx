@@ -4,8 +4,6 @@ import HomepageHero from "@/components/HomepageHero";
 
 import SeasonalPromo from "@/components/SeasonalPromo";
 import NearbyStylists from "@/components/NearbyStylists";
-import ServicesNearYou from "@/components/ServicesNearYou";
-
 import ProductsNearYou from "@/components/ProductsNearYou";
 import CategoryStylists from "@/components/CategoryStylists";
 import BestDeals from "@/components/BestDeals";
@@ -31,7 +29,6 @@ const Index = () => {
       <TopRatedStylists />
       <FaceScanPromo />
       <HowItWorks />
-      <ServicesNearYou />
       <Footer />
     </div>
   );
