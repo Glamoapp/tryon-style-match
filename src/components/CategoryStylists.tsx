@@ -45,10 +45,10 @@ const CategoryStylists = () => {
           <div className="container mx-auto px-6">
             <div className="flex items-center justify-between mb-6">
               <div>
-              <span className="text-sm md:text-base font-logo font-bold text-primary uppercase tracking-[0.25em]">
+              <span className="text-sm md:text-base font-logo font-bold text-primary uppercase tracking-[0.08em]">
                 In Your Area
               </span>
-              <h2 className="text-2xl md:text-3xl font-logo font-bold text-foreground uppercase tracking-[0.15em]">
+              <h2 className="text-2xl md:text-3xl font-logo font-bold text-foreground uppercase tracking-[0.03em]">
                 {section.label} Near You
               </h2>
               </div>
