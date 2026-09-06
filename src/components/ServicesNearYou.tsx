@@ -3,24 +3,16 @@ import { motion } from "framer-motion";
 import { MapPin, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useProviders, ProviderListing } from "@/hooks/useProviders";
-import serviceBraids from "@/assets/service-braids.jpg";
-import serviceWeave from "@/assets/service-weave.jpg";
-import serviceWigs from "@/assets/service-wigs.jpg";
-import serviceLocs from "@/assets/service-locs.jpg";
-import serviceMakeup from "@/assets/service-makeup.jpg";
-import serviceBarber from "@/assets/service-barber.jpg";
-import serviceKtips from "@/assets/service-ktips.jpg";
-import serviceNatural from "@/assets/service-natural.jpg";
 
 const SERVICES = [
-  { label: "Braids", image: serviceBraids, match: ["braid", "knotless", "box braid", "cornrow", "tribal", "fulani", "senegalese"], from: 120 },
-  { label: "Weaves", image: serviceWeave, match: ["weave", "sew-in", "sew in", "sewin"], from: 150 },
-  { label: "Wigs", image: serviceWigs, match: ["wig", "frontal", "closure", "lace front", "glueless"], from: 180 },
-  { label: "Locs", image: serviceLocs, match: ["loc", "dreadlock", "faux loc", "goddess loc"], from: 200 },
-  { label: "Extensions", image: serviceKtips, match: ["extension", "k-tip", "ktip", "i-tip", "nano", "fusion", "tape-in"], from: 250 },
-  { label: "Natural", image: serviceNatural, match: ["natural", "silk press", "twist out", "wash"], from: 95 },
-  { label: "Makeup", image: serviceMakeup, match: ["makeup", "make up", "glam", "beat", "bridal makeup"], from: 85 },
-  { label: "Barber", image: serviceBarber, match: ["barber", "fade", "lineup", "line up", "taper", "beard trim", "haircut", "cut"], from: 45 },
+  { label: "Braids", match: ["braid", "knotless", "box braid", "cornrow", "tribal", "fulani", "senegalese"], from: 120 },
+  { label: "Weaves", match: ["weave", "sew-in", "sew in", "sewin"], from: 150 },
+  { label: "Wigs", match: ["wig", "frontal", "closure", "lace front", "glueless"], from: 180 },
+  { label: "Locs", match: ["loc", "dreadlock", "faux loc", "goddess loc"], from: 200 },
+  { label: "Extensions", match: ["extension", "k-tip", "ktip", "i-tip", "nano", "fusion", "tape-in"], from: 250 },
+  { label: "Natural", match: ["natural", "silk press", "twist out", "wash"], from: 95 },
+  { label: "Makeup", match: ["makeup", "make up", "glam", "beat", "bridal makeup"], from: 85 },
+  { label: "Barber", match: ["barber", "fade", "lineup", "line up", "taper", "beard trim", "haircut", "cut"], from: 45 },
 ];
 
 const countProviders = (providers: ProviderListing[], matchTerms: string[]) =>
