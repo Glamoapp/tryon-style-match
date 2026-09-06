@@ -38,11 +38,19 @@ const VendorDashboard = () => {
         .eq("id", user.id)
         .single();
 
-      if (profile?.role !== "vendor") {
+      const { data: adminRole } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+
+      if (profile?.role !== "vendor" && !adminRole) {
         toast.error("Access denied");
         navigate("/");
         return;
       }
+
 
       const { count } = await supabase
         .from("bookings")
