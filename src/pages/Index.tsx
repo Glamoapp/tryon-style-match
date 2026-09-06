@@ -29,7 +29,6 @@ const Index = () => {
       <TopRatedStylists />
       <FaceScanPromo />
       <HowItWorks />
-      <ServicesNearYou />
       <Footer />
     </div>
   );
