@@ -20,11 +20,11 @@ const TopRatedStylists = () => {
           <div>
             <div className="flex items-center gap-2 mb-1">
               <Crown className="w-4 h-4 text-gold" />
-              <span className="text-sm font-semibold text-gold uppercase tracking-widest font-body">
+              <span className="text-sm md:text-base font-logo font-bold text-gold uppercase tracking-[0.25em]">
                 Highest Rated
               </span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-logo font-bold text-foreground uppercase tracking-wide">
+            <h2 className="text-3xl md:text-4xl font-logo font-bold text-foreground uppercase tracking-[0.15em]">
               Top Rated Stylists
             </h2>
           </div>
