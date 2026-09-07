@@ -409,10 +409,14 @@ export const VendorProducts = ({ vendorId, isApproved }: { vendorId: string; isA
                 ))}
               </div>
 
-              <Button onClick={handleSave} className="w-full" disabled={saving}>
-                {saving ? "Saving..." : editingProduct ? "Update Product" : "Add Product"}
+              <Button onClick={() => {
+                if (!form.title || !form.price) { toast.error("Title and base price are required"); return; }
+                setPreviewMode(true);
+              }} className="w-full" variant="hero">
+                <Eye className="w-4 h-4 mr-1" /> Preview Before Publishing
               </Button>
             </div>
+            )}
           </DialogContent>
         </Dialog>
       </div>
