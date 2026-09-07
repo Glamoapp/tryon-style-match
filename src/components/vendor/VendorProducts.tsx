@@ -161,9 +161,10 @@ export const VendorProducts = ({ vendorId, isApproved }: { vendorId: string; isA
       price: parseFloat(form.price),
       compare_at_price: form.compare_at_price ? parseFloat(form.compare_at_price) : null,
       category: form.category,
+      hair_type: form.hair_type || null,
       inventory_count: parseInt(form.inventory_count) || 0,
       image_urls: form.image_urls,
-    };
+    } as any;
 
     let productId = editingProduct?.id;
 
