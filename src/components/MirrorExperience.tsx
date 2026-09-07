@@ -300,35 +300,47 @@ const MirrorExperience = () => {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-5"
+            className="absolute inset-0 flex flex-col justify-center gap-4"
           >
-            <div className="w-full rounded-2xl bg-white/12 backdrop-blur-md border border-white/15 p-3 flex items-center gap-3">
-              <div className="w-12 h-12 rounded-lg bg-gold/25 border border-gold/40 flex items-center justify-center">
-                <ShoppingBag className="w-5 h-5 text-gold" />
-              </div>
-              <div className="flex-1">
-                <p className="text-[11px] text-cream font-body">Raw Body Wave 18"</p>
-                <p className="text-[10px] text-cream/60 font-body">2 bundles · Natural black</p>
-              </div>
-              <p className="text-[11px] text-gold font-body font-semibold">$90</p>
-            </div>
-            <div className="w-full rounded-2xl bg-white/12 backdrop-blur-md border border-white/15 p-3 flex items-center gap-3">
-              <div className="w-12 h-12 rounded-lg bg-primary/35 border border-primary/50 flex items-center justify-center">
-                <Package className="w-5 h-5 text-cream" />
-              </div>
-              <div className="flex-1">
-                <p className="text-[11px] text-cream font-body">Lace Closure 4x4</p>
-                <p className="text-[10px] text-cream/60 font-body">16" · Free part</p>
-              </div>
-              <p className="text-[11px] text-gold font-body font-semibold">$65</p>
-            </div>
+            <p className="px-5 text-[10px] uppercase tracking-[0.25em] text-cream/60 font-body">
+              Hair Extensions Near You
+            </p>
+            {/* Sliding product row — like the website */}
             <motion.div
-              animate={{ scale: [1, 1.04, 1] }}
-              transition={{ duration: 1.6, repeat: Infinity }}
-              className="rounded-full bg-gold px-5 py-2 text-[11px] font-semibold text-charcoal font-body"
+              className="flex gap-3 pl-5"
+              animate={{ x: ["0%", "-38%"] }}
+              transition={{ duration: 3.2, ease: "easeInOut" }}
             >
-              Add to cart · $155
+              {[
+                { name: "Raw Body Wave", detail: '18" · Natural black', price: "$90" },
+                { name: "K Tips Raw Hair", detail: "100g · 18\"", price: "$130" },
+                { name: "3 Bundle Brazilian", detail: '16" 18" 20"', price: "$280" },
+                { name: "Pineapple Curls", detail: "4 bundles", price: "$210" },
+              ].map((p) => (
+                <div
+                  key={p.name}
+                  className="w-28 flex-shrink-0 rounded-2xl bg-white/12 backdrop-blur-md border border-white/15 overflow-hidden"
+                >
+                  <div className="h-16 bg-gradient-to-br from-gold/30 to-primary/30 flex items-center justify-center">
+                    <ShoppingBag className="w-5 h-5 text-cream/70" />
+                  </div>
+                  <div className="p-2">
+                    <p className="text-[9px] text-cream font-body leading-tight">{p.name}</p>
+                    <p className="text-[8px] text-cream/55 font-body">{p.detail}</p>
+                    <p className="text-[10px] text-gold font-body font-semibold mt-1">{p.price}</p>
+                  </div>
+                </div>
+              ))}
             </motion.div>
+            <div className="px-5">
+              <motion.div
+                animate={{ scale: [1, 1.04, 1] }}
+                transition={{ duration: 1.6, repeat: Infinity }}
+                className="rounded-full bg-gold px-5 py-2 text-center text-[11px] font-semibold text-charcoal font-body"
+              >
+                Add to cart · $155
+              </motion.div>
+            </div>
           </motion.div>
         )}
 
