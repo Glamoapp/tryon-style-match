@@ -92,25 +92,8 @@ const FaceScanPromo = () => {
 
                 {/* Screen content */}
                 <div className="relative aspect-[9/19] overflow-hidden bg-charcoal">
-                  {/* Smart Mirror demo video */}
-                  <video
-                    src={mirrorDemo.url}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="metadata"
-                    aria-label="NEXTLOOK Smart Mirror demo: talk to the mirror, play music, check the time, try on hair, and track your stylist"
-                    className="absolute inset-0 w-full h-full object-cover object-center"
-                  />
-
-                  {/* Top badge */}
-                  <div className="absolute top-8 left-3 right-3 flex items-center justify-between z-20">
-                    <div className="flex items-center gap-1.5 bg-primary/80 backdrop-blur-sm rounded-full px-2.5 py-1">
-                      <Sparkles className="w-3 h-3 text-cream" />
-                      <span className="text-[9px] font-semibold text-cream font-body">Smart Mirror Demo</span>
-                    </div>
-                  </div>
+                  {/* Smart Mirror step-by-step experience */}
+                  <MirrorExperience />
 
                   {/* Gradient overlay at bottom */}
                   <div className="absolute bottom-0 left-0 right-0 h-1/4 bg-gradient-to-t from-charcoal via-charcoal/60 to-transparent z-10" />
