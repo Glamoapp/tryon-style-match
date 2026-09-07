@@ -83,9 +83,10 @@ export const VendorProducts = ({ vendorId, isApproved }: { vendorId: string; isA
   useEffect(() => { fetchProducts(); }, [vendorId]);
 
   const resetForm = () => {
-    setForm({ title: "", description: "", price: "", compare_at_price: "", category: "Hair Extensions", inventory_count: "0", image_urls: [] });
+    setForm(emptyForm());
     setEditingProduct(null);
     setVariants([]);
+    setPreviewMode(false);
   };
 
   const openEdit = async (p: Product) => {
@@ -96,6 +97,7 @@ export const VendorProducts = ({ vendorId, isApproved }: { vendorId: string; isA
       price: String(p.price),
       compare_at_price: p.compare_at_price ? String(p.compare_at_price) : "",
       category: p.category || "Hair Extensions",
+      hair_type: p.hair_type || "",
       inventory_count: String(p.inventory_count),
       image_urls: p.image_urls || [],
     });
