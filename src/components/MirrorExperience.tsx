@@ -8,6 +8,11 @@ import {
   Sparkles,
   Navigation,
   Scissors,
+  ShoppingBag,
+  Calendar,
+  CreditCard,
+  CheckCircle2,
+  Package,
 } from "lucide-react";
 
 type Step = {
@@ -20,10 +25,14 @@ const steps: Step[] = [
   { id: "wake", label: "Talk to the mirror" },
   { id: "daily", label: "Music & time" },
   { id: "tryon", label: "Try on hair" },
+  { id: "shop", label: "Buy the hair" },
+  { id: "book", label: "Pick your time" },
+  { id: "pay", label: "Secure checkout" },
+  { id: "confirm", label: "Booked" },
   { id: "arriving", label: "Stylist on the way" },
 ];
 
-const STEP_MS = 3800;
+const STEP_MS = 3600;
 
 const MirrorExperience = () => {
   const [index, setIndex] = useState(0);
