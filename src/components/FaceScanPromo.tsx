@@ -92,10 +92,15 @@ const FaceScanPromo = () => {
 
                 {/* Screen content */}
                 <div className="relative aspect-[9/19] overflow-hidden bg-charcoal">
-                  {/* Demo image */}
-                  <img
-                    src={tryOnImage}
-                    alt="Hair try-on preview"
+                  {/* Smart Mirror demo video */}
+                  <video
+                    src={mirrorDemo.url}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    aria-label="NEXTLOOK Smart Mirror demo: talk to the mirror, play music, check the time, try on hair, and track your stylist"
                     className="absolute inset-0 w-full h-full object-cover object-center"
                   />
 
