@@ -231,8 +231,72 @@ export const VendorProducts = ({ vendorId, isApproved }: { vendorId: string; isA
           </DialogTrigger>
           <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{editingProduct ? "Edit Product" : "Add New Product"}</DialogTitle>
+              <DialogTitle>
+                {previewMode ? "Preview — as customers will see it" : editingProduct ? "Edit Product" : "Add New Product"}
+              </DialogTitle>
             </DialogHeader>
+
+            {previewMode ? (
+              <div className="space-y-4 mt-4">
+                {/* Customer-facing preview card */}
+                <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
+                  <div className="aspect-square bg-muted relative">
+                    {form.image_urls[0] ? (
+                      <img src={form.image_urls[0]} alt={form.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Package className="w-12 h-12 text-muted-foreground/40" />
+                      </div>
+                    )}
+                    {form.compare_at_price && Number(form.compare_at_price) > Number(form.price) && (
+                      <Badge className="absolute top-2 left-2 bg-primary text-primary-foreground">Sale</Badge>
+                    )}
+                  </div>
+                  <div className="p-4 space-y-1.5">
+                    {form.hair_type && (
+                      <p className="text-[10px] uppercase tracking-[0.15em] text-primary font-body">{form.hair_type}</p>
+                    )}
+                    <p className="font-body font-semibold text-foreground">{form.title || "Product title"}</p>
+                    {form.description && (
+                      <p className="text-xs text-muted-foreground font-body line-clamp-2">{form.description}</p>
+                    )}
+                    <div className="flex items-baseline gap-2 pt-1">
+                      <span className="text-lg font-bold text-foreground">${Number(form.price || 0).toFixed(2)}</span>
+                      {form.compare_at_price && (
+                        <span className="text-sm text-muted-foreground line-through">${Number(form.compare_at_price).toFixed(2)}</span>
+                      )}
+                    </div>
+                    {variants.filter(v => v.price).length > 0 && (
+                      <div className="flex flex-wrap gap-1 pt-1">
+                        {variants.filter(v => v.price).slice(0, 5).map((v, i) => (
+                          <Badge key={i} variant="secondary" className="text-[10px] px-1.5 py-0">
+                            {[v.length, v.color, v.size].filter(Boolean).join(" / ")} — ${Number(v.price).toFixed(2)}
+                          </Badge>
+                        ))}
+                        {variants.filter(v => v.price).length > 5 && (
+                          <Badge variant="outline" className="text-[10px] px-1.5 py-0">+{variants.filter(v => v.price).length - 5} more</Badge>
+                        )}
+                      </div>
+                    )}
+                    <p className="text-[11px] text-muted-foreground font-body pt-1">
+                      {Number(form.inventory_count) > 0 ? `${form.inventory_count} in stock` : "Out of stock"}
+                    </p>
+                    <div className="grid grid-cols-2 gap-2 pt-2">
+                      <Button variant="hero" size="sm" className="w-full" type="button">Buy Now</Button>
+                      <Button variant="outline" size="sm" className="w-full" type="button">Add to Cart</Button>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" className="flex-1" onClick={() => setPreviewMode(false)}>
+                    <ArrowLeft className="w-4 h-4 mr-1" /> Back to Edit
+                  </Button>
+                  <Button variant="hero" className="flex-1" onClick={handleSave} disabled={saving}>
+                    {saving ? "Publishing..." : editingProduct ? "Update Product" : "Publish Product"}
+                  </Button>
+                </div>
+              </div>
+            ) : (
             <div className="space-y-4 mt-4">
               <div>
                 <Label>Title *</Label>
