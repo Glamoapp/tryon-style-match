@@ -322,8 +322,22 @@ export const VendorProducts = ({ vendorId, isApproved }: { vendorId: string; isA
                   <Input value={form.category} onChange={(e) => setForm(p => ({ ...p, category: e.target.value }))} />
                 </div>
                 <div>
-                  <Label>Base Inventory</Label>
+                  <Label>Hair Type</Label>
+                  <Select value={form.hair_type} onValueChange={(v) => setForm(p => ({ ...p, hair_type: v }))}>
+                    <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
+                    <SelectContent>
+                      {HAIR_TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>Base Inventory (Stock Count)</Label>
                   <Input type="number" value={form.inventory_count} onChange={(e) => setForm(p => ({ ...p, inventory_count: e.target.value }))} />
+                </div>
+                <div className="flex items-end pb-1">
+                  <p className="text-[11px] text-muted-foreground font-body">Lengths & colors with prices are added as variants below.</p>
                 </div>
               </div>
 
