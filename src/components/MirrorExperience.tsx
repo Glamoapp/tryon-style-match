@@ -164,6 +164,53 @@ const MirrorExperience = () => {
           </motion.div>
         )}
 
+        {step === "splash" && (
+          <motion.div
+            key="splash"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 flex flex-col items-center justify-center gap-6 px-6"
+            style={{
+              backgroundImage:
+                "radial-gradient(ellipse at 20% 10%, hsl(280 70% 40% / 0.55), transparent 55%), radial-gradient(ellipse at 80% 90%, hsl(260 80% 25% / 0.7), transparent 60%), linear-gradient(135deg, hsl(270 70% 12%) 0%, hsl(275 65% 25%) 40%, hsl(268 60% 15%) 100%)",
+            }}
+          >
+            <motion.p
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.9, ease: "easeOut" }}
+              className="font-display font-bold tracking-[0.15em] text-center leading-none text-3xl"
+              style={{
+                backgroundImage:
+                  "linear-gradient(135deg, #8A6A1F 0%, #E8CF7A 35%, #FFF3C4 50%, #C5A55A 65%, #8A6A1F 100%)",
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+                color: "transparent",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              NEXTLOOK
+            </motion.p>
+            <p className="text-[10px] uppercase tracking-[0.3em] text-cream/70 font-body">
+              Try On Hair Styles
+            </p>
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="rounded-full px-6 py-2 text-[11px] font-semibold uppercase tracking-widest font-body"
+              style={{
+                backgroundImage: "linear-gradient(135deg, #8A6A1F 0%, #E8CF7A 50%, #B8892E 100%)",
+                color: "#2A1150",
+                border: "1px solid rgba(255,243,196,0.5)",
+              }}
+            >
+              Get Started
+            </motion.div>
+          </motion.div>
+        )}
+
         {step === "tryon" && (
           <motion.div
             key="tryon"
