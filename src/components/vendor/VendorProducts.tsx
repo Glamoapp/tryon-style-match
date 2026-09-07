@@ -28,10 +28,17 @@ type Product = {
   price: number;
   compare_at_price: number | null;
   category: string | null;
+  hair_type: string | null;
   image_urls: string[];
   is_active: boolean;
   inventory_count: number;
 };
+
+const HAIR_TYPES = ["Raw Human Hair", "Virgin Brazilian", "Virgin Peruvian", "Virgin Malaysian", "Body Wave", "Deep Wave", "Loose Wave", "Straight", "Curly", "Kinky Curly", "Synthetic", "Blend"];
+
+const emptyForm = () => ({
+  title: "", description: "", price: "", compare_at_price: "", category: "Hair Extensions", hair_type: "", inventory_count: "0", image_urls: [] as string[],
+});
 
 const emptyVariant = (): Variant => ({ length: "", size: "", color: "", price: "", compare_at_price: "", inventory_count: "0" });
 
