@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Sparkles, ArrowRight, ShoppingBag } from "lucide-react";
 import { styles } from "@/data/tryOnStyles";
-import mirrorDemo from "@/assets/videos/mirror-tryon-demo.mp4.asset.json";
+import MirrorExperience from "@/components/MirrorExperience";
 
 const FaceScanPromo = () => {
   return (
