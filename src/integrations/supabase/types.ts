@@ -1050,6 +1050,7 @@ export type Database = {
           compare_at_price: number | null
           created_at: string
           description: string | null
+          hair_type: string | null
           id: string
           image_urls: string[] | null
           inventory_count: number
@@ -1064,6 +1065,7 @@ export type Database = {
           compare_at_price?: number | null
           created_at?: string
           description?: string | null
+          hair_type?: string | null
           id?: string
           image_urls?: string[] | null
           inventory_count?: number
@@ -1078,6 +1080,7 @@ export type Database = {
           compare_at_price?: number | null
           created_at?: string
           description?: string | null
+          hair_type?: string | null
           id?: string
           image_urls?: string[] | null
           inventory_count?: number
