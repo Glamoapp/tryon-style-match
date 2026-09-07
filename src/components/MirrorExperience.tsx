@@ -350,20 +350,62 @@ const MirrorExperience = () => {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-6"
+            className="absolute inset-0 flex flex-col justify-center gap-3 px-5"
           >
-            <div className="flex items-center gap-2 text-cream font-body text-[11px]">
-              <Calendar className="w-4 h-4 text-gold" />
-              Choose your install time
+            {/* Stylist card — like the booking page */}
+            <div className="rounded-2xl bg-white/12 backdrop-blur-md border border-white/15 p-3 flex items-center gap-3">
+              <div className="w-11 h-11 rounded-full bg-gradient-to-br from-gold/50 to-primary/50 border border-gold/50 flex items-center justify-center">
+                <Scissors className="w-4 h-4 text-cream" />
+              </div>
+              <div className="flex-1">
+                <p className="text-[11px] text-cream font-body font-semibold">Simone</p>
+                <p className="text-[9px] text-gold font-body">Golden Crown Stylist · 4.9 ★</p>
+              </div>
+              <Navigation className="w-3.5 h-3.5 text-cream/50" />
             </div>
-            <div className="grid grid-cols-3 gap-2 w-full">
+
+            {/* Her services list */}
+            <div className="space-y-2">
+              {[
+                { name: "Wig Installation", price: "$180", time: "2 hrs" },
+                { name: "Sew-In Install", price: "$150", time: "2.5 hrs" },
+                { name: "Braid Touch-Up", price: "$65", time: "1 hr" },
+              ].map((s, i) => (
+                <motion.div
+                  key={s.name}
+                  initial={{ opacity: 0, x: -12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.15 + i * 0.12 }}
+                  className={`rounded-xl px-3 py-2.5 flex items-center justify-between border ${
+                    i === 0
+                      ? "bg-gold/20 border-gold/60"
+                      : "bg-white/8 border-white/15"
+                  }`}
+                >
+                  <div>
+                    <p className="text-[10px] text-cream font-body">{s.name}</p>
+                    <p className="text-[8px] text-cream/55 font-body">{s.time}</p>
+                  </div>
+                  <p className={`text-[10px] font-body font-semibold ${i === 0 ? "text-gold" : "text-cream/80"}`}>
+                    {s.price}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Time picker */}
+            <div className="flex items-center gap-2 text-cream font-body text-[10px] mt-1">
+              <Calendar className="w-3.5 h-3.5 text-gold" />
+              Friday 11:00 AM
+            </div>
+            <div className="grid grid-cols-3 gap-1.5">
               {["Thu 10am", "Thu 2pm", "Fri 9am", "Fri 11am", "Sat 12pm", "Sat 3pm"].map((t, i) => (
                 <motion.div
                   key={t}
                   initial={{ opacity: 0, scale: 0.85 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.15 + i * 0.1 }}
-                  className={`rounded-xl px-2 py-2.5 text-center text-[10px] font-body border ${
+                  transition={{ delay: 0.4 + i * 0.08 }}
+                  className={`rounded-lg px-2 py-2 text-center text-[9px] font-body border ${
                     i === 3
                       ? "bg-gold text-charcoal border-gold font-semibold"
                       : "bg-white/10 text-cream/80 border-white/20"
@@ -373,9 +415,6 @@ const MirrorExperience = () => {
                 </motion.div>
               ))}
             </div>
-            <p className="text-[10px] text-cream/70 font-body">
-              Wig install with Simone · Friday 11:00 AM
-            </p>
           </motion.div>
         )}
 
