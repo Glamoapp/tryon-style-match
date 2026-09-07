@@ -51,9 +51,8 @@ export const VendorProducts = ({ vendorId, isApproved }: { vendorId: string; isA
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [uploading, setUploading] = useState(false);
   const [variants, setVariants] = useState<Variant[]>([]);
-  const [form, setForm] = useState({
-    title: "", description: "", price: "", compare_at_price: "", category: "Hair Extensions", inventory_count: "0", image_urls: [] as string[],
-  });
+  const [previewMode, setPreviewMode] = useState(false);
+  const [form, setForm] = useState(emptyForm());
 
   const fetchProducts = async () => {
     const { data } = await supabase
