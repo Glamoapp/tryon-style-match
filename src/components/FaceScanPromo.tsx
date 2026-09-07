@@ -108,7 +108,7 @@ const FaceScanPromo = () => {
                   <div className="absolute top-8 left-3 right-3 flex items-center justify-between z-20">
                     <div className="flex items-center gap-1.5 bg-primary/80 backdrop-blur-sm rounded-full px-2.5 py-1">
                       <Sparkles className="w-3 h-3 text-cream" />
-                      <span className="text-[9px] font-semibold text-cream font-body">Hair Preview Demo</span>
+                      <span className="text-[9px] font-semibold text-cream font-body">Smart Mirror Demo</span>
                     </div>
                   </div>
 
