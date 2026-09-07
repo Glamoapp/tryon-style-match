@@ -8,6 +8,11 @@ import {
   Sparkles,
   Navigation,
   Scissors,
+  ShoppingBag,
+  Calendar,
+  CreditCard,
+  CheckCircle2,
+  Package,
 } from "lucide-react";
 
 type Step = {
@@ -20,10 +25,14 @@ const steps: Step[] = [
   { id: "wake", label: "Talk to the mirror" },
   { id: "daily", label: "Music & time" },
   { id: "tryon", label: "Try on hair" },
+  { id: "shop", label: "Buy the hair" },
+  { id: "book", label: "Pick your time" },
+  { id: "pay", label: "Secure checkout" },
+  { id: "confirm", label: "Booked" },
   { id: "arriving", label: "Stylist on the way" },
 ];
 
-const STEP_MS = 3800;
+const STEP_MS = 3600;
 
 const MirrorExperience = () => {
   const [index, setIndex] = useState(0);
@@ -192,6 +201,147 @@ const MirrorExperience = () => {
               <span className="text-[10px] text-cream font-body">
                 Book this look · $180
               </span>
+            </div>
+          </motion.div>
+        )}
+
+        {step === "shop" && (
+          <motion.div
+            key="shop"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-5"
+          >
+            <div className="w-full rounded-2xl bg-white/12 backdrop-blur-md border border-white/15 p-3 flex items-center gap-3">
+              <div className="w-12 h-12 rounded-lg bg-gold/25 border border-gold/40 flex items-center justify-center">
+                <ShoppingBag className="w-5 h-5 text-gold" />
+              </div>
+              <div className="flex-1">
+                <p className="text-[11px] text-cream font-body">Raw Body Wave 18"</p>
+                <p className="text-[10px] text-cream/60 font-body">2 bundles · Natural black</p>
+              </div>
+              <p className="text-[11px] text-gold font-body font-semibold">$90</p>
+            </div>
+            <div className="w-full rounded-2xl bg-white/12 backdrop-blur-md border border-white/15 p-3 flex items-center gap-3">
+              <div className="w-12 h-12 rounded-lg bg-primary/35 border border-primary/50 flex items-center justify-center">
+                <Package className="w-5 h-5 text-cream" />
+              </div>
+              <div className="flex-1">
+                <p className="text-[11px] text-cream font-body">Lace Closure 4x4</p>
+                <p className="text-[10px] text-cream/60 font-body">16" · Free part</p>
+              </div>
+              <p className="text-[11px] text-gold font-body font-semibold">$65</p>
+            </div>
+            <motion.div
+              animate={{ scale: [1, 1.04, 1] }}
+              transition={{ duration: 1.6, repeat: Infinity }}
+              className="rounded-full bg-gold px-5 py-2 text-[11px] font-semibold text-charcoal font-body"
+            >
+              Add to cart · $155
+            </motion.div>
+          </motion.div>
+        )}
+
+        {step === "book" && (
+          <motion.div
+            key="book"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-6"
+          >
+            <div className="flex items-center gap-2 text-cream font-body text-[11px]">
+              <Calendar className="w-4 h-4 text-gold" />
+              Choose your install time
+            </div>
+            <div className="grid grid-cols-3 gap-2 w-full">
+              {["Thu 10am", "Thu 2pm", "Fri 9am", "Fri 11am", "Sat 12pm", "Sat 3pm"].map((t, i) => (
+                <motion.div
+                  key={t}
+                  initial={{ opacity: 0, scale: 0.85 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.15 + i * 0.1 }}
+                  className={`rounded-xl px-2 py-2.5 text-center text-[10px] font-body border ${
+                    i === 3
+                      ? "bg-gold text-charcoal border-gold font-semibold"
+                      : "bg-white/10 text-cream/80 border-white/20"
+                  }`}
+                >
+                  {t}
+                </motion.div>
+              ))}
+            </div>
+            <p className="text-[10px] text-cream/70 font-body">
+              Wig install with Simone · Friday 11:00 AM
+            </p>
+          </motion.div>
+        )}
+
+        {step === "pay" && (
+          <motion.div
+            key="pay"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-6"
+          >
+            <div className="w-full rounded-2xl bg-white/12 backdrop-blur-md border border-white/15 p-4 space-y-2.5">
+              <div className="flex items-center gap-2">
+                <CreditCard className="w-4 h-4 text-gold" />
+                <span className="text-[11px] text-cream font-body">Secure checkout</span>
+              </div>
+              <div className="rounded-lg bg-white/10 border border-white/15 px-3 py-2 text-[11px] text-cream/70 font-body tracking-widest">
+                •••• •••• •••• 4242
+              </div>
+              <div className="flex justify-between text-[10px] font-body text-cream/70">
+                <span>Hair + Install</span>
+                <span className="text-cream">$335</span>
+              </div>
+              <div className="flex justify-between text-[10px] font-body text-cream/70">
+                <span>Free install (REPENTNOW)</span>
+                <span className="text-gold">−$180</span>
+              </div>
+              <div className="h-px bg-white/15" />
+              <div className="flex justify-between text-[11px] font-body font-semibold text-cream">
+                <span>Total</span>
+                <span className="text-gold">$155</span>
+              </div>
+            </div>
+            <motion.div
+              animate={{ opacity: [0.75, 1, 0.75] }}
+              transition={{ duration: 1.6, repeat: Infinity }}
+              className="rounded-full bg-gold px-6 py-2 text-[11px] font-semibold text-charcoal font-body"
+            >
+              Pay now
+            </motion.div>
+          </motion.div>
+        )}
+
+        {step === "confirm" && (
+          <motion.div
+            key="confirm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-6"
+          >
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", damping: 12, stiffness: 200 }}
+              className="w-16 h-16 rounded-full bg-gold/20 border-2 border-gold flex items-center justify-center"
+            >
+              <CheckCircle2 className="w-8 h-8 text-gold" />
+            </motion.div>
+            <div className="text-center">
+              <p className="text-sm text-cream font-body font-semibold">You're booked!</p>
+              <p className="text-[10px] text-cream/70 font-body mt-1">
+                Simone · Friday 11:00 AM · Confirmation sent
+              </p>
+            </div>
+            <div className="rounded-full bg-white/10 border border-white/15 px-4 py-1.5 text-[9px] uppercase tracking-[0.2em] text-gold font-body">
+              Golden Crown Stylist
             </div>
           </motion.div>
         )}

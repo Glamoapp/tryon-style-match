@@ -5,7 +5,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2, Package, Loader2, ImagePlus, X } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Plus, Pencil, Trash2, Package, Loader2, ImagePlus, X, Eye, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -27,10 +28,17 @@ type Product = {
   price: number;
   compare_at_price: number | null;
   category: string | null;
+  hair_type: string | null;
   image_urls: string[];
   is_active: boolean;
   inventory_count: number;
 };
+
+const HAIR_TYPES = ["Raw Human Hair", "Virgin Brazilian", "Virgin Peruvian", "Virgin Malaysian", "Body Wave", "Deep Wave", "Loose Wave", "Straight", "Curly", "Kinky Curly", "Synthetic", "Blend"];
+
+const emptyForm = () => ({
+  title: "", description: "", price: "", compare_at_price: "", category: "Hair Extensions", hair_type: "", inventory_count: "0", image_urls: [] as string[],
+});
 
 const emptyVariant = (): Variant => ({ length: "", size: "", color: "", price: "", compare_at_price: "", inventory_count: "0" });
 
@@ -43,9 +51,8 @@ export const VendorProducts = ({ vendorId, isApproved }: { vendorId: string; isA
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [uploading, setUploading] = useState(false);
   const [variants, setVariants] = useState<Variant[]>([]);
-  const [form, setForm] = useState({
-    title: "", description: "", price: "", compare_at_price: "", category: "Hair Extensions", inventory_count: "0", image_urls: [] as string[],
-  });
+  const [previewMode, setPreviewMode] = useState(false);
+  const [form, setForm] = useState(emptyForm());
 
   const fetchProducts = async () => {
     const { data } = await supabase
@@ -76,9 +83,10 @@ export const VendorProducts = ({ vendorId, isApproved }: { vendorId: string; isA
   useEffect(() => { fetchProducts(); }, [vendorId]);
 
   const resetForm = () => {
-    setForm({ title: "", description: "", price: "", compare_at_price: "", category: "Hair Extensions", inventory_count: "0", image_urls: [] });
+    setForm(emptyForm());
     setEditingProduct(null);
     setVariants([]);
+    setPreviewMode(false);
   };
 
   const openEdit = async (p: Product) => {
@@ -89,6 +97,7 @@ export const VendorProducts = ({ vendorId, isApproved }: { vendorId: string; isA
       price: String(p.price),
       compare_at_price: p.compare_at_price ? String(p.compare_at_price) : "",
       category: p.category || "Hair Extensions",
+      hair_type: p.hair_type || "",
       inventory_count: String(p.inventory_count),
       image_urls: p.image_urls || [],
     });
@@ -152,9 +161,10 @@ export const VendorProducts = ({ vendorId, isApproved }: { vendorId: string; isA
       price: parseFloat(form.price),
       compare_at_price: form.compare_at_price ? parseFloat(form.compare_at_price) : null,
       category: form.category,
+      hair_type: form.hair_type || null,
       inventory_count: parseInt(form.inventory_count) || 0,
       image_urls: form.image_urls,
-    };
+    } as any;
 
     let productId = editingProduct?.id;
 
@@ -221,8 +231,72 @@ export const VendorProducts = ({ vendorId, isApproved }: { vendorId: string; isA
           </DialogTrigger>
           <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{editingProduct ? "Edit Product" : "Add New Product"}</DialogTitle>
+              <DialogTitle>
+                {previewMode ? "Preview — as customers will see it" : editingProduct ? "Edit Product" : "Add New Product"}
+              </DialogTitle>
             </DialogHeader>
+
+            {previewMode ? (
+              <div className="space-y-4 mt-4">
+                {/* Customer-facing preview card */}
+                <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
+                  <div className="aspect-square bg-muted relative">
+                    {form.image_urls[0] ? (
+                      <img src={form.image_urls[0]} alt={form.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Package className="w-12 h-12 text-muted-foreground/40" />
+                      </div>
+                    )}
+                    {form.compare_at_price && Number(form.compare_at_price) > Number(form.price) && (
+                      <Badge className="absolute top-2 left-2 bg-primary text-primary-foreground">Sale</Badge>
+                    )}
+                  </div>
+                  <div className="p-4 space-y-1.5">
+                    {form.hair_type && (
+                      <p className="text-[10px] uppercase tracking-[0.15em] text-primary font-body">{form.hair_type}</p>
+                    )}
+                    <p className="font-body font-semibold text-foreground">{form.title || "Product title"}</p>
+                    {form.description && (
+                      <p className="text-xs text-muted-foreground font-body line-clamp-2">{form.description}</p>
+                    )}
+                    <div className="flex items-baseline gap-2 pt-1">
+                      <span className="text-lg font-bold text-foreground">${Number(form.price || 0).toFixed(2)}</span>
+                      {form.compare_at_price && (
+                        <span className="text-sm text-muted-foreground line-through">${Number(form.compare_at_price).toFixed(2)}</span>
+                      )}
+                    </div>
+                    {variants.filter(v => v.price).length > 0 && (
+                      <div className="flex flex-wrap gap-1 pt-1">
+                        {variants.filter(v => v.price).slice(0, 5).map((v, i) => (
+                          <Badge key={i} variant="secondary" className="text-[10px] px-1.5 py-0">
+                            {[v.length, v.color, v.size].filter(Boolean).join(" / ")} — ${Number(v.price).toFixed(2)}
+                          </Badge>
+                        ))}
+                        {variants.filter(v => v.price).length > 5 && (
+                          <Badge variant="outline" className="text-[10px] px-1.5 py-0">+{variants.filter(v => v.price).length - 5} more</Badge>
+                        )}
+                      </div>
+                    )}
+                    <p className="text-[11px] text-muted-foreground font-body pt-1">
+                      {Number(form.inventory_count) > 0 ? `${form.inventory_count} in stock` : "Out of stock"}
+                    </p>
+                    <div className="grid grid-cols-2 gap-2 pt-2">
+                      <Button variant="hero" size="sm" className="w-full" type="button">Buy Now</Button>
+                      <Button variant="outline" size="sm" className="w-full" type="button">Add to Cart</Button>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" className="flex-1" onClick={() => setPreviewMode(false)}>
+                    <ArrowLeft className="w-4 h-4 mr-1" /> Back to Edit
+                  </Button>
+                  <Button variant="hero" className="flex-1" onClick={handleSave} disabled={saving}>
+                    {saving ? "Publishing..." : editingProduct ? "Update Product" : "Publish Product"}
+                  </Button>
+                </div>
+              </div>
+            ) : (
             <div className="space-y-4 mt-4">
               <div>
                 <Label>Title *</Label>
@@ -248,8 +322,22 @@ export const VendorProducts = ({ vendorId, isApproved }: { vendorId: string; isA
                   <Input value={form.category} onChange={(e) => setForm(p => ({ ...p, category: e.target.value }))} />
                 </div>
                 <div>
-                  <Label>Base Inventory</Label>
+                  <Label>Hair Type</Label>
+                  <Select value={form.hair_type} onValueChange={(v) => setForm(p => ({ ...p, hair_type: v }))}>
+                    <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
+                    <SelectContent>
+                      {HAIR_TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>Base Inventory (Stock Count)</Label>
                   <Input type="number" value={form.inventory_count} onChange={(e) => setForm(p => ({ ...p, inventory_count: e.target.value }))} />
+                </div>
+                <div className="flex items-end pb-1">
+                  <p className="text-[11px] text-muted-foreground font-body">Lengths & colors with prices are added as variants below.</p>
                 </div>
               </div>
 
@@ -321,10 +409,14 @@ export const VendorProducts = ({ vendorId, isApproved }: { vendorId: string; isA
                 ))}
               </div>
 
-              <Button onClick={handleSave} className="w-full" disabled={saving}>
-                {saving ? "Saving..." : editingProduct ? "Update Product" : "Add Product"}
+              <Button onClick={() => {
+                if (!form.title || !form.price) { toast.error("Title and base price are required"); return; }
+                setPreviewMode(true);
+              }} className="w-full" variant="hero">
+                <Eye className="w-4 h-4 mr-1" /> Preview Before Publishing
               </Button>
             </div>
+            )}
           </DialogContent>
         </Dialog>
       </div>
