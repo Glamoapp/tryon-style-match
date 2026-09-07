@@ -217,38 +217,79 @@ const MirrorExperience = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0"
+            className="absolute inset-0 flex flex-col px-4 pt-16 pb-4"
           >
-            {/* Scan line */}
-            <motion.div
-              className="absolute left-0 right-0 h-16 bg-gradient-to-b from-transparent via-gold/25 to-transparent"
-              animate={{ top: ["10%", "70%", "10%"] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            />
-            {/* Face mesh dots */}
-            <div className="absolute left-1/2 -translate-x-1/2 top-[24%] w-24 h-28 rounded-[3rem] border border-gold/50" />
-            <div className="absolute bottom-24 left-0 right-0 flex justify-center gap-2 px-4">
-              {["Braids", "Wig", "Curls"].map((s, i) => (
-                <motion.div
-                  key={s}
-                  initial={{ opacity: 0, y: 10 }}
+            {/* Category tabs — matches real Try-On page */}
+            <div className="flex flex-wrap justify-center gap-1.5">
+              {["Wig Frontal", "Braids", "Curls", "Makeup"].map((c, i) => (
+                <motion.span
+                  key={c}
+                  initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 + i * 0.15 }}
-                  className={`rounded-full px-3 py-1 text-[10px] font-body border ${
-                    i === 1
-                      ? "bg-gold/90 text-charcoal border-gold"
-                      : "bg-white/10 text-cream/80 border-white/20"
+                  transition={{ delay: 0.1 + i * 0.08 }}
+                  className={`rounded-full px-2.5 py-1 text-[9px] font-body font-semibold ${
+                    i === 0
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-white/10 text-cream/70 border border-white/15"
                   }`}
                 >
-                  {s}
-                </motion.div>
+                  {c}
+                </motion.span>
               ))}
             </div>
-            <div className="absolute bottom-10 left-4 right-4 rounded-xl bg-white/12 backdrop-blur-md border border-white/15 p-2.5 flex items-center gap-2">
-              <Scissors className="w-4 h-4 text-gold" />
-              <span className="text-[10px] text-cream font-body">
-                Book this look · $180
-              </span>
+
+            {/* Model preview with scan line */}
+            <div className="relative flex-1 mt-3 rounded-2xl overflow-hidden bg-white/5 border border-white/10">
+              <div className="absolute left-1/2 -translate-x-1/2 top-[16%] w-24 h-28 rounded-[3rem] border border-gold/50" />
+              <motion.div
+                className="absolute left-0 right-0 h-14 bg-gradient-to-b from-transparent via-gold/25 to-transparent"
+                animate={{ top: ["8%", "72%", "8%"] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              />
+              <div className="absolute top-2 left-2 bg-black/50 rounded-full px-2.5 py-1 flex items-center gap-1">
+                <Sparkles className="w-3 h-3 text-gold" />
+                <span className="text-[9px] text-cream font-body">Body Wave 18"</span>
+              </div>
+
+              {/* Thumbnail strip */}
+              <div className="absolute bottom-2 left-2 right-2">
+                <p className="text-[8px] text-cream/50 font-body mb-1">Tap to switch hair</p>
+                <div className="flex gap-1.5">
+                  {[0, 1, 2, 3, 4].map((i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 + i * 0.1 }}
+                      className={`w-8 h-10 rounded-md ${
+                        i === 1
+                          ? "ring-2 ring-gold bg-gold/30"
+                          : "ring-1 ring-white/25 bg-white/10"
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Real page CTAs */}
+            <div className="flex gap-2 mt-3">
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="flex-1 rounded-full bg-primary px-3 py-2 text-center text-[10px] font-semibold text-primary-foreground font-body flex items-center justify-center gap-1"
+              >
+                <Scissors className="w-3 h-3" /> Select a Stylist
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.65 }}
+                className="flex-1 rounded-full bg-gold px-3 py-2 text-center text-[10px] font-semibold text-charcoal font-body flex items-center justify-center gap-1"
+              >
+                <ShoppingBag className="w-3 h-3" /> Buy Hair
+              </motion.div>
             </div>
           </motion.div>
         )}
