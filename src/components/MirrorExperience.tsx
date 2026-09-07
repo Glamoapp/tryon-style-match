@@ -24,6 +24,7 @@ const steps: Step[] = [
   { id: "mirror", label: "Just a mirror" },
   { id: "wake", label: "Talk to the mirror" },
   { id: "daily", label: "Music & time" },
+  { id: "splash", label: "NEXTLOOK Try-On" },
   { id: "tryon", label: "Try on hair" },
   { id: "shop", label: "Buy the hair" },
   { id: "book", label: "Pick your time" },
