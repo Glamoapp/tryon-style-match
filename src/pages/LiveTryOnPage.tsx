@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Camera, RotateCcw, ArrowLeft, Sparkles, ShoppingBag, Calendar,
-  ChevronRight, ChevronUp, Palette, Ruler, Waves, X, FlipHorizontal, Users
+  ChevronRight, ChevronUp, Palette, Ruler, Waves, X, FlipHorizontal, Users, Scissors
 } from "lucide-react";
 import BookingDialog from "@/components/BookingDialog";
 import { styles, categories, type StyleCategory } from "@/data/tryOnStyles";
@@ -35,6 +35,7 @@ const COLORS = [
 
 const LENGTHS = ["Short", "Medium", "Long", "Extra Long"];
 const TEXTURES = ["Straight", "Wavy", "Curly", "Coily"];
+const SERVICES = ["Sew-In Install", "Wig Installation", "K-Tip Installation", "Tape-In Installation", "Microlink Installation"];
 
 const LiveTryOnPage = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -54,6 +55,7 @@ const LiveTryOnPage = () => {
   const [selectedColor, setSelectedColor] = useState(COLORS[0]);
   const [selectedLength, setSelectedLength] = useState("Medium");
   const [selectedTexture, setSelectedTexture] = useState("Straight");
+  const [selectedService, setSelectedService] = useState(SERVICES[0]);
   const [showCustomize, setShowCustomize] = useState(false);
   const [showStyles, setShowStyles] = useState(true);
 
@@ -457,9 +459,9 @@ const LiveTryOnPage = () => {
                 </Button>
               </div>
               <div className="flex gap-2">
-                <Link to={`/stylists?specialty=${encodeURIComponent(currentStyle?.category || '')}`} className="flex-1">
+                <Link to={`/discover?service=${encodeURIComponent(selectedService)}`} className="flex-1">
                   <Button variant="hero" className="w-full">
-                    <Users className="w-4 h-4 mr-1" /> Select a Stylist <ChevronRight className="w-4 h-4" />
+                    <Users className="w-4 h-4 mr-1" /> Book Service <ChevronRight className="w-4 h-4" />
                   </Button>
                 </Link>
                 <Link to="/extensions" className="flex-1">
@@ -565,6 +567,26 @@ const LiveTryOnPage = () => {
                       ))}
                     </div>
                   </div>
+                  {/* Installation service */}
+                  <div>
+                    <label className="text-[10px] font-body font-semibold text-white/60 mb-1.5 flex items-center gap-1">
+                      <Scissors className="w-3 h-3" /> Service: {selectedService}
+                    </label>
+                    <div className="flex gap-1.5 overflow-x-auto scrollbar-none pb-1">
+                      {SERVICES.map((service) => (
+                        <Button
+                          key={service}
+                          type="button"
+                          onClick={() => setSelectedService(service)}
+                          variant={selectedService === service ? "default" : "outline"}
+                          size="sm"
+                          className="h-8 flex-shrink-0 whitespace-nowrap px-3 text-[10px]"
+                        >
+                          {service}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             )}
@@ -576,7 +598,7 @@ const LiveTryOnPage = () => {
             className="w-full flex items-center justify-center gap-1 py-2 bg-black/70 backdrop-blur-sm text-white/80 text-xs font-body font-semibold"
           >
             <Palette className="w-3.5 h-3.5 text-primary" />
-            Customize
+            Customize Hair & Service
             <ChevronUp className={`w-3.5 h-3.5 transition-transform ${showCustomize ? "" : "rotate-180"}`} />
           </button>
 
