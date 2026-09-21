@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -8,9 +9,11 @@ import {
   ChevronRight,
   Clock,
   CloudSun,
+  CalendarDays,
   Headphones,
   Heart,
   Mic,
+  MapPin,
   Music,
   Play,
   Ruler,
@@ -38,6 +41,15 @@ type SpeechRecognitionLike = {
 };
 
 type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
+
+type VoiceBookingRequest = {
+  service: string;
+  dateLabel: string;
+  dateValue: string;
+  location: string;
+};
+
+const bookingServices = ["Braids", "Weave", "Wigs", "Locs", "K-Tips", "Makeup", "Natural Hair", "Frontals"];
 
 const dailyAffirmations = [
   { text: "I am fearfully and wonderfully made.", verse: "Psalm 139:14" },
@@ -93,6 +105,7 @@ const GoldWordmark = ({ compact = false }: { compact?: boolean }) => (
 );
 
 const MirrorExperience = ({ presentation = "preview" }: MirrorExperienceProps) => {
+  const routeTo = useNavigate();
   const isPage = presentation === "page";
   const [screen, setScreen] = useState<Screen>("brand");
   const [history, setHistory] = useState<Screen[]>([]);
@@ -105,6 +118,7 @@ const MirrorExperience = ({ presentation = "preview" }: MirrorExperienceProps) =
   const [weatherLoading, setWeatherLoading] = useState(false);
   const [voiceStatus, setVoiceStatus] = useState("Tap to speak");
   const [showNextlookPlaylist, setShowNextlookPlaylist] = useState(false);
+  const [voiceBooking, setVoiceBooking] = useState<VoiceBookingRequest | null>(null);
 
   const affirmation = useMemo(() => {
     const day = Math.floor(Date.now() / 86_400_000);
@@ -142,6 +156,44 @@ const MirrorExperience = ({ presentation = "preview" }: MirrorExperienceProps) =
 
   const toggleNextlookPlaylist = () => {
     setShowNextlookPlaylist((current) => !current);
+  };
+
+  const speakAsGwen = (message: string) => {
+    if (!("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const response = new SpeechSynthesisUtterance(message);
+    response.rate = 0.95;
+    response.pitch = 1.05;
+    window.speechSynthesis.speak(response);
+  };
+
+  const buildVoiceBooking = (command: string): VoiceBookingRequest => {
+    const service = bookingServices.find((item) => command.includes(item.toLowerCase()))
+      ?? (command.includes("braid") ? "Braids" : command.includes("wig") ? "Wigs" : command.includes("hair") ? "Natural Hair" : "All");
+    const requestedDate = new Date();
+    let dateLabel = "Any available date";
+    let dateValue = "";
+    if (command.includes("tomorrow")) {
+      requestedDate.setDate(requestedDate.getDate() + 1);
+      dateLabel = "Tomorrow";
+      dateValue = requestedDate.toISOString().slice(0, 10);
+    } else if (command.includes("today")) {
+      dateLabel = "Today";
+      dateValue = requestedDate.toISOString().slice(0, 10);
+    }
+    const locationMatch = command.match(/(?:\bin\b|\bnear\b)\s+(.+?)(?=\s+(?:today|tomorrow|this|next)\b|$)/i);
+    const location = locationMatch?.[1]?.trim().replace(/[.,!?]+$/, "") ?? "Near me";
+    return { service, dateLabel, dateValue, location };
+  };
+
+  const openVoiceBooking = (request = voiceBooking) => {
+    if (!request) return;
+    const params = new URLSearchParams();
+    if (request.service !== "All") params.set("service", request.service);
+    if (request.location !== "Near me") params.set("location", request.location);
+    if (request.dateValue) params.set("date", request.dateValue);
+    speakAsGwen("Perfect. I’m showing you matching NEXTLOOK stylists now.");
+    routeTo(`/discover?${params.toString()}`);
   };
 
   const loadWeather = () => {
@@ -195,7 +247,14 @@ const MirrorExperience = ({ presentation = "preview" }: MirrorExperienceProps) =
     recognition.onresult = (event) => {
       const command = event.results[0]?.[0]?.transcript.toLowerCase() ?? "";
       setVoiceStatus(`You said: “${command}”`);
-      if (command.includes("beauty") || command.includes("hair")) navigate("beauty-permission");
+      if ((command.includes("book") || command.includes("appointment") || command.includes("stylist")) && command.includes("confirm") && voiceBooking) openVoiceBooking();
+      else if (command.includes("book") || command.includes("appointment") || command.includes("stylist")) {
+        const request = buildVoiceBooking(command);
+        setVoiceBooking(request);
+        setVoiceStatus("Gwen found your booking request");
+        speakAsGwen(`I found your ${request.service === "All" ? "beauty" : request.service} booking request for ${request.dateLabel.toLowerCase()} ${request.location === "Near me" ? "near you" : `in ${request.location}`}. Please confirm it on the screen.`);
+      }
+      else if (command.includes("beauty") || command.includes("hair")) navigate("beauty-permission");
       else if (command.includes("apparel") || command.includes("clothes")) navigate("apparel-permission");
       else if (command.includes("try on") || command.includes("open")) navigate("category");
       else if (command.includes("my apple") || command.includes("my music") || command.includes("account")) openAppleMusic();
@@ -205,7 +264,10 @@ const MirrorExperience = ({ presentation = "preview" }: MirrorExperienceProps) =
       }
       else if (command.includes("weather")) loadWeather();
       else if (command.includes("time")) setVoiceStatus(`It is ${now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`);
-      else setVoiceStatus("Try saying “Open Virtual Try-On”");
+      else {
+        setVoiceStatus("Try saying “Gwen, book braids tomorrow”");
+        speakAsGwen("Try saying, Gwen, book braids tomorrow near me.");
+      }
     };
     recognition.onerror = () => setVoiceStatus("I couldn’t hear that. Tap to try again.");
     recognition.onend = () => setTimeout(() => setVoiceStatus((current) => current === "Listening…" ? "Tap to speak" : current), 400);
@@ -303,9 +365,23 @@ const MirrorExperience = ({ presentation = "preview" }: MirrorExperienceProps) =
                 )}
               </div>
               <div className="mt-3 grid grid-cols-2 gap-2">
-                <Button onClick={startVoiceAssistant} variant="outline" className="h-auto min-h-20 flex-col whitespace-normal border-border bg-background p-2 text-center text-foreground"><Mic className="h-4 w-4 text-accent" /><span className="mt-1 font-body text-[8px] font-semibold">Voice assistant</span><span className="mt-1 font-body text-[7px] font-normal text-muted-foreground">{voiceStatus}</span></Button>
+                <Button onClick={startVoiceAssistant} variant="outline" className="h-auto min-h-20 flex-col whitespace-normal border-border bg-background p-2 text-center text-foreground"><Mic className="h-4 w-4 text-accent" /><span className="mt-1 font-body text-[8px] font-semibold">Gwen Voice Assistant</span><span className="mt-1 font-body text-[7px] font-normal text-muted-foreground">{voiceStatus}</span></Button>
                 <Button onClick={loadWeather} disabled={weatherLoading} variant="outline" className="h-auto min-h-20 flex-col whitespace-normal border-border bg-background p-2 text-center text-foreground"><div className="flex gap-1"><Clock className="h-4 w-4 text-accent" /><CloudSun className="h-4 w-4 text-accent" /></div><span className="mt-1 font-body text-[8px] font-semibold">Time & weather</span><span className="mt-1 font-body text-[7px] font-normal text-muted-foreground">{weather}</span></Button>
               </div>
+              {voiceBooking && (
+                <div className="mt-3 rounded-lg border border-accent/30 bg-background p-3 shadow-soft" aria-live="polite">
+                  <div className="flex items-center gap-2"><Sparkles className="h-4 w-4 text-accent" /><p className="font-display text-[10px] font-bold text-foreground">Gwen’s booking request</p></div>
+                  <div className="mt-2 grid grid-cols-3 gap-1 text-center font-body text-[7px] text-muted-foreground">
+                    <span className="rounded-md bg-muted p-1.5"><Scissors className="mx-auto mb-1 h-3 w-3 text-accent" />{voiceBooking.service === "All" ? "Any service" : voiceBooking.service}</span>
+                    <span className="rounded-md bg-muted p-1.5"><CalendarDays className="mx-auto mb-1 h-3 w-3 text-accent" />{voiceBooking.dateLabel}</span>
+                    <span className="rounded-md bg-muted p-1.5"><MapPin className="mx-auto mb-1 h-3 w-3 text-accent" />{voiceBooking.location}</span>
+                  </div>
+                  <div className="mt-2 grid grid-cols-2 gap-2">
+                    <Button onClick={() => { setVoiceBooking(null); setVoiceStatus("Tap to speak"); }} variant="outline" size="sm" className="h-8 text-[8px]">Cancel</Button>
+                    <Button onClick={() => openVoiceBooking()} size="sm" className="h-8 bg-accent text-[8px] text-accent-foreground hover:bg-accent/90">Find My Stylist</Button>
+                  </div>
+                </div>
+              )}
               <Button onClick={() => navigate("category")} size="sm" className="mt-auto w-full bg-accent text-accent-foreground text-[10px] font-bold uppercase hover:bg-accent/90">Open Virtual Try-On <ChevronRight className="ml-1 h-3.5 w-3.5" /></Button>
             </div>
           )}
