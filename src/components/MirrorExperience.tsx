@@ -21,6 +21,10 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+type MirrorExperienceProps = {
+  presentation?: "preview" | "page";
+};
+
 type Screen =
   | "brand"
   | "welcome"
@@ -60,7 +64,8 @@ const GoldWordmark = ({ compact = false }: { compact?: boolean }) => (
   </p>
 );
 
-const MirrorExperience = () => {
+const MirrorExperience = ({ presentation = "preview" }: MirrorExperienceProps) => {
+  const isPage = presentation === "page";
   const [screen, setScreen] = useState<Screen>("brand");
   const [history, setHistory] = useState<Screen[]>([]);
   const [hair, setHair] = useState("Body Wave");
@@ -103,7 +108,12 @@ const MirrorExperience = () => {
   const navVisible = !["brand", "welcome", "lifestyle", "complete"].includes(screen);
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-purple-deep text-cream">
+    <div
+      data-presentation={presentation}
+      className={`relative w-full overflow-hidden bg-purple-deep text-cream ${
+        isPage ? "min-h-[calc(100vh-5rem)]" : "h-full"
+      }`}
+    >
       <div className="absolute inset-0 bg-gradient-to-b from-primary/80 via-purple-deep to-charcoal" />
       <div className="absolute inset-x-0 top-0 z-30 flex h-12 items-end justify-center pb-1.5">
         <span className="rounded-full bg-charcoal/55 px-3 py-1 font-body text-[8px] font-semibold backdrop-blur-md">
@@ -118,7 +128,11 @@ const MirrorExperience = () => {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.28 }}
-          className="absolute inset-0 z-10 flex flex-col px-4 pb-5 pt-14"
+          className={
+            isPage
+              ? "relative z-10 mx-auto flex min-h-[calc(100vh-5rem)] w-full max-w-3xl flex-col px-5 pb-10 pt-20 sm:px-10 sm:pb-12 sm:pt-24"
+              : "absolute inset-0 z-10 flex flex-col px-4 pb-5 pt-14"
+          }
         >
           {screen === "brand" && (
             <div className="flex flex-1 flex-col items-center justify-center gap-5 text-center">

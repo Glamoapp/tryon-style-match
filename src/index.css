@@ -153,3 +153,20 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* Full-page Virtual Try-On keeps the same journey while enlarging mirror-sized copy. */
+[data-presentation="page"] .text-\[7px\] {
+  font-size: 0.75rem;
+}
+
+[data-presentation="page"] .text-\[8px\] {
+  font-size: 0.8125rem;
+}
+
+[data-presentation="page"] .text-\[9px\] {
+  font-size: 0.875rem;
+}
+
+[data-presentation="page"] .text-\[10px\] {
+  font-size: 0.9375rem;
+}
