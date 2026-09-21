@@ -37,6 +37,26 @@ const LENGTHS = ["Short", "Medium", "Long", "Extra Long"];
 const TEXTURES = ["Straight", "Wavy", "Curly", "Coily"];
 const SERVICES = ["Sew-In Install", "Wig Installation", "K-Tip Installation", "Tape-In Installation", "Microlink Installation"];
 
+const optimizeSelfie = (imageData: string) => new Promise<string>((resolve) => {
+  const image = new Image();
+  image.onload = () => {
+    const longestSide = Math.max(image.naturalWidth, image.naturalHeight);
+    const scale = Math.min(1, 768 / longestSide);
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+    canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+    const context = canvas.getContext("2d");
+    if (!context) {
+      resolve(imageData);
+      return;
+    }
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    resolve(canvas.toDataURL("image/jpeg", 0.78));
+  };
+  image.onerror = () => resolve(imageData);
+  image.src = imageData;
+});
+
 const LiveTryOnPage = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -47,6 +67,7 @@ const LiveTryOnPage = () => {
   const [selfie, setSelfie] = useState<string | null>(null);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [generationSeconds, setGenerationSeconds] = useState(0);
   const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
   const [captureSource, setCaptureSource] = useState<"live" | "file">("live");
 
@@ -144,7 +165,7 @@ const LiveTryOnPage = () => {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = () => {
+    reader.onload = async () => {
       const imageData = typeof reader.result === "string" ? reader.result : null;
       if (!imageData) {
         toast.error("Could not read the photo. Please try again.");
@@ -153,7 +174,7 @@ const LiveTryOnPage = () => {
 
       stopCamera();
       setCaptureSource("file");
-      setSelfie(imageData);
+      setSelfie(await optimizeSelfie(imageData));
       setResultImage(null);
     };
     reader.onerror = () => {
@@ -226,6 +247,18 @@ const LiveTryOnPage = () => {
     };
   }, [stream]);
 
+  useEffect(() => {
+    if (!isGenerating) {
+      setGenerationSeconds(0);
+      return;
+    }
+    const startedAt = Date.now();
+    const timer = window.setInterval(() => {
+      setGenerationSeconds(Math.floor((Date.now() - startedAt) / 1000));
+    }, 250);
+    return () => window.clearInterval(timer);
+  }, [isGenerating]);
+
   const takeSelfie = useCallback(() => {
     if (!videoRef.current || !canvasRef.current) return;
     const video = videoRef.current;
@@ -240,8 +273,8 @@ const LiveTryOnPage = () => {
       ctx.scale(-1, 1);
     }
     ctx.drawImage(video, 0, 0);
-    const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
-    setSelfie(dataUrl);
+    const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
+    void optimizeSelfie(dataUrl).then(setSelfie);
     stopCamera();
   }, [stopCamera, facingMode]);
 
@@ -387,8 +420,16 @@ const LiveTryOnPage = () => {
             >
               <Sparkles className="w-14 h-14 text-primary" />
             </motion.div>
-            <p className="text-white font-body mt-4 text-sm relative z-10">AI is styling your look…</p>
-            <p className="text-white/50 font-body mt-1 text-xs relative z-10">This may take 10-20 seconds</p>
+            <p className="text-white font-body mt-4 text-sm relative z-10">Creating your hair preview…</p>
+            <div className="relative z-10 mt-3 h-1.5 w-40 overflow-hidden rounded-full bg-white/20">
+              <motion.div
+                className="h-full bg-primary"
+                initial={{ width: "8%" }}
+                animate={{ width: generationSeconds < 3 ? `${Math.min(92, 12 + generationSeconds * 28)}%` : "96%" }}
+                transition={{ duration: 0.25 }}
+              />
+            </div>
+            <p className="text-white/60 font-body mt-2 text-xs relative z-10">{generationSeconds < 3 ? "Fast preview in progress" : "Adding the finishing details…"}</p>
           </div>
         )}
 
