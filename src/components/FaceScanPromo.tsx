@@ -57,7 +57,7 @@ const FaceScanPromo = () => {
             <div className="flex flex-col sm:flex-row gap-3">
               <Link to="/tryon">
                 <Button variant="hero" size="lg" className="text-base px-8 py-6">
-                  Try On Hair Styles
+                  Virtual Try-On
                   <ArrowRight className="w-5 h-5 ml-1" />
                 </Button>
               </Link>
