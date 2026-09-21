@@ -221,7 +221,7 @@ const MirrorExperience = ({ presentation = "preview" }: MirrorExperienceProps) =
   return (
     <div
       data-presentation={presentation}
-      className={`relative w-full overflow-hidden ${isIntro ? "bg-purple-deep text-cream" : "bg-background text-foreground"} ${
+      className={`relative w-full overflow-hidden ${isIntro ? "bg-purple-deep text-cream" : "mirror-light bg-background text-foreground"} ${
         isPage ? "min-h-[calc(100vh-5rem)]" : "h-full"
       }`}
     >

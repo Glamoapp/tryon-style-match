@@ -170,3 +170,14 @@
 [data-presentation="page"] .text-\[10px\] {
   font-size: 0.9375rem;
 }
+
+/* The guided mirror uses a bright neutral canvas with purple interaction states. */
+.mirror-light {
+  --primary: var(--accent);
+  --primary-foreground: var(--accent-foreground);
+  --gold: var(--accent);
+  --gold-foreground: var(--accent-foreground);
+  --cream: var(--foreground);
+  --charcoal: var(--background);
+  --purple-deep: var(--secondary);
+}
