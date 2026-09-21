@@ -182,7 +182,8 @@ const MirrorExperience = ({ presentation = "preview" }: MirrorExperienceProps) =
       dateValue = requestedDate.toISOString().slice(0, 10);
     }
     const locationMatch = command.match(/(?:\bin\b|\bnear\b)\s+(.+?)(?=\s+(?:today|tomorrow|this|next)\b|$)/i);
-    const location = locationMatch?.[1]?.trim().replace(/[.,!?]+$/, "") ?? "Near me";
+    const spokenLocation = locationMatch?.[1]?.trim().replace(/[.,!?]+$/, "");
+    const location = !spokenLocation || spokenLocation.toLowerCase() === "me" ? "Near me" : spokenLocation;
     return { service, dateLabel, dateValue, location };
   };
 
