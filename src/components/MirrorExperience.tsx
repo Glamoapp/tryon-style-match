@@ -7,10 +7,12 @@ import {
   Check,
   ChevronRight,
   Clock,
+  CloudSun,
   Headphones,
   Heart,
   Mic,
   Music,
+  Play,
   Ruler,
   ScanFace,
   Scissors,
@@ -20,6 +22,32 @@ import {
   UserRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+type SpeechRecognitionEventLike = {
+  results: ArrayLike<{ 0: { transcript: string } }>;
+};
+
+type SpeechRecognitionLike = {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  start: () => void;
+  onresult: ((event: SpeechRecognitionEventLike) => void) | null;
+  onerror: (() => void) | null;
+  onend: (() => void) | null;
+};
+
+type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
+
+const dailyAffirmations = [
+  { text: "I am fearfully and wonderfully made.", verse: "Psalm 139:14" },
+  { text: "I am clothed with strength and dignity.", verse: "Proverbs 31:25" },
+  { text: "God’s grace is sufficient for me today.", verse: "2 Corinthians 12:9" },
+  { text: "I can do all things through Christ who strengthens me.", verse: "Philippians 4:13" },
+  { text: "I am God’s workmanship, created with purpose.", verse: "Ephesians 2:10" },
+  { text: "The joy of the Lord is my strength.", verse: "Nehemiah 8:10" },
+  { text: "I will shine because God’s light is within me.", verse: "Matthew 5:16" },
+];
 
 type MirrorExperienceProps = {
   presentation?: "preview" | "page";
@@ -72,6 +100,15 @@ const MirrorExperience = ({ presentation = "preview" }: MirrorExperienceProps) =
   const [hairColor, setHairColor] = useState("Natural Black");
   const [style, setStyle] = useState("Elegant");
   const [completion, setCompletion] = useState("Your look is saved");
+  const [now, setNow] = useState(() => new Date());
+  const [weather, setWeather] = useState("Tap to use your location");
+  const [weatherLoading, setWeatherLoading] = useState(false);
+  const [voiceStatus, setVoiceStatus] = useState("Tap to speak");
+
+  const affirmation = useMemo(() => {
+    const day = Math.floor(Date.now() / 86_400_000);
+    return dailyAffirmations[day % dailyAffirmations.length];
+  }, []);
 
   const navigate = (next: Screen) => {
     setHistory((current) => [...current, screen]);
@@ -93,6 +130,79 @@ const MirrorExperience = ({ presentation = "preview" }: MirrorExperienceProps) =
     return () => window.clearTimeout(timer);
   }, [screen]);
 
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(new Date()), 30_000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const openAppleMusic = () => {
+    window.open("https://music.apple.com/", "_blank", "noopener,noreferrer");
+  };
+
+  const loadWeather = () => {
+    if (!navigator.geolocation) {
+      setWeather("Location is not available on this device");
+      return;
+    }
+    setWeatherLoading(true);
+    setWeather("Finding your local weather…");
+    navigator.geolocation.getCurrentPosition(
+      async ({ coords }) => {
+        try {
+          const response = await fetch(
+            `https://api.open-meteo.com/v1/forecast?latitude=${coords.latitude}&longitude=${coords.longitude}&current=temperature_2m,weather_code&temperature_unit=fahrenheit`,
+          );
+          if (!response.ok) throw new Error("Weather unavailable");
+          const data = await response.json() as { current?: { temperature_2m?: number; weather_code?: number } };
+          const temperature = data.current?.temperature_2m;
+          const code = data.current?.weather_code ?? 0;
+          const condition = code === 0 ? "Clear" : code <= 3 ? "Partly cloudy" : code <= 67 ? "Rain nearby" : code <= 77 ? "Snow nearby" : "Storms nearby";
+          setWeather(typeof temperature === "number" ? `${Math.round(temperature)}°F · ${condition}` : condition);
+        } catch {
+          setWeather("Weather is temporarily unavailable");
+        } finally {
+          setWeatherLoading(false);
+        }
+      },
+      () => {
+        setWeather("Allow location to see local weather");
+        setWeatherLoading(false);
+      },
+      { enableHighAccuracy: false, timeout: 10_000, maximumAge: 600_000 },
+    );
+  };
+
+  const startVoiceAssistant = () => {
+    const speechWindow = window as typeof window & {
+      SpeechRecognition?: SpeechRecognitionConstructor;
+      webkitSpeechRecognition?: SpeechRecognitionConstructor;
+    };
+    const Recognition = speechWindow.SpeechRecognition ?? speechWindow.webkitSpeechRecognition;
+    if (!Recognition) {
+      setVoiceStatus("Voice assistant is not supported in this browser");
+      return;
+    }
+    const recognition = new Recognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = "en-US";
+    setVoiceStatus("Listening…");
+    recognition.onresult = (event) => {
+      const command = event.results[0]?.[0]?.transcript.toLowerCase() ?? "";
+      setVoiceStatus(`You said: “${command}”`);
+      if (command.includes("beauty") || command.includes("hair")) navigate("beauty-permission");
+      else if (command.includes("apparel") || command.includes("clothes")) navigate("apparel-permission");
+      else if (command.includes("try on") || command.includes("open")) navigate("category");
+      else if (command.includes("music") || command.includes("apple")) openAppleMusic();
+      else if (command.includes("weather")) loadWeather();
+      else if (command.includes("time")) setVoiceStatus(`It is ${now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`);
+      else setVoiceStatus("Try saying “Open Virtual Try-On”");
+    };
+    recognition.onerror = () => setVoiceStatus("I couldn’t hear that. Tap to try again.");
+    recognition.onend = () => setTimeout(() => setVoiceStatus((current) => current === "Listening…" ? "Tap to speak" : current), 400);
+    recognition.start();
+  };
+
   const progress = useMemo(() => {
     const path: Screen[] = screen.startsWith("apparel") || ["measurements", "body-scan", "outfit-preview"].includes(screen)
       ? ["lifestyle", "category", "apparel-permission", "body-scan", "apparel-styles", "outfit-preview"]
@@ -106,17 +216,18 @@ const MirrorExperience = ({ presentation = "preview" }: MirrorExperienceProps) =
   };
 
   const navVisible = !["brand", "welcome", "lifestyle", "complete"].includes(screen);
+  const isIntro = screen === "brand" || screen === "welcome";
 
   return (
     <div
       data-presentation={presentation}
-      className={`relative w-full overflow-hidden bg-purple-deep text-cream ${
+      className={`relative w-full overflow-hidden ${isIntro ? "bg-purple-deep text-cream" : "mirror-light bg-background text-foreground"} ${
         isPage ? "min-h-[calc(100vh-5rem)]" : "h-full"
       }`}
     >
-      <div className="absolute inset-0 bg-gradient-to-b from-primary/80 via-purple-deep to-charcoal" />
+      <div className={`absolute inset-0 ${isIntro ? "bg-gradient-to-b from-accent via-purple-deep to-charcoal" : "bg-gradient-to-b from-background via-muted to-secondary"}`} />
       <div className="absolute inset-x-0 top-0 z-30 flex h-12 items-end justify-center pb-1.5">
-        <span className="rounded-full bg-charcoal/55 px-3 py-1 font-body text-[8px] font-semibold backdrop-blur-md">
+        <span className={`rounded-full px-3 py-1 font-body text-[8px] font-semibold backdrop-blur-md ${isIntro ? "bg-charcoal/55" : "border border-border bg-background/80 text-accent"}`}>
           {screenLabels[screen]}
         </span>
       </div>
@@ -155,41 +266,41 @@ const MirrorExperience = ({ presentation = "preview" }: MirrorExperienceProps) =
           {screen === "lifestyle" && (
             <div className="flex flex-1 flex-col">
               <div className="text-center">
-                <p className="font-display text-4xl leading-none">9:30</p>
-                <p className="mt-1 font-body text-[9px] uppercase tracking-[0.16em] text-cream/60">Good morning, beautiful</p>
+                <p className="font-display text-4xl font-bold leading-none text-accent">{now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</p>
+                <p className="mt-1 font-body text-[9px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Good {now.getHours() < 12 ? "morning" : now.getHours() < 18 ? "afternoon" : "evening"}, beautiful</p>
               </div>
-              <div className="mt-4 rounded-xl border border-gold/30 bg-charcoal/40 p-3 text-center backdrop-blur-md">
-                <BookOpen className="mx-auto mb-1 h-4 w-4 text-gold" />
-                <p className="font-display text-[12px] leading-snug">“I am fearfully and wonderfully made.”</p>
-                <p className="mt-1 font-body text-[8px] text-gold">Psalm 139:14</p>
+              <div className="mt-4 rounded-lg border border-border bg-background/90 p-3 text-center shadow-soft backdrop-blur-md">
+                <BookOpen className="mx-auto mb-1 h-4 w-4 text-accent" />
+                <p className="font-display text-[12px] font-bold leading-snug text-foreground">“{affirmation.text}”</p>
+                <p className="mt-1 font-body text-[8px] font-semibold text-accent">{affirmation.verse} · Today’s affirmation</p>
               </div>
-              <div className="mt-3 rounded-xl border border-cream/15 bg-cream/10 p-3">
+              <div className="mt-3 rounded-lg border border-border bg-muted/80 p-3">
                 <div className="flex items-center gap-2">
-                  <Music className="h-5 w-5 text-gold" />
-                  <div className="min-w-0 flex-1"><p className="font-body text-[9px]">Apple Music</p><p className="truncate font-body text-[8px] text-cream/55">Worship & Inspiration</p></div>
-                  <Headphones className="h-4 w-4 text-cream/60" />
+                  <Music className="h-5 w-5 text-accent" />
+                  <div className="min-w-0 flex-1"><p className="font-body text-[9px] font-bold">Apple Music</p><p className="truncate font-body text-[8px] text-muted-foreground">Connect your account and play your library</p></div>
+                  <Button onClick={openAppleMusic} variant="outline" size="sm" className="h-8 px-2 text-[8px]"><Play className="mr-1 h-3 w-3" />Connect</Button>
                 </div>
-                <div className="mt-2 h-1 overflow-hidden rounded-full bg-cream/15"><motion.div className="h-full bg-gold" animate={{ width: ["12%", "82%"] }} transition={{ duration: 5, repeat: Infinity }} /></div>
+                <div className="mt-2 h-1 overflow-hidden rounded-full bg-border"><div className="h-full w-1/3 bg-accent" /></div>
               </div>
               <div className="mt-3 grid grid-cols-2 gap-2">
-                <div className="rounded-lg bg-cream/10 p-2 text-center"><Mic className="mx-auto h-4 w-4 text-gold" /><p className="mt-1 font-body text-[8px]">Voice assistant</p></div>
-                <div className="rounded-lg bg-cream/10 p-2 text-center"><Clock className="mx-auto h-4 w-4 text-gold" /><p className="mt-1 font-body text-[8px]">Time & weather</p></div>
+                <Button onClick={startVoiceAssistant} variant="outline" className="h-auto min-h-20 flex-col whitespace-normal border-border bg-background p-2 text-center text-foreground"><Mic className="h-4 w-4 text-accent" /><span className="mt-1 font-body text-[8px] font-semibold">Voice assistant</span><span className="mt-1 font-body text-[7px] font-normal text-muted-foreground">{voiceStatus}</span></Button>
+                <Button onClick={loadWeather} disabled={weatherLoading} variant="outline" className="h-auto min-h-20 flex-col whitespace-normal border-border bg-background p-2 text-center text-foreground"><div className="flex gap-1"><Clock className="h-4 w-4 text-accent" /><CloudSun className="h-4 w-4 text-accent" /></div><span className="mt-1 font-body text-[8px] font-semibold">Time & weather</span><span className="mt-1 font-body text-[7px] font-normal text-muted-foreground">{weather}</span></Button>
               </div>
-              <Button onClick={() => navigate("category")} variant="gold" size="sm" className="mt-auto w-full text-[10px] font-bold uppercase">Open Virtual Try-On <ChevronRight className="ml-1 h-3.5 w-3.5" /></Button>
+              <Button onClick={() => navigate("category")} size="sm" className="mt-auto w-full bg-accent text-accent-foreground text-[10px] font-bold uppercase hover:bg-accent/90">Open Virtual Try-On <ChevronRight className="ml-1 h-3.5 w-3.5" /></Button>
             </div>
           )}
 
           {screen === "category" && (
             <div className="flex flex-1 flex-col justify-center">
               <h3 className="text-center font-display text-xl font-bold">What would you like to try?</h3>
-              <p className="mt-1 text-center font-body text-[9px] text-cream/60">Choose an experience to begin</p>
+              <p className="mt-1 text-center font-body text-[9px] text-muted-foreground">Choose an experience to begin</p>
               <div className="mt-6 grid grid-cols-2 gap-3">
-                <button onClick={() => navigate("beauty-permission")} className="flex min-h-36 flex-col items-center justify-center rounded-xl border border-gold bg-gold/15 p-3 text-cream">
-                  <Sparkles className="h-8 w-8 text-gold" /><span className="mt-3 font-display text-base font-bold">Beauty</span><span className="font-body text-[8px] text-cream/60">Hair, wigs & color</span>
-                </button>
-                <button onClick={() => navigate("apparel-permission")} className="flex min-h-36 flex-col items-center justify-center rounded-xl border border-cream/20 bg-cream/10 p-3 text-cream">
-                  <Shirt className="h-8 w-8 text-gold" /><span className="mt-3 font-display text-base font-bold">Apparel</span><span className="font-body text-[8px] text-cream/60">Clothing & fit</span>
-                </button>
+                <Button onClick={() => navigate("beauty-permission")} variant="outline" className="flex h-auto min-h-36 flex-col items-center justify-center whitespace-normal border-accent bg-background p-3 text-foreground shadow-soft">
+                  <Sparkles className="h-8 w-8 text-accent" /><span className="mt-3 font-display text-base font-bold">Beauty</span><span className="font-body text-[8px] text-muted-foreground">Hair, wigs & color</span>
+                </Button>
+                <Button onClick={() => navigate("apparel-permission")} variant="outline" className="flex h-auto min-h-36 flex-col items-center justify-center whitespace-normal border-border bg-muted p-3 text-foreground">
+                  <Shirt className="h-8 w-8 text-accent" /><span className="mt-3 font-display text-base font-bold">Apparel</span><span className="font-body text-[8px] text-muted-foreground">Clothing & fit</span>
+                </Button>
               </div>
             </div>
           )}
