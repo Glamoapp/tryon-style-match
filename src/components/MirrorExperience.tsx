@@ -104,6 +104,7 @@ const MirrorExperience = ({ presentation = "preview" }: MirrorExperienceProps) =
   const [weather, setWeather] = useState("Tap to use your location");
   const [weatherLoading, setWeatherLoading] = useState(false);
   const [voiceStatus, setVoiceStatus] = useState("Tap to speak");
+  const [showNextlookPlaylist, setShowNextlookPlaylist] = useState(false);
 
   const affirmation = useMemo(() => {
     const day = Math.floor(Date.now() / 86_400_000);
@@ -137,6 +138,10 @@ const MirrorExperience = ({ presentation = "preview" }: MirrorExperienceProps) =
 
   const openAppleMusic = () => {
     window.open("https://music.apple.com/", "_blank", "noopener,noreferrer");
+  };
+
+  const toggleNextlookPlaylist = () => {
+    setShowNextlookPlaylist((current) => !current);
   };
 
   const loadWeather = () => {
@@ -193,7 +198,11 @@ const MirrorExperience = ({ presentation = "preview" }: MirrorExperienceProps) =
       if (command.includes("beauty") || command.includes("hair")) navigate("beauty-permission");
       else if (command.includes("apparel") || command.includes("clothes")) navigate("apparel-permission");
       else if (command.includes("try on") || command.includes("open")) navigate("category");
-      else if (command.includes("music") || command.includes("apple")) openAppleMusic();
+      else if (command.includes("my apple") || command.includes("my music") || command.includes("account")) openAppleMusic();
+      else if (command.includes("music") || command.includes("playlist")) {
+        setShowNextlookPlaylist(true);
+        setVoiceStatus("Opening the NEXTLOOK playlist");
+      }
       else if (command.includes("weather")) loadWeather();
       else if (command.includes("time")) setVoiceStatus(`It is ${now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`);
       else setVoiceStatus("Try saying “Open Virtual Try-On”");
@@ -277,10 +286,21 @@ const MirrorExperience = ({ presentation = "preview" }: MirrorExperienceProps) =
               <div className="mt-3 rounded-lg border border-border bg-muted/80 p-3">
                 <div className="flex items-center gap-2">
                   <Music className="h-5 w-5 text-accent" />
-                  <div className="min-w-0 flex-1"><p className="font-body text-[9px] font-bold">Apple Music</p><p className="truncate font-body text-[8px] text-muted-foreground">Connect your account and play your library</p></div>
-                  <Button onClick={openAppleMusic} variant="outline" size="sm" className="h-8 px-2 text-[8px]"><Play className="mr-1 h-3 w-3" />Connect</Button>
+                  <div className="min-w-0 flex-1"><p className="font-body text-[9px] font-bold">Music</p><p className="truncate font-body text-[8px] text-muted-foreground">Choose NEXTLOOK or your Apple Music</p></div>
                 </div>
-                <div className="mt-2 h-1 overflow-hidden rounded-full bg-border"><div className="h-full w-1/3 bg-accent" /></div>
+                <div className="mt-2 grid grid-cols-2 gap-2">
+                  <Button onClick={toggleNextlookPlaylist} variant={showNextlookPlaylist ? "default" : "outline"} size="sm" className="h-8 px-2 text-[8px]"><Headphones className="mr-1 h-3 w-3" />NEXTLOOK Playlist</Button>
+                  <Button onClick={openAppleMusic} variant="outline" size="sm" className="h-8 px-2 text-[8px]"><Play className="mr-1 h-3 w-3" />My Apple Music</Button>
+                </div>
+                {showNextlookPlaylist && (
+                  <iframe
+                    title="NEXTLOOK Gospel Worship playlist"
+                    allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write"
+                    sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation-by-user-activation"
+                    src="https://embed.music.apple.com/us/playlist/gospel-worship/pl.2bdba44288924df98a9118c263a1b5a8"
+                    className="mt-2 h-[175px] w-full rounded-lg border-0 bg-background"
+                  />
+                )}
               </div>
               <div className="mt-3 grid grid-cols-2 gap-2">
                 <Button onClick={startVoiceAssistant} variant="outline" className="h-auto min-h-20 flex-col whitespace-normal border-border bg-background p-2 text-center text-foreground"><Mic className="h-4 w-4 text-accent" /><span className="mt-1 font-body text-[8px] font-semibold">Voice assistant</span><span className="mt-1 font-body text-[7px] font-normal text-muted-foreground">{voiceStatus}</span></Button>
