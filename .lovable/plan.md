@@ -1,21 +1,17 @@
-# Virtual Try-On Walkthrough Update
+# Full-Page Virtual Try-On
 
 ## What will change
-- Reorder the walkthrough to begin with the purple metallic NEXTLOOK screen.
-- Add a short “Welcome to NEXTLOOK Virtual Try-On” splash.
-- Show the smart-mirror home with Apple Music, time, voice control, and Bible inspiration.
-- Add an “Open Virtual Try-On” action at the bottom of that screen.
-- Add a choice between Beauty and Apparel.
-- Show the Beauty path: face scan, hair try-on, then choose to book a stylist, buy hair, or do both.
-- Show the Apparel path: body scan, body-type matching, and clothing-style selection.
-- Keep the existing product browsing, stylist services, appointment, checkout, confirmation, and arrival sequence after the Beauty path.
+- Rename the homepage “Try On Hair Styles” button to “Virtual Try-On.”
+- Make that button open the complete guided Virtual Try-On as a real website page, not only inside the display-phone preview.
+- Keep the purple landing, three-second welcome, lifestyle screen, Beauty/Apparel choice, permissions, scans, selection, save, purchase, and stylist options.
+- Preserve the small display-phone preview on the homepage as a demonstration.
 
 ## Technical details
-- Update only the animated homepage mirror walkthrough in `MirrorExperience`.
-- Use the existing NEXTLOOK colors, typography, icons, and motion system.
-- Keep all imagery static; only interface elements and transitions will animate.
-- Make each stage readable inside the existing phone-shaped preview on mobile and desktop.
+- Rework the `/tryon` page around the existing guided experience.
+- Add a full-page responsive presentation mode with larger text, controls, and content widths for phones and computers.
+- Keep the same Back, Continue, and Skip behavior and the existing NEXTLOOK colors.
 
 ## Verification
-- Confirm the app builds without errors.
-- Review the full sequence in the homepage preview and check that labels and controls fit the mirror frame.
+- Click “Virtual Try-On” from the homepage and confirm it opens the purple NEXTLOOK journey.
+- Check both Beauty and Apparel paths on desktop and mobile.
+- Confirm the preview builds without errors.
