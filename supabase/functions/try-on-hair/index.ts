@@ -89,11 +89,11 @@ COLOR ENFORCEMENT — CRITICAL:
 
 OUTPUT: A photo of the SAME PERSON (identical, recognizable face) with lightly smoothed skin, wearing the new hairstyle in the EXACT requested color. It should look like the same person took a salon photo on a good-lighting day.`;
 
-    // Try the highest-quality model first for best identity preservation,
-    // then fall back to the faster flash model on failure / rate limit.
+    // Start with the existing fast image model for interactive try-on speed,
+    // then use the quality model only when the fast pass is unavailable.
     const models = [
-      "google/gemini-3-pro-image-preview",
       "google/gemini-3.1-flash-image-preview",
+      "google/gemini-3-pro-image-preview",
     ];
 
     let lastStatus = 500;
