@@ -410,7 +410,8 @@ const MirrorExperience = ({ presentation = "preview" }: MirrorExperienceProps) =
                 {screen === "beauty-permission" ? "We use the camera to map your face and head so hair sits naturally. Your scan starts only after you allow it." : "We use the camera to understand proportions and recommend a comfortable fit. Your scan starts only after you allow it."}
               </p>
               <div className="mt-5 w-full space-y-2">
-                <Button onClick={() => navigate(screen === "beauty-permission" ? "beauty-scan" : "body-scan")} variant="gold" size="sm" className="w-full text-[10px]"><Camera className="mr-1.5 h-3.5 w-3.5" />Allow Camera</Button>
+                <Button onClick={() => screen === "beauty-permission" ? routeTo("/tryon/live") : navigate("body-scan")} variant="gold" size="sm" className="w-full text-[10px]"><Camera className="mr-1.5 h-3.5 w-3.5" />{screen === "beauty-permission" ? "Use My Real Photo" : "Allow Camera"}</Button>
+                {screen === "beauty-permission" && <p className="font-body text-[8px] leading-relaxed text-muted-foreground">On the next screen, open your camera or choose a photo already on your device.</p>}
                 {screen === "apparel-permission" && <Button onClick={() => navigate("measurements")} variant="hero-outline" size="sm" className="w-full text-[10px]"><Ruler className="mr-1.5 h-3.5 w-3.5" />Enter Measurements</Button>}
                 <Button onClick={() => navigate(screen === "beauty-permission" ? "beauty-looks" : "apparel-styles")} variant="ghost" size="sm" className="w-full text-[9px] text-cream/60">Skip for now</Button>
               </div>
