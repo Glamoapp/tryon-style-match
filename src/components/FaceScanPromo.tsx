@@ -30,7 +30,7 @@ const FaceScanPromo = () => {
       <div className="absolute bottom-0 right-1/4 w-[300px] h-[300px] rounded-full bg-accent/6 blur-[100px] pointer-events-none" />
 
       <div className="container mx-auto px-6 relative z-10">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
+        <div className="grid gap-12 lg:grid-cols-[minmax(0,0.8fr)_minmax(380px,1.2fr)] lg:items-center">
           {/* Left: Content */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
@@ -82,28 +82,18 @@ const FaceScanPromo = () => {
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="flex justify-center"
+            className="flex justify-center lg:justify-end"
           >
-            <div className="relative w-[280px] sm:w-[300px] mx-auto">
-              {/* Phone frame */}
-              <div className="relative rounded-[2.5rem] border-[6px] border-foreground/20 bg-charcoal shadow-elevated overflow-hidden">
+            <div className="relative mx-auto w-full max-w-[360px] lg:mr-0 lg:max-w-[440px]">
+              {/* Responsive smart-mirror frame */}
+              <div className="relative overflow-hidden rounded-[2rem] border-[6px] border-foreground/20 bg-charcoal shadow-elevated sm:rounded-[2.5rem]">
                 {/* Notch */}
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-6 bg-foreground/20 rounded-b-2xl z-30" />
 
                 {/* Screen content */}
-                <div className="relative aspect-[9/19] overflow-hidden bg-charcoal">
+                <div className="relative aspect-[9/16] overflow-hidden bg-charcoal">
                   {/* Smart Mirror step-by-step experience */}
                   <MirrorExperience />
-
-                  {/* Gradient overlay at bottom */}
-                  <div className="absolute bottom-0 left-0 right-0 h-1/4 bg-gradient-to-t from-charcoal via-charcoal/60 to-transparent z-10" />
-
-                  {/* Bottom label */}
-                  <div className="absolute bottom-3 left-3 right-3 z-20">
-                    <p className="text-[9px] text-cream/70 font-body text-center">
-                      Scan · Try · Choose · Book
-                    </p>
-                  </div>
                 </div>
               </div>
 
