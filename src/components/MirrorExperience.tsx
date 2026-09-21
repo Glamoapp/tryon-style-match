@@ -247,7 +247,7 @@ const MirrorExperience = ({ presentation = "preview" }: MirrorExperienceProps) =
     recognition.onresult = (event) => {
       const command = event.results[0]?.[0]?.transcript.toLowerCase() ?? "";
       setVoiceStatus(`You said: “${command}”`);
-      if ((command.includes("book") || command.includes("appointment") || command.includes("stylist")) && command.includes("confirm") && voiceBooking) openVoiceBooking();
+      if (command.includes("confirm") && voiceBooking) openVoiceBooking();
       else if (command.includes("book") || command.includes("appointment") || command.includes("stylist")) {
         const request = buildVoiceBooking(command);
         setVoiceBooking(request);
