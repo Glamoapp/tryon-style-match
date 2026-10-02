@@ -706,6 +706,11 @@ const StylistDiscoveryPage = () => {
                 {loading ? "..." : `${filtered.length} found`}
               </span>
             </div>
+            {serviceFallback && (
+              <p className="text-xs text-muted-foreground font-body -mt-1">
+                No stylists offer {activeFilter} yet — showing all stylists.
+              </p>
+            )}
 
             <div className="flex gap-2 items-center">
               <div className="relative flex-1 max-w-sm">
