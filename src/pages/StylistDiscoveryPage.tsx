@@ -31,6 +31,17 @@ const serviceFilters = [
   "Locs",
 ];
 
+// Installation service labels (e.g. passed from the try-on studio via
+// /discover?service=...) don't appear verbatim in provider specialties.
+// Expand them into keywords that provider service names actually use.
+const SERVICE_KEYWORDS: Record<string, string[]> = {
+  "sew-in install": ["weave", "sew-in", "sew in", "sewin"],
+  "wig installation": ["wig", "frontal", "closure", "lace"],
+  "k-tip installation": ["k-tip", "ktip", "k tip", "extension", "fusion", "nano"],
+  "tape-in installation": ["tape-in", "tape in", "tapein", "extension"],
+  "microlink installation": ["microlink", "micro link", "micro-link", "extension", "natural hair"],
+};
+
 interface StylistCard {
   id: string;
   name: string;
@@ -530,7 +541,9 @@ const StylistDiscoveryPage = () => {
 
   const locationParam = searchParams.get("location") || "";
 
-  const filtered = useMemo(() => {
+  const isCustomServiceFilter = activeFilter !== "All" && !serviceFilters.includes(activeFilter);
+
+  const filteredResult = useMemo(() => {
     let list = allCards;
     if (search) {
       const q = search.toLowerCase();
@@ -544,12 +557,25 @@ const StylistDiscoveryPage = () => {
       if (byCity.length) list = byCity;
     }
     if (activeFilter !== "All") {
+      const keywords = SERVICE_KEYWORDS[activeFilter.toLowerCase()] || [activeFilter.toLowerCase()];
       list = list.filter((s) =>
-        s.specialties.some((sp) => sp.toLowerCase().includes(activeFilter.toLowerCase()))
+        s.specialties.some((sp) => {
+          const specialty = sp.toLowerCase();
+          return keywords.some((kw) => specialty.includes(kw));
+        })
       );
     }
-    return list.sort((a, b) => b.rating - a.rating);
-  }, [search, activeFilter, allCards, locationParam]);
+    // A custom service label (e.g. from the try-on studio) that matches no
+    // stylist should never show an empty list — fall back to all stylists
+    // so shoppers keep moving toward booking.
+    if (isCustomServiceFilter && list.length === 0) {
+      return { stylists: allCards.slice().sort((a, b) => b.rating - a.rating), fallback: true };
+    }
+    return { stylists: list.sort((a, b) => b.rating - a.rating), fallback: false };
+  }, [search, activeFilter, allCards, locationParam, isCustomServiceFilter]);
+
+  const filtered = filteredResult.stylists;
+  const serviceFallback = filteredResult.fallback;
 
 
   const handleSelectStylist = useCallback((id: string) => {
@@ -680,6 +706,11 @@ const StylistDiscoveryPage = () => {
                 {loading ? "..." : `${filtered.length} found`}
               </span>
             </div>
+            {serviceFallback && (
+              <p className="text-xs text-muted-foreground font-body -mt-1">
+                No stylists offer {activeFilter} yet — showing all stylists.
+              </p>
+            )}
 
             <div className="flex gap-2 items-center">
               <div className="relative flex-1 max-w-sm">
