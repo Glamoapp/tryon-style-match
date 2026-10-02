@@ -541,7 +541,9 @@ const StylistDiscoveryPage = () => {
 
   const locationParam = searchParams.get("location") || "";
 
-  const filtered = useMemo(() => {
+  const isCustomServiceFilter = activeFilter !== "All" && !serviceFilters.includes(activeFilter);
+
+  const filteredResult = useMemo(() => {
     let list = allCards;
     if (search) {
       const q = search.toLowerCase();
@@ -563,8 +565,17 @@ const StylistDiscoveryPage = () => {
         })
       );
     }
-    return list.sort((a, b) => b.rating - a.rating);
-  }, [search, activeFilter, allCards, locationParam]);
+    // A custom service label (e.g. from the try-on studio) that matches no
+    // stylist should never show an empty list — fall back to all stylists
+    // so shoppers keep moving toward booking.
+    if (isCustomServiceFilter && list.length === 0) {
+      return { stylists: allCards.slice().sort((a, b) => b.rating - a.rating), fallback: true };
+    }
+    return { stylists: list.sort((a, b) => b.rating - a.rating), fallback: false };
+  }, [search, activeFilter, allCards, locationParam, isCustomServiceFilter]);
+
+  const filtered = filteredResult.stylists;
+  const serviceFallback = filteredResult.fallback;
 
 
   const handleSelectStylist = useCallback((id: string) => {
