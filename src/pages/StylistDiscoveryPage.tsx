@@ -555,8 +555,12 @@ const StylistDiscoveryPage = () => {
       if (byCity.length) list = byCity;
     }
     if (activeFilter !== "All") {
+      const keywords = SERVICE_KEYWORDS[activeFilter.toLowerCase()] || [activeFilter.toLowerCase()];
       list = list.filter((s) =>
-        s.specialties.some((sp) => sp.toLowerCase().includes(activeFilter.toLowerCase()))
+        s.specialties.some((sp) => {
+          const specialty = sp.toLowerCase();
+          return keywords.some((kw) => specialty.includes(kw));
+        })
       );
     }
     return list.sort((a, b) => b.rating - a.rating);
