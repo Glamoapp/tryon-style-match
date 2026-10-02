@@ -31,6 +31,17 @@ const serviceFilters = [
   "Locs",
 ];
 
+// Installation service labels (e.g. passed from the try-on studio via
+// /discover?service=...) don't appear verbatim in provider specialties.
+// Expand them into keywords that provider service names actually use.
+const SERVICE_KEYWORDS: Record<string, string[]> = {
+  "sew-in install": ["weave", "sew-in", "sew in", "sewin"],
+  "wig installation": ["wig", "frontal", "closure", "lace"],
+  "k-tip installation": ["k-tip", "ktip", "k tip", "extension", "fusion", "nano"],
+  "tape-in installation": ["tape-in", "tape in", "tapein", "extension"],
+  "microlink installation": ["microlink", "micro link", "micro-link", "extension", "natural hair"],
+};
+
 interface StylistCard {
   id: string;
   name: string;
