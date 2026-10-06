@@ -10,3 +10,5 @@
 - [x] Turn the mirror voice assistant into Gwen with spoken booking requests and confirmation.
 - [x] Connect the guided Beauty flow to real camera or selfie try-on with hair and service customization.
 - [x] Speed up photo try-on with optimized selfie uploads and the existing fast image pass first.
+
+- [x] Share video guides for converting the website to an app via GitHub.
