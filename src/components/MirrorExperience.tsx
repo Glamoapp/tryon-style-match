@@ -131,7 +131,7 @@ const MirrorExperience = ({ presentation = "preview" }: MirrorExperienceProps) =
   };
 
   const back = () => {
-    const previous = history.at(-1);
+    const previous = history[history.length - 1];
     if (!previous) return;
     setHistory((current) => current.slice(0, -1));
     setScreen(previous);
