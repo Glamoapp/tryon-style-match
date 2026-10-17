@@ -369,8 +369,13 @@ const LiveTryOnPage = () => {
           <ArrowLeft className="w-5 h-5" />
           <span className="hidden sm:inline">Back</span>
         </Link>
-        <h1 className="text-white font-display font-bold text-base">
-          NEXTLOOK Genesis
+        <h1 className="text-center leading-none">
+          <span className="block font-logo text-white text-xl tracking-[0.08em]">
+            NEXTLOOK
+          </span>
+          <span className="block font-body text-[10px] font-semibold uppercase tracking-[0.3em] text-gold mt-1">
+            Genesis Pro
+          </span>
         </h1>
         <div className="w-10" />
       </div>
