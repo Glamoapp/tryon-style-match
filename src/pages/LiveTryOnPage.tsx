@@ -92,6 +92,16 @@ const LiveTryOnPage = () => {
   const [selectedService, setSelectedService] = useState(SERVICES[0]);
   const [showCustomize, setShowCustomize] = useState(false);
   const [showStyles, setShowStyles] = useState(true);
+  const [showMirrorPanel, setShowMirrorPanel] = useState(true);
+  const [showPlaylist, setShowPlaylist] = useState(false);
+  const [now, setNow] = useState(() => new Date());
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(new Date()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const dailyAffirmation = DAILY_AFFIRMATIONS[now.getDate() % DAILY_AFFIRMATIONS.length];
 
   const filteredStyles = styles.filter((s) => s.category === activeCategory);
   const currentStyle = filteredStyles[selectedStyleIdx] || filteredStyles[0];
