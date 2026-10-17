@@ -370,7 +370,7 @@ const LiveTryOnPage = () => {
           <span className="hidden sm:inline">Back</span>
         </Link>
         <h1 className="text-white font-display font-bold text-base">
-          NEXTLOOK AI Try-On
+          NEXTLOOK Genesis
         </h1>
         <div className="w-10" />
       </div>
