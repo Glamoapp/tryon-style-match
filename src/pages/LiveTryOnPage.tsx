@@ -739,6 +739,98 @@ const LiveTryOnPage = () => {
           )}
         </div>
       )}
+
+      {/* Smart Mirror side panel — music, affirmation, time */}
+      <AnimatePresence>
+        {showMirrorPanel && (
+          <motion.aside
+            initial={{ x: 320, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: 320, opacity: 0 }}
+            transition={{ type: "spring", damping: 26, stiffness: 220 }}
+            className="absolute top-0 right-0 bottom-0 z-40 w-[280px] sm:w-[300px] bg-black/85 backdrop-blur-xl border-l border-primary/30 flex flex-col overflow-y-auto scrollbar-none"
+          >
+            <div className="flex items-center justify-between px-4 pt-[calc(env(safe-area-inset-top,12px)+8px)] pb-3 border-b border-white/10">
+              <span className="text-primary font-display font-bold text-sm tracking-wide">NEXTLOOK Mirror</span>
+              <button onClick={() => setShowMirrorPanel(false)} className="text-white/60 hover:text-white p-1" aria-label="Close mirror panel">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Music */}
+            <div className="px-4 py-4 border-b border-white/10">
+              <div className="flex items-center gap-2 mb-2">
+                <Music className="w-4 h-4 text-primary" />
+                <span className="text-white font-body font-semibold text-sm">Music</span>
+              </div>
+              <p className="text-white/50 text-[11px] font-body italic mb-3">"Play my favorite worship playlist"</p>
+              <div className="flex gap-2">
+                <Button
+                  variant="gold"
+                  size="sm"
+                  className="flex-1 h-9 text-xs"
+                  onClick={() => setShowPlaylist((v) => !v)}
+                >
+                  {showPlaylist ? <Pause className="w-3.5 h-3.5 mr-1" /> : <Play className="w-3.5 h-3.5 mr-1" />}
+                  {showPlaylist ? "Hide Player" : "Play Worship"}
+                </Button>
+                <a href="https://music.apple.com/" target="_blank" rel="noreferrer" className="flex-1">
+                  <Button variant="outline" size="sm" className="w-full h-9 text-xs bg-white/5 border-white/20 text-white hover:bg-white/10">
+                    My Apple Music
+                  </Button>
+                </a>
+              </div>
+              {showPlaylist && (
+                <iframe
+                  title="NEXTLOOK Worship Playlist"
+                  src={NEXTLOOK_PLAYLIST_EMBED}
+                  className="mt-3 w-full h-[150px] rounded-xl border border-white/10"
+                  allow="autoplay *; encrypted-media *;"
+                  sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation-by-user-activation"
+                />
+              )}
+            </div>
+
+            {/* Biblical Word of Affirmation */}
+            <div className="px-4 py-4 border-b border-white/10">
+              <div className="flex items-center gap-2 mb-2">
+                <BookOpen className="w-4 h-4 text-primary" />
+                <span className="text-white font-body font-semibold text-sm">Biblical Word of Affirmation</span>
+              </div>
+              <p className="text-white/50 text-[11px] font-body italic mb-2">"Give me a word of encouragement"</p>
+              <p className="text-primary/90 font-body text-sm leading-relaxed">"{dailyAffirmation.verse}"</p>
+              <p className="text-white/40 text-[11px] font-body mt-1">— {dailyAffirmation.ref}</p>
+            </div>
+
+            {/* Time */}
+            <div className="px-4 py-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Clock className="w-4 h-4 text-primary" />
+                <span className="text-white font-body font-semibold text-sm">Time</span>
+              </div>
+              <p className="text-white/50 text-[11px] font-body italic mb-2">"What's the time?"</p>
+              <p className="text-primary font-display font-bold text-4xl leading-none">
+                {now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}
+              </p>
+              <p className="text-white/60 font-body text-xs mt-2">
+                {now.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" })}
+              </p>
+            </div>
+          </motion.aside>
+        )}
+      </AnimatePresence>
+
+      {/* Floating toggle to reopen the mirror panel */}
+      {!showMirrorPanel && (
+        <button
+          onClick={() => setShowMirrorPanel(true)}
+          className="absolute top-16 right-3 z-40 flex flex-col items-center gap-1 bg-black/70 backdrop-blur-sm border border-primary/40 rounded-2xl px-3 py-2 text-primary shadow-glow"
+          aria-label="Open mirror panel"
+        >
+          <Music className="w-4 h-4" />
+          <span className="text-[9px] font-body font-semibold">Mirror</span>
+        </button>
+      )}
     </div>
   );
 };
