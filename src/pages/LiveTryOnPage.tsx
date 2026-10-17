@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Camera, RotateCcw, ArrowLeft, Sparkles, ShoppingBag, Calendar,
-  ChevronRight, ChevronUp, Palette, Ruler, Waves, X, FlipHorizontal, Users, Scissors
+  ChevronRight, ChevronUp, Palette, Ruler, Waves, X, FlipHorizontal, Users, Scissors,
+  Music, BookOpen, Clock, Play, Pause
 } from "lucide-react";
 import BookingDialog from "@/components/BookingDialog";
 import { styles, categories, type StyleCategory } from "@/data/tryOnStyles";
@@ -36,6 +37,18 @@ const COLORS = [
 const LENGTHS = ["Short", "Medium", "Long", "Extra Long"];
 const TEXTURES = ["Straight", "Wavy", "Curly", "Coily"];
 const SERVICES = ["Sew-In Install", "Wig Installation", "K-Tip Installation", "Tape-In Installation", "Microlink Installation"];
+
+const DAILY_AFFIRMATIONS = [
+  { verse: "I praise you because I am fearfully and wonderfully made.", ref: "Psalm 139:14" },
+  { verse: "She is clothed with strength and dignity; she can laugh at the days to come.", ref: "Proverbs 31:25" },
+  { verse: "You are altogether beautiful, my darling; there is no flaw in you.", ref: "Song of Songs 4:7" },
+  { verse: "Charm is deceptive, and beauty is fleeting; but a woman who fears the Lord is to be praised.", ref: "Proverbs 31:30" },
+  { verse: "He has made everything beautiful in its time.", ref: "Ecclesiastes 3:11" },
+  { verse: "You are a chosen people, a royal priesthood, a holy nation, God's special possession.", ref: "1 Peter 2:9" },
+  { verse: "The Lord your God is with you, the mighty warrior who saves. He will take great delight in you.", ref: "Zephaniah 3:17" },
+];
+
+const NEXTLOOK_PLAYLIST_EMBED = "https://embed.music.apple.com/us/playlist/gospel-worship/pl.2bdba44288924df98a9118c263a1b5a8";
 
 const optimizeSelfie = (imageData: string) => new Promise<string>((resolve) => {
   const image = new Image();
