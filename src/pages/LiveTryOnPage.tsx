@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Camera, RotateCcw, ArrowLeft, Sparkles, ShoppingBag, Calendar,
-  ChevronRight, ChevronUp, Palette, Ruler, Waves, X, FlipHorizontal, Users, Scissors
+  ChevronRight, ChevronUp, Palette, Ruler, Waves, X, FlipHorizontal, Users, Scissors,
+  Music, BookOpen, Clock, Play, Pause
 } from "lucide-react";
 import BookingDialog from "@/components/BookingDialog";
 import { styles, categories, type StyleCategory } from "@/data/tryOnStyles";
@@ -36,6 +37,18 @@ const COLORS = [
 const LENGTHS = ["Short", "Medium", "Long", "Extra Long"];
 const TEXTURES = ["Straight", "Wavy", "Curly", "Coily"];
 const SERVICES = ["Sew-In Install", "Wig Installation", "K-Tip Installation", "Tape-In Installation", "Microlink Installation"];
+
+const DAILY_AFFIRMATIONS = [
+  { verse: "I praise you because I am fearfully and wonderfully made.", ref: "Psalm 139:14" },
+  { verse: "She is clothed with strength and dignity; she can laugh at the days to come.", ref: "Proverbs 31:25" },
+  { verse: "You are altogether beautiful, my darling; there is no flaw in you.", ref: "Song of Songs 4:7" },
+  { verse: "Charm is deceptive, and beauty is fleeting; but a woman who fears the Lord is to be praised.", ref: "Proverbs 31:30" },
+  { verse: "He has made everything beautiful in its time.", ref: "Ecclesiastes 3:11" },
+  { verse: "You are a chosen people, a royal priesthood, a holy nation, God's special possession.", ref: "1 Peter 2:9" },
+  { verse: "The Lord your God is with you, the mighty warrior who saves. He will take great delight in you.", ref: "Zephaniah 3:17" },
+];
+
+const NEXTLOOK_PLAYLIST_EMBED = "https://embed.music.apple.com/us/playlist/gospel-worship/pl.2bdba44288924df98a9118c263a1b5a8";
 
 const optimizeSelfie = (imageData: string) => new Promise<string>((resolve) => {
   const image = new Image();
@@ -79,6 +92,16 @@ const LiveTryOnPage = () => {
   const [selectedService, setSelectedService] = useState(SERVICES[0]);
   const [showCustomize, setShowCustomize] = useState(false);
   const [showStyles, setShowStyles] = useState(true);
+  const [showMirrorPanel, setShowMirrorPanel] = useState(true);
+  const [showPlaylist, setShowPlaylist] = useState(false);
+  const [now, setNow] = useState(() => new Date());
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(new Date()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const dailyAffirmation = DAILY_AFFIRMATIONS[now.getDate() % DAILY_AFFIRMATIONS.length];
 
   const filteredStyles = styles.filter((s) => s.category === activeCategory);
   const currentStyle = filteredStyles[selectedStyleIdx] || filteredStyles[0];
@@ -715,6 +738,98 @@ const LiveTryOnPage = () => {
             </Button>
           )}
         </div>
+      )}
+
+      {/* Smart Mirror side panel — music, affirmation, time */}
+      <AnimatePresence>
+        {showMirrorPanel && (
+          <motion.aside
+            initial={{ x: 320, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: 320, opacity: 0 }}
+            transition={{ type: "spring", damping: 26, stiffness: 220 }}
+            className="absolute top-0 right-0 bottom-0 z-40 w-[280px] sm:w-[300px] bg-black/85 backdrop-blur-xl border-l border-primary/30 flex flex-col overflow-y-auto scrollbar-none"
+          >
+            <div className="flex items-center justify-between px-4 pt-[calc(env(safe-area-inset-top,12px)+8px)] pb-3 border-b border-white/10">
+              <span className="text-primary font-display font-bold text-sm tracking-wide">NEXTLOOK Mirror</span>
+              <button onClick={() => setShowMirrorPanel(false)} className="text-white/60 hover:text-white p-1" aria-label="Close mirror panel">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Music */}
+            <div className="px-4 py-4 border-b border-white/10">
+              <div className="flex items-center gap-2 mb-2">
+                <Music className="w-4 h-4 text-primary" />
+                <span className="text-white font-body font-semibold text-sm">Music</span>
+              </div>
+              <p className="text-white/50 text-[11px] font-body italic mb-3">"Play my favorite worship playlist"</p>
+              <div className="flex gap-2">
+                <Button
+                  variant="gold"
+                  size="sm"
+                  className="flex-1 h-9 text-xs"
+                  onClick={() => setShowPlaylist((v) => !v)}
+                >
+                  {showPlaylist ? <Pause className="w-3.5 h-3.5 mr-1" /> : <Play className="w-3.5 h-3.5 mr-1" />}
+                  {showPlaylist ? "Hide Player" : "Play Worship"}
+                </Button>
+                <a href="https://music.apple.com/" target="_blank" rel="noreferrer" className="flex-1">
+                  <Button variant="outline" size="sm" className="w-full h-9 text-xs bg-white/5 border-white/20 text-white hover:bg-white/10">
+                    My Apple Music
+                  </Button>
+                </a>
+              </div>
+              {showPlaylist && (
+                <iframe
+                  title="NEXTLOOK Worship Playlist"
+                  src={NEXTLOOK_PLAYLIST_EMBED}
+                  className="mt-3 w-full h-[150px] rounded-xl border border-white/10"
+                  allow="autoplay *; encrypted-media *;"
+                  sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation-by-user-activation"
+                />
+              )}
+            </div>
+
+            {/* Biblical Word of Affirmation */}
+            <div className="px-4 py-4 border-b border-white/10">
+              <div className="flex items-center gap-2 mb-2">
+                <BookOpen className="w-4 h-4 text-primary" />
+                <span className="text-white font-body font-semibold text-sm">Biblical Word of Affirmation</span>
+              </div>
+              <p className="text-white/50 text-[11px] font-body italic mb-2">"Give me a word of encouragement"</p>
+              <p className="text-primary/90 font-body text-sm leading-relaxed">"{dailyAffirmation.verse}"</p>
+              <p className="text-white/40 text-[11px] font-body mt-1">— {dailyAffirmation.ref}</p>
+            </div>
+
+            {/* Time */}
+            <div className="px-4 py-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Clock className="w-4 h-4 text-primary" />
+                <span className="text-white font-body font-semibold text-sm">Time</span>
+              </div>
+              <p className="text-white/50 text-[11px] font-body italic mb-2">"What's the time?"</p>
+              <p className="text-primary font-display font-bold text-4xl leading-none">
+                {now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}
+              </p>
+              <p className="text-white/60 font-body text-xs mt-2">
+                {now.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" })}
+              </p>
+            </div>
+          </motion.aside>
+        )}
+      </AnimatePresence>
+
+      {/* Floating toggle to reopen the mirror panel */}
+      {!showMirrorPanel && (
+        <button
+          onClick={() => setShowMirrorPanel(true)}
+          className="absolute top-16 right-3 z-40 flex flex-col items-center gap-1 bg-black/70 backdrop-blur-sm border border-primary/40 rounded-2xl px-3 py-2 text-primary shadow-glow"
+          aria-label="Open mirror panel"
+        >
+          <Music className="w-4 h-4" />
+          <span className="text-[9px] font-body font-semibold">Mirror</span>
+        </button>
       )}
     </div>
   );
