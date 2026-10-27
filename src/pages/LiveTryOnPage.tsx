@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useFaceOverlay } from "@/hooks/useFaceOverlay";
 import logoImg from "@/assets/logo.png";
+import { hairPurchaseUrl, type HairSelection } from "@/lib/hairProductMatching";
 
 const COLORS = [
   { name: "#1 Jet Black", value: "jet black hair color #1", hex: "#0a0a0a" },
@@ -79,6 +80,7 @@ const LiveTryOnPage = () => {
   const [cameraActive, setCameraActive] = useState(false);
   const [selfie, setSelfie] = useState<string | null>(null);
   const [resultImage, setResultImage] = useState<string | null>(null);
+  const [resultSelection, setResultSelection] = useState<HairSelection | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationSeconds, setGenerationSeconds] = useState(0);
   const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
@@ -105,6 +107,11 @@ const LiveTryOnPage = () => {
 
   const filteredStyles = styles.filter((s) => s.category === activeCategory);
   const currentStyle = filteredStyles[selectedStyleIdx] || filteredStyles[0];
+  const purchaseSelection = resultImage && resultSelection ? resultSelection : {
+    style: currentStyle?.name ?? "", category: activeCategory,
+    color: selectedColor.name, length: selectedLength, texture: selectedTexture,
+  };
+  const purchaseUrl = hairPurchaseUrl(purchaseSelection);
 
   // Scan status — updated via throttled callback from the hook (not useState in rAF)
   const [scanInfo, setScanInfo] = useState({ progress: 0, complete: false, faceDetected: false });
@@ -320,6 +327,7 @@ const LiveTryOnPage = () => {
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       if (data?.image) {
+        setResultSelection({ style: currentStyle.name, category: activeCategory, color: selectedColor.name, length: selectedLength, texture: selectedTexture });
         setResultImage(data.image);
         toast.success("Your look is ready! 🔥");
       } else {
@@ -330,7 +338,7 @@ const LiveTryOnPage = () => {
     } finally {
       setIsGenerating(false);
     }
-  }, [selfie, currentStyle, selectedColor, selectedLength, selectedTexture]);
+  }, [selfie, currentStyle, activeCategory, selectedColor, selectedLength, selectedTexture]);
 
   const resetAll = () => {
     setSelfie(null);
@@ -503,7 +511,7 @@ const LiveTryOnPage = () => {
                   <Users className="w-5 h-5 mr-2" /> Select a Stylist
                 </Button>
               </Link>
-              <Link to="/extensions" className="w-full">
+              <Link to={purchaseUrl} className="w-full">
                 <Button size="lg" className="w-full bg-black text-white border border-white/20 hover:bg-black/80">
                   <ShoppingBag className="w-5 h-5 mr-2" /> Shop Extensions
                 </Button>
@@ -533,7 +541,7 @@ const LiveTryOnPage = () => {
                     <Users className="w-4 h-4 mr-1" /> Book Service <ChevronRight className="w-4 h-4" />
                   </Button>
                 </Link>
-                <Link to="/extensions" className="flex-1">
+                <Link to={purchaseUrl} className="flex-1">
                   <Button variant="gold" className="w-full">
                     <ShoppingBag className="w-4 h-4 mr-1" /> Buy Hair
                   </Button>
