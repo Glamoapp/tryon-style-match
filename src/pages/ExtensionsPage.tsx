@@ -8,6 +8,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { VendorProductDialog } from "@/components/VendorProductDialog";
+import { matchingHairVariant, readHairSelection, type HairVariant } from "@/lib/hairProductMatching";
 
 type VendorProduct = {
   id: string;
@@ -16,6 +17,9 @@ type VendorProduct = {
   price: number;
   compare_at_price: number | null;
   category: string | null;
+  hair_type?: string | null;
+  inventory_count?: number;
+  variants?: HairVariant[];
   image_urls: string[];
   vendor_id: string;
   vendor?: { full_name: string };
@@ -25,6 +29,7 @@ type VendorProduct = {
 const ExtensionsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const filterQuery = searchParams.get("q")?.toLowerCase() || "";
+  const hairSelection = useMemo(() => readHairSelection(searchParams), [searchParams]);
   const [vendorProducts, setVendorProducts] = useState<VendorProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedVendorProduct, setSelectedVendorProduct] = useState<VendorProduct | null>(null);
@@ -37,7 +42,7 @@ const ExtensionsPage = () => {
     try {
       const { data } = await supabase
         .from("vendor_products")
-        .select("*, vendor:profiles!vendor_products_vendor_id_fkey(full_name)")
+        .select("*, vendor:profiles!vendor_products_vendor_id_fkey(full_name), variants:vendor_product_variants(id, length, color, is_active, inventory_count)")
         .eq("is_active", true)
         .order("created_at", { ascending: false });
 
@@ -72,12 +77,13 @@ const ExtensionsPage = () => {
   };
 
   const filteredVendor = useMemo(() => {
-    if (!filterQuery) return vendorProducts;
     return vendorProducts.filter(p => {
+      if (hairSelection && matchingHairVariant(p, hairSelection) === undefined) return false;
+      if (!filterQuery) return true;
       const text = `${p.title} ${p.description || ""} ${p.category || ""}`.toLowerCase();
       return text.includes(filterQuery);
     });
-  }, [vendorProducts, filterQuery]);
+  }, [vendorProducts, filterQuery, hairSelection]);
 
   const hasProducts = filteredVendor.length > 0;
 
@@ -94,10 +100,10 @@ const ExtensionsPage = () => {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <span className="text-sm font-semibold text-primary uppercase tracking-widest font-body">Shop</span>
               <h1 className="text-4xl md:text-5xl font-logo font-bold uppercase tracking-wide text-foreground mt-2">
-                Hair Extensions & Products
+                {hairSelection ? "Hair Matching Your Try-On" : "Hair Extensions & Products"}
               </h1>
               <p className="text-muted-foreground mt-4 max-w-lg font-body">
-                Premium hair extensions and beauty products from our verified vendors.
+                {hairSelection ? [hairSelection.style, hairSelection.color, hairSelection.length, hairSelection.texture].filter(Boolean).join(" · ") : "Premium hair extensions and beauty products from our verified vendors."}
               </p>
             </motion.div>
           </div>
@@ -123,6 +129,13 @@ const ExtensionsPage = () => {
             </span>
           </Link>
 
+          {hairSelection && (
+            <div className="mb-6 flex flex-wrap items-center gap-3">
+              <Button variant="outline" asChild><Link to="/tryon/live"><ArrowLeft className="h-4 w-4" />Back to Try-On</Link></Button>
+              <Button variant="ghost" onClick={() => setSearchParams({})}>Browse all products</Button>
+            </div>
+          )}
+
           {filterQuery && !loading && (
             <div className="mb-6 flex items-center gap-2">
               <span className="text-sm text-muted-foreground font-body">
@@ -141,9 +154,9 @@ const ExtensionsPage = () => {
           ) : !hasProducts ? (
             <div className="text-center py-24">
               <Package className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-              <h2 className="text-2xl font-display font-bold text-foreground mb-2">No products found</h2>
+              <h2 className="text-2xl font-display font-bold text-foreground mb-2">{hairSelection ? "Your selected hair is not available yet" : "No products found"}</h2>
               <p className="text-muted-foreground font-body max-w-md mx-auto">
-                We're stocking up! Products will appear here once they're added.
+                {hairSelection ? "No available product matches this look and its selected options. Try another look or browse all products." : "We're stocking up! Products will appear here once they're added."}
               </p>
             </div>
           ) : (
@@ -170,7 +183,7 @@ const ExtensionsPage = () => {
                       {hasDeal && (
                         <div className="absolute top-2 left-2 bg-destructive text-destructive-foreground text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
                           <Tag className="w-3 h-3" />
-                          {product.deals![0].deal_title}
+                          {product.deals?.[0]?.deal_title}
                         </div>
                       )}
                     </div>
@@ -210,6 +223,7 @@ const ExtensionsPage = () => {
         product={selectedVendorProduct}
         open={!!selectedVendorProduct}
         onOpenChange={(open) => { if (!open) setSelectedVendorProduct(null); }}
+        preferredVariantId={selectedVendorProduct && hairSelection ? matchingHairVariant(selectedVendorProduct, hairSelection)?.id : undefined}
       />
       <Footer />
     </div>

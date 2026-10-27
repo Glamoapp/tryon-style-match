@@ -54,6 +54,7 @@ interface Props {
   product: VendorProduct | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  preferredVariantId?: string;
 }
 
 // Map product categories to stylist service categories
@@ -96,7 +97,7 @@ const generateCompletionCode = () => `${Math.floor(100000 + Math.random() * 9000
 
 type Step = "product" | "cross_sell" | "stylist" | "booking" | "contact";
 
-export const VendorProductDialog = ({ product, open, onOpenChange }: Props) => {
+export const VendorProductDialog = ({ product, open, onOpenChange, preferredVariantId }: Props) => {
   const navigate = useNavigate();
   const addVendorItem = useCartStore((s) => s.addVendorItem);
   const addServiceItem = useCartStore((s) => s.addServiceItem);
@@ -130,9 +131,9 @@ export const VendorProductDialog = ({ product, open, onOpenChange }: Props) => {
   useEffect(() => {
     if (product && open) {
       resetAll();
-      fetchVariants(product.id);
+      fetchVariants(product.id, preferredVariantId);
     }
-  }, [product, open]);
+  }, [product, open, preferredVariantId]);
 
   function resetAll() {
     setStep("product");
@@ -154,7 +155,7 @@ export const VendorProductDialog = ({ product, open, onOpenChange }: Props) => {
     setSubmitting(false);
   }
 
-  async function fetchVariants(productId: string) {
+  async function fetchVariants(productId: string, preferredId?: string) {
     setLoadingVariants(true);
     const { data } = await supabase
       .from("vendor_product_variants")
@@ -162,6 +163,12 @@ export const VendorProductDialog = ({ product, open, onOpenChange }: Props) => {
       .eq("product_id", productId)
       .eq("is_active", true);
     setVariants(data || []);
+    const preferred = data?.find(v => v.id === preferredId && v.inventory_count > 0);
+    if (preferred) {
+      setSelectedLength(preferred.length ?? "");
+      setSelectedColor(preferred.color ?? "");
+      setSelectedSize(preferred.size ?? "");
+    }
     setLoadingVariants(false);
   }
 

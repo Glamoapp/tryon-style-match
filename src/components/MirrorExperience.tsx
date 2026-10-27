@@ -25,6 +25,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { hairPurchaseUrl } from "@/lib/hairProductMatching";
 
 type SpeechRecognitionEventLike = {
   results: ArrayLike<{ 0: { transcript: string } }>;
@@ -457,8 +458,8 @@ const MirrorExperience = ({ presentation = "preview" }: MirrorExperienceProps) =
               <Check className="mx-auto h-9 w-9 text-gold" /><h3 className="mt-3 font-display text-xl font-bold">Complete your look</h3><p className="mt-1 font-body text-[9px] text-cream/60">Your {hair} look is ready</p>
               <div className="mt-5 space-y-2">
                 <Button onClick={() => finish("Your stylist request is ready")} variant="hero-outline" size="sm" className="w-full justify-start text-[10px]"><Scissors className="mr-2 h-4 w-4" />Book a stylist</Button>
-                <Button onClick={() => finish("Your hair is saved to your bag")} variant="hero-outline" size="sm" className="w-full justify-start text-[10px]"><ShoppingBag className="mr-2 h-4 w-4" />Purchase the hair or product</Button>
-                <Button onClick={() => finish("Your hair and stylist are ready")} variant="gold" size="sm" className="w-full justify-start text-[10px]"><Sparkles className="mr-2 h-4 w-4" />Book stylist + purchase product</Button>
+                <Button onClick={() => routeTo(hairPurchaseUrl({ style: hair, category: hair === "K-Tips" ? "K-Tips" : hair === "Braids" ? "Braids" : "Weave", color: hairColor }))} variant="hero-outline" size="sm" className="w-full justify-start text-[10px]"><ShoppingBag className="mr-2 h-4 w-4" />Purchase the hair or product</Button>
+                <Button onClick={() => routeTo(hairPurchaseUrl({ style: hair, category: hair === "K-Tips" ? "K-Tips" : hair === "Braids" ? "Braids" : "Weave", color: hairColor }))} variant="gold" size="sm" className="w-full justify-start text-[10px]"><Sparkles className="mr-2 h-4 w-4" />Book stylist + purchase product</Button>
               </div>
             </div>
           )}
