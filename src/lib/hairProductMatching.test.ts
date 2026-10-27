@@ -31,4 +31,9 @@ describe("try-on purchase recommendations", () => {
   it("does not substitute a different wave pattern", () => {
     expect(matchingHairVariant({ ...product, title: "Loose Wave Bundles" }, { style: "Body Wave", category: "Weave", color: "Honey Blonde" })).toBeUndefined();
   });
+  it("does not recommend closure wigs for a lace-front selection", () => {
+    const wigSelection = { ...selection, style: "Lace Front Wig", category: "Wig Frontal & Closure" };
+    expect(matchingHairVariant({ ...product, title: "Closure Wig Straight" }, wigSelection)).toBeUndefined();
+    expect(matchingHairVariant({ ...product, title: "Lace Front Wig Straight" }, wigSelection)?.id).toBe("blonde-long");
+  });
 });

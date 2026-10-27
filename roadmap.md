@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Match try-on hair purchases to the selected look and available product options; verify matching and no-match states.
+- [x] Match try-on hair purchases to the selected look and available product options; verify matching rules and the real catalog's no-match state.
 
 - [x] Rebuild the Virtual Try-On walkthrough in the exact requested sequence.
 - [x] Include Beauty and Apparel paths, scanning, matching, shopping, and stylist booking choices.

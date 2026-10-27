@@ -31,6 +31,8 @@ export function matchingHairVariant(product: HairProduct, selection: HairSelecti
   const productText = `${product.title} ${product.category ?? ""} ${product.hair_type ?? ""}`;
   if (!type || hairType(productText) !== type) return undefined;
   const text = normalize(`${productText} ${product.description ?? ""}`);
+  const wigDetail = normalize(selection.style).match(/glueless|closure|360|bob|pixie|hd lace|lace front/)?.[0];
+  if (type === "wig" && wigDetail && !text.includes(wigDetail)) return undefined;
   // Specific wave/curl patterns must not be replaced by a different pattern.
   const pattern = normalize(selection.style).match(/body wave|loose wave|deep wave|water wave|kinky straight|jerry curl/)?.[0];
   if (pattern && !text.includes(pattern)) return undefined;
