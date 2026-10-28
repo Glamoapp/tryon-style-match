@@ -8,7 +8,7 @@ import rewardsImg from "@/assets/rewards-white-metal.jpg";
 import heroBeauty from "@/assets/hero-beauty-mirror-white.jpg";
 import stylistImg from "@/assets/stylist-1.jpg";
 import hairImg from "@/assets/hair-body-wave.png";
-import mirrorImg from "@/assets/mirror-genesis-white.jpg";
+import mirrorImg from "@/assets/mirror-hero-white.png";
 import accessoriesImg from "@/assets/blowdryer-pin.png";
 
 interface Tile {
@@ -22,6 +22,7 @@ interface Tile {
   dark?: boolean;
   card?: boolean;
   wide?: boolean;
+  heroImage?: boolean;
 }
 
 const TILES: Tile[] = [
@@ -52,6 +53,7 @@ const TILES: Tile[] = [
     image: mirrorImg,
     imageAlt: "NEXTLOOK Genesis smart mirror",
     wide: true,
+    heroImage: true,
   },
   {
     eyebrow: "NEXTLOOK Accessories",
@@ -107,11 +109,17 @@ const TileCard = ({ tile }: { tile: Tile }) => (
       </div>
     ) : (
       tile.image && (
-        <div className="mt-10 w-full flex-1">
+        <div className={`mt-6 w-full flex-1 ${tile.heroImage ? "pb-16" : ""}`}>
           <img
             src={tile.image}
             alt={tile.imageAlt}
-            className={`mx-auto w-full ${tile.wide ? "h-[360px] object-contain md:h-[500px]" : "h-full max-h-[440px] object-cover object-top"}`}
+            width={tile.heroImage ? 818 : undefined}
+            height={tile.heroImage ? 896 : undefined}
+            className={
+              tile.heroImage
+                ? "mx-auto h-[560px] w-auto max-w-full md:h-[960px]"
+                : `mx-auto w-full ${tile.wide ? "h-[360px] object-contain md:h-[500px]" : "h-full max-h-[440px] object-cover object-top"}`
+            }
             loading="lazy"
           />
         </div>
