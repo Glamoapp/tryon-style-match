@@ -117,7 +117,7 @@ const TileCard = ({ tile }: { tile: Tile }) => (
             height={tile.heroImage ? 896 : undefined}
             className={
               tile.heroImage
-                ? "mx-auto h-[520px] w-auto max-w-full md:h-[820px]"
+                ? "mx-auto h-[560px] w-auto max-w-full md:h-[960px]"
                 : `mx-auto w-full ${tile.wide ? "h-[360px] object-contain md:h-[500px]" : "h-full max-h-[440px] object-cover object-top"}`
             }
             loading="lazy"
