@@ -202,7 +202,7 @@ const ShopPage = () => {
       </section>
 
       {/* Tile grid */}
-      <section className="mx-auto grid max-w-6xl grid-cols-1 gap-4 px-4 py-10 md:grid-cols-2">
+      <section className="mx-auto grid w-full max-w-[1800px] grid-cols-1 gap-4 px-4 py-10 md:grid-cols-2 md:px-6">
         {TILES.map((tile) => (
           <TileCard key={tile.title} tile={tile} />
         ))}
