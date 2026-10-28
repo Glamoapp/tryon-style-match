@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Stack Mirrors and Accessories first, rename the mirror heading Welcome, and show a realistic metallic-white rewards card without a star.
+
 - [x] Widen Genesis Pro, remove mirror stands, show the woman full body, and make pre-order buttons black; verify the page.
 
 - [x] Match try-on hair purchases to the selected look and available product options; verify matching rules and the real catalog's no-match state.
