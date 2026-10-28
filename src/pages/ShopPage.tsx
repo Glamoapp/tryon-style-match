@@ -20,6 +20,7 @@ interface Tile {
   imageAlt?: string;
   dark?: boolean;
   card?: boolean;
+  wide?: boolean;
 }
 
 const TILES: Tile[] = [
@@ -67,6 +68,7 @@ const TILES: Tile[] = [
     primary: { label: "Learn more", to: "/glowup-monday" },
     secondary: { label: "Join now", to: "/auth" },
     card: true,
+    wide: true,
   },
 ];
 
@@ -74,7 +76,7 @@ const TileCard = ({ tile }: { tile: Tile }) => (
   <div
     className={`flex flex-col items-center overflow-hidden rounded-2xl px-6 pt-12 text-center ${
       tile.dark ? "bg-zinc-950 text-white" : "bg-zinc-100 text-zinc-900"
-    }`}
+    } ${tile.wide ? "md:col-span-2" : ""}`}
   >
     {tile.eyebrow && (
       <p
