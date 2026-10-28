@@ -3,7 +3,8 @@ import { SEO } from "@/components/SEO";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import rewardsImg from "@/assets/rewards-white-metal.jpg";
 import heroBeauty from "@/assets/hero-beauty-mirror-white.jpg";
 import stylistImg from "@/assets/stylist-1.jpg";
 import hairImg from "@/assets/hair-body-wave.png";
@@ -44,12 +45,13 @@ const TILES: Tile[] = [
   },
   {
     eyebrow: "NEXTLOOK Genesis",
-    title: "The Smart Mirror",
+    title: "Welcome",
     subtitle: "Try on looks, book stylists, and glow — right from your wall.",
     primary: { label: "Pre-order", to: "/mirror/preorder" },
     secondary: { label: "Learn more", to: "/mirror" },
     image: mirrorImg,
     imageAlt: "NEXTLOOK Genesis smart mirror",
+    wide: true,
   },
   {
     eyebrow: "NEXTLOOK Accessories",
@@ -58,6 +60,7 @@ const TILES: Tile[] = [
     primary: { label: "Shop accessories", to: "/extensions" },
     image: accessoriesImg,
     imageAlt: "NEXTLOOK beauty accessories",
+    wide: true,
   },
   {
     eyebrow: "NEXTLOOK Rewards",
@@ -72,70 +75,35 @@ const TILES: Tile[] = [
 
 const TileCard = ({ tile }: { tile: Tile }) => (
   <div
-    className={`flex flex-col items-center overflow-hidden rounded-2xl px-6 pt-12 text-center ${
-      tile.dark ? "bg-zinc-950 text-white" : "bg-zinc-100 text-zinc-900"
-    } ${tile.wide ? "md:col-span-2" : ""}`}
+    className={`flex flex-col items-center overflow-hidden bg-shop-surface px-6 pt-12 text-center text-shop-ink ${tile.wide ? "md:col-span-2" : ""}`}
   >
     {tile.eyebrow && (
       <p
-        className={`text-xs font-semibold uppercase tracking-[0.2em] ${
-          tile.dark ? "text-amber-400" : "text-amber-600"
-        }`}
+        className="text-xs font-semibold uppercase text-gold"
       >
         {tile.eyebrow}
       </p>
     )}
     <h2 className="mt-2 font-display text-3xl md:text-4xl">{tile.title}</h2>
     <p
-      className={`mt-2 max-w-sm text-sm md:text-base ${
-        tile.dark ? "text-zinc-300" : "text-zinc-600"
-      }`}
+      className="mt-2 max-w-lg text-sm text-shop-muted md:text-base"
     >
       {tile.subtitle}
     </p>
     <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
-      <Link
-        to={tile.primary.to}
-        className={`rounded-full px-5 py-2 text-sm font-semibold transition-colors ${
-          tile.dark
-            ? "bg-white text-zinc-900 hover:bg-zinc-200"
-            : "bg-zinc-900 text-white hover:bg-zinc-700"
-        }`}
-      >
-        {tile.primary.label}
-      </Link>
+      <Button asChild className="rounded-full bg-mirror-action px-5 text-mirror-action-foreground hover:bg-mirror-action-hover">
+        <Link to={tile.primary.to}>{tile.primary.label}</Link>
+      </Button>
       {tile.secondary && (
-        <Link
-          to={tile.secondary.to}
-          className={`rounded-full border px-5 py-2 text-sm font-semibold transition-colors ${
-            tile.dark
-              ? "border-white/60 text-white hover:bg-white/10"
-              : "border-zinc-900/40 text-zinc-900 hover:bg-zinc-900/5"
-          }`}
-        >
-          {tile.secondary.label}
-        </Link>
+        <Button asChild variant="outline" className="rounded-full border-shop-ink/40 bg-transparent px-5 text-shop-ink hover:bg-background hover:text-shop-ink">
+          <Link to={tile.secondary.to}>{tile.secondary.label}</Link>
+        </Button>
       )}
     </div>
 
     {tile.card ? (
-      <div className="mt-10 mb-[-40px] w-full max-w-sm">
-        <div className="aspect-[8/5] w-full rounded-2xl bg-gradient-to-br from-zinc-900 via-zinc-800 to-purple-950 p-5 text-left shadow-2xl">
-          <div className="flex items-center justify-between">
-            <span className="font-display text-lg tracking-wide text-white">NEXTLOOK</span>
-            <Sparkles className="h-5 w-5 text-amber-400" />
-          </div>
-          <div className="mt-6 h-8 w-11 rounded-md bg-gradient-to-br from-amber-300 to-amber-500" />
-          <p className="mt-6 font-mono text-sm tracking-[0.25em] text-zinc-300">
-            •••• •••• •••• 2026
-          </p>
-          <div className="mt-4 flex items-end justify-between">
-            <span className="text-xs uppercase tracking-widest text-zinc-400">Rewards Member</span>
-            <span className="text-xs font-semibold uppercase tracking-widest text-amber-400">
-              GlowUp
-            </span>
-          </div>
-        </div>
+      <div className="my-10 w-full max-w-xl">
+        <img src={rewardsImg} alt="Realistic metallic white NEXTLOOK rewards membership card with a gold chip and no star logo" width={1200} height={800} loading="lazy" className="h-auto w-full rounded-lg" />
       </div>
     ) : (
       tile.image && (
@@ -143,7 +111,7 @@ const TileCard = ({ tile }: { tile: Tile }) => (
           <img
             src={tile.image}
             alt={tile.imageAlt}
-            className="mx-auto h-full max-h-[440px] w-full object-cover object-top"
+            className={`mx-auto w-full ${tile.wide ? "h-[360px] object-contain md:h-[500px]" : "h-full max-h-[440px] object-cover object-top"}`}
             loading="lazy"
           />
         </div>
@@ -203,7 +171,7 @@ const ShopPage = () => {
 
       {/* Tile grid */}
       <section className="mx-auto grid w-full max-w-[1800px] grid-cols-1 gap-4 px-4 py-10 md:grid-cols-2 md:px-6">
-        {TILES.map((tile) => (
+        {[...TILES.filter((tile) => tile.wide && !tile.card), ...TILES.filter((tile) => !tile.wide), ...TILES.filter((tile) => tile.card)].map((tile) => (
           <TileCard key={tile.title} tile={tile} />
         ))}
       </section>
