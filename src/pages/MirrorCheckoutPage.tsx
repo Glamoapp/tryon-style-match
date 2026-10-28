@@ -86,8 +86,14 @@ const MirrorCheckoutPage = () => {
       });
       if (error) throw error;
       if (!data?.url) throw new Error("Could not start checkout");
-      window.location.href = data.url;
+      if (checkoutWindow) {
+        checkoutWindow.location.href = data.url;
+        setLoading(false);
+      } else {
+        window.location.href = data.url;
+      }
     } catch (err) {
+      checkoutWindow?.close();
       console.error(err);
       toast.error("Couldn't start checkout", {
         description: err instanceof Error ? err.message : "Please try again.",
