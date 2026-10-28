@@ -36,6 +36,7 @@ import ResetPasswordPage from "./pages/ResetPasswordPage.tsx";
 import MirrorPage from "./pages/MirrorPage.tsx";
 import MirrorPreorderPage from "./pages/MirrorPreorderPage.tsx";
 import MirrorCheckoutPage from "./pages/MirrorCheckoutPage.tsx";
+import ShopPage from "./pages/ShopPage.tsx";
 
 import MaintenancePage from "./pages/MaintenancePage.tsx";
 import MaintenanceDetailPage from "./pages/MaintenanceDetailPage.tsx";
@@ -85,6 +86,7 @@ const AppContent = () => {
         <Route path="/mirror" element={<PageTransition><MirrorPage /></PageTransition>} />
         <Route path="/mirror/preorder" element={<PageTransition><MirrorPreorderPage /></PageTransition>} />
         <Route path="/mirror/checkout" element={<PageTransition><MirrorCheckoutPage /></PageTransition>} />
+        <Route path="/shop" element={<PageTransition><ShopPage /></PageTransition>} />
 
         <Route path="/maintenance" element={<PageTransition><MaintenancePage /></PageTransition>} />
         <Route path="/maintenance/:slug" element={<PageTransition><MaintenanceDetailPage /></PageTransition>} />
