@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import logoImg from "@/assets/logo-menu.png";
 
 const navLinks = [
-  { label: "Shop NEXTLOOK", href: "/shop", icon: LayoutGrid },
+  { label: "Shop NEXTLOOK", href: "/", icon: LayoutGrid },
   { label: "Services", href: "/discover", icon: Scissors },
   { label: "Virtual Try-On", href: "/tryon", icon: Sparkles },
   { label: "NextLook Smart Mirror", href: "/mirror", icon: Monitor },
@@ -26,7 +26,7 @@ const navLinks = [
 ];
 
 const desktopLinks = [
-  { label: "Shop", href: "/shop" },
+  { label: "Shop", href: "/" },
   { label: "Book a Stylist", href: "/discover" },
   { label: "Hair", href: "/extensions" },
   { label: "Mirrors", href: "/mirror/preorder" },

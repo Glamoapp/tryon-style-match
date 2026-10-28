@@ -32,7 +32,7 @@ const TILES: Tile[] = [
     eyebrow: "NEXTLOOK Stylists",
     title: "Book a Stylist",
     subtitle: "Luxury hair, braids, and makeup — at home or in salon.",
-    primary: { label: "Book now", to: "/discover" },
+    primary: { label: "Book now", to: "/home" },
     secondary: { label: "Learn more", to: "/stylists" },
     image: stylistImg,
     imageAlt: "Stylist in an all-black NEXTLOOK t-shirt holding open hair shears",
@@ -146,7 +146,7 @@ const ShopPage = () => {
   return (
     <div className="min-h-screen bg-white">
       <SEO
-        path="/shop"
+        path="/"
         title="NEXTLOOK — Book Stylists, Shop Hair, Mirrors & More"
         description="One place for beauty on demand: book a stylist, shop raw hair and extensions, pre-order the NEXTLOOK Genesis smart mirror, and join the NEXTLOOK Rewards Card."
       />
@@ -163,7 +163,7 @@ const ShopPage = () => {
         </p>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
           <Link
-            to="/discover"
+            to="/home"
             className="rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-zinc-900 transition-colors hover:bg-zinc-200"
           >
             Book a stylist

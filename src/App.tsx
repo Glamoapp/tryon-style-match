@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -57,7 +57,8 @@ const AppContent = () => {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<PageTransition><Index /></PageTransition>} />
+        <Route path="/" element={<PageTransition><ShopPage /></PageTransition>} />
+        <Route path="/home" element={<PageTransition><Index /></PageTransition>} />
         <Route path="/stylists" element={<PageTransition><StylistsPage /></PageTransition>} />
         <Route path="/discover" element={<PageTransition><StylistDiscoveryPage /></PageTransition>} />
         <Route path="/stylist/:id" element={<PageTransition><StylistProfilePage /></PageTransition>} />
@@ -86,7 +87,7 @@ const AppContent = () => {
         <Route path="/mirror" element={<PageTransition><MirrorPage /></PageTransition>} />
         <Route path="/mirror/preorder" element={<PageTransition><MirrorPreorderPage /></PageTransition>} />
         <Route path="/mirror/checkout" element={<PageTransition><MirrorCheckoutPage /></PageTransition>} />
-        <Route path="/shop" element={<PageTransition><ShopPage /></PageTransition>} />
+        <Route path="/shop" element={<Navigate to="/" replace />} />
 
         <Route path="/maintenance" element={<PageTransition><MaintenancePage /></PageTransition>} />
         <Route path="/maintenance/:slug" element={<PageTransition><MaintenanceDetailPage /></PageTransition>} />

@@ -18,7 +18,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <SEO title="NEXTLOOK — Luxury Beauty That Comes to You" description="Match with top-rated stylists, try on hairstyles virtually, shop premium hair extensions, and book at-home beauty services." path="/" />
+      <SEO title="NEXTLOOK — Luxury Beauty That Comes to You" description="Match with top-rated stylists, try on hairstyles virtually, shop premium hair extensions, and book at-home beauty services." path="/home" />
       <Navbar />
       <HomepageHero />
       <NearbyStylists />
