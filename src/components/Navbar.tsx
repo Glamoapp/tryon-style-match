@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Scissors, Sparkles, Search, ShoppingBag, Star, CalendarDays, UserCog, LogOut, LogIn, User, Store, Info, Monitor, BookOpen, Gift } from "lucide-react";
+import { Menu, X, Scissors, Sparkles, Search, ShoppingBag, Star, CalendarDays, UserCog, LogOut, LogIn, User, Store, Info, Monitor, BookOpen, Gift, LayoutGrid } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { CartDrawer } from "@/components/CartDrawer";
 import MessageNotification from "@/components/MessageNotification";
@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import logoImg from "@/assets/logo.png";
 
 const navLinks = [
+  { label: "Shop NEXTLOOK", href: "/shop", icon: LayoutGrid },
   { label: "Services", href: "/discover", icon: Scissors },
   { label: "Virtual Try-On", href: "/tryon", icon: Sparkles },
   { label: "NextLook Smart Mirror", href: "/mirror", icon: Monitor },
