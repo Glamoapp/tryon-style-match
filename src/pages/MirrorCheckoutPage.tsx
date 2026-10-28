@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
-import { getModel, isModelId, getMirrorColor, CUSTOMIZATION_PRICE } from "@/lib/mirrorModels";
+import { getModel, isModelId, getMirrorColor, CUSTOMIZATION_PRICE, STAND_PRICE } from "@/lib/mirrorModels";
 
 const MirrorCheckoutPage = () => {
   const navigate = useNavigate();
@@ -22,7 +22,9 @@ const MirrorCheckoutPage = () => {
   const engravingParam = (searchParams.get("engraving") || "").trim();
   const personalized = personalizeParam && engravingParam.length > 0;
   const mirrorColor = getMirrorColor(searchParams.get("color"));
-  const totalPrice = (model.price ?? 0) + (personalized ? CUSTOMIZATION_PRICE : 0);
+  const standParam = searchParams.get("stand") === "1";
+  const totalPrice =
+    (model.price ?? 0) + (personalized ? CUSTOMIZATION_PRICE : 0) + (standParam ? STAND_PRICE : 0);
   const priceLabel = `$${(model.price ?? 0).toLocaleString()}`;
   const totalLabel = `$${totalPrice.toLocaleString()}`;
   const [form, setForm] = useState({
@@ -71,6 +73,7 @@ const MirrorCheckoutPage = () => {
           personalization: personalized
             ? { engraving: engravingParam, color: mirrorColor.id }
             : undefined,
+          stand: standParam,
           name: form.name,
           email: form.email,
           phone: form.phone,
@@ -139,6 +142,9 @@ const MirrorCheckoutPage = () => {
                 <p className="mt-2 text-sm text-amber-700">
                   Engraved “{engravingParam}” · {mirrorColor.label} finish (+${CUSTOMIZATION_PRICE})
                 </p>
+              )}
+              {standParam && (
+                <p className="mt-2 text-sm text-amber-700">Floor stand included (+${STAND_PRICE})</p>
               )}
               <div className="mt-8 grid grid-cols-2 gap-3 text-sm">
                 <div className="rounded-2xl bg-zinc-50 ring-1 ring-zinc-200 p-4">
@@ -290,6 +296,12 @@ const MirrorCheckoutPage = () => {
                       <span className="block text-xs text-zinc-400">Engraved: “{engravingParam}”</span>
                     </span>
                     <span>${CUSTOMIZATION_PRICE}.00</span>
+                  </div>
+                )}
+                {standParam && (
+                  <div className="flex justify-between text-zinc-600 mb-2">
+                    <span>Floor stand</span>
+                    <span>${STAND_PRICE}.00</span>
                   </div>
                 )}
                 <div className="flex justify-between text-zinc-600 mb-4">
