@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Widen Genesis Pro, remove mirror stands, show the woman full body, and make pre-order buttons black; verify the page.
+- [x] Widen Genesis Pro, remove mirror stands, show the woman full body, and make pre-order buttons black; verify the page.
 
 - [x] Match try-on hair purchases to the selected look and available product options; verify matching rules and the real catalog's no-match state.
 
