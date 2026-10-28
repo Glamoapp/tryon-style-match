@@ -114,7 +114,7 @@ const MirrorPreorderPage = () => {
               <div className="rounded-2xl bg-white p-4 ring-1 ring-black/5">
                 <img
                   src={personalizationImg}
-                  alt="NEXTLOOK mirrors in Silver, Gold and Amethyst finishes with a name engraved on the glass"
+                  alt="NEXTLOOK mirrors in Silver, Gold, Amethyst and Black finishes with a name engraved on the glass"
                   width={1440}
                   height={1080}
                   loading="lazy"

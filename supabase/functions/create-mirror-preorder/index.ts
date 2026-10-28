@@ -34,7 +34,7 @@ Deno.serve(async (req) => {
     const personalizationMeta: Record<string, string> = {};
     if (personalization && typeof personalization === "object") {
       const engraving = typeof personalization.engraving === "string" ? personalization.engraving.trim() : "";
-      const COLOR_LABELS: Record<string, string> = { silver: "Silver", gold: "Gold", amethyst: "Amethyst" };
+      const COLOR_LABELS: Record<string, string> = { silver: "Silver", gold: "Gold", amethyst: "Amethyst", black: "Black" };
       const colorId = typeof personalization.color === "string" ? personalization.color : "";
       if (engraving.length > 0 && engraving.length <= 40 && COLOR_LABELS[colorId]) {
         personalizationLine = {
