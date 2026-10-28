@@ -117,7 +117,8 @@ const GalleryPage = () => {
                   <img src={item.url} alt={`${item.serviceName || "Work"} by ${item.stylistName}`} loading="lazy" className="h-full w-full object-cover" />
                 )}
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/70 to-transparent px-2 pb-1.5 pt-6">
-                  <p className="truncate text-xs font-body font-medium text-background">{item.stylistName}</p>
+                  <p className="truncate text-xs font-body font-medium text-background">{formatViews(item.viewCount)} views</p>
+                  {item.city && <p className="truncate text-[10px] font-body text-background/80">{item.city}</p>}
                 </div>
               </Link>
             ))}
