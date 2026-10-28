@@ -126,7 +126,7 @@ const MirrorPreorderPage = () => {
                   <div className="relative my-6">
                     <img src={m.image} alt={`${m.name} smart mirror`} width={768} height={1024} loading="lazy" className="w-full aspect-[3/4] object-contain" />
                     <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5">
-                      <span className="font-display text-2xl font-bold tracking-[0.18em] uppercase text-white/90 [text-shadow:0_1px_8px_rgba(0,0,0,0.55)] text-center px-4">
+                      <span className="font-display text-lg md:text-xl font-bold tracking-[0.14em] uppercase text-white/95 [text-shadow:0_1px_8px_rgba(0,0,0,0.6),0_0_2px_rgba(255,255,255,0.4)] text-center px-4">
                         NEXTLOOK
                       </span>
                       <span className="text-[11px] font-semibold tracking-[0.3em] uppercase text-white/80 [text-shadow:0_1px_8px_rgba(0,0,0,0.55)] text-center px-4">
@@ -167,7 +167,7 @@ const MirrorPreorderPage = () => {
                 <div className="relative">
                   <img src={model.image} alt={model.name} className="w-full max-h-[520px] object-contain" />
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-                    <span className="font-display text-3xl font-bold tracking-[0.18em] uppercase text-white/90 [text-shadow:0_1px_8px_rgba(0,0,0,0.55)] text-center px-4">
+                    <span className="font-display text-2xl md:text-3xl font-bold tracking-[0.16em] uppercase text-white/95 [text-shadow:0_1px_8px_rgba(0,0,0,0.6),0_0_2px_rgba(255,255,255,0.4)] text-center px-4">
                       NEXTLOOK
                     </span>
                     <span className="text-sm font-semibold tracking-[0.3em] uppercase text-white/80 [text-shadow:0_1px_8px_rgba(0,0,0,0.55)] text-center px-4">
