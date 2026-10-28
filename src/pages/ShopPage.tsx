@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import rewardsImg from "@/assets/rewards-white-metal.jpg";
 import heroBeauty from "@/assets/hero-beauty-mirror-white.jpg";
 import stylistImg from "@/assets/shop-stylist-cutout.png";
-import hairImg from "@/assets/hair-body-wave.png";
+import hairImg from "@/assets/shop-hair-cutout.png";
 import mirrorImg from "@/assets/mirror-hero-reflect.png";
 import accessoriesImg from "@/assets/blowdryer-pin.png";
 
@@ -44,7 +44,8 @@ const TILES: Tile[] = [
     primary: { label: "Shop hair", to: "/extensions" },
     secondary: { label: "Try it on", to: "/tryon" },
     image: hairImg,
-    imageAlt: "Raw body wave hair bundles",
+    imageAlt: "Woman with long body wave black hair looking over her shoulder",
+    cutoutImage: true,
   },
   {
     eyebrow: "NEXTLOOK Genesis",
