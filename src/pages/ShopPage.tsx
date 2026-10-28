@@ -32,7 +32,6 @@ const TILES: Tile[] = [
     secondary: { label: "Learn more", to: "/stylists" },
     image: stylistImg,
     imageAlt: "NEXTLOOK stylist styling a client's hair",
-    dark: true,
   },
   {
     eyebrow: "NEXTLOOK Hair",
@@ -51,7 +50,6 @@ const TILES: Tile[] = [
     secondary: { label: "Learn more", to: "/mirror" },
     image: mirrorImg,
     imageAlt: "NEXTLOOK Genesis smart mirror",
-    dark: true,
   },
   {
     eyebrow: "NEXTLOOK Accessories",
