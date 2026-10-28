@@ -29,3 +29,4 @@
 - [x] Add a floor stand option ($100) to the customize section and carry it through checkout and payment.
 - [x] Put the Book a Stylist and Shop Hair row above the smart mirror section on the shop page.
 - [x] Give the shop mirror glass its reflection back (bright room reflection behind the widgets).
+- [x] Put an all-black NEXTLOOK-tee stylist holding shears, background removed, in the Book a Stylist card.
