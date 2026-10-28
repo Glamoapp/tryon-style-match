@@ -17,7 +17,16 @@ Deno.serve(async (req) => {
     });
 
     const body = await req.json();
-    const { name, email, phone, address } = body || {};
+    const { name, email, phone, address, model } = body || {};
+    const MODELS: Record<string, { amount: number; name: string }> = {
+      genesis: { amount: 250000, name: 'NEXTLOOK Genesis — 32" Smart Mirror Pre-order' },
+      genesis_pro: { amount: 350000, name: 'NEXTLOOK Genesis Pro — 43" Smart Mirror Pre-order' },
+    };
+    const chosen = MODELS[model as string];
+    if (!chosen) {
+      return new Response(JSON.stringify({ error: "Please choose an available mirror model." }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 });
+    }
 
     if (!email || !name || !phone || !address?.line1 || !address?.city || !address?.state || !address?.postal_code) {
       return new Response(
@@ -36,10 +45,10 @@ Deno.serve(async (req) => {
         {
           price_data: {
             currency: "usd",
-            unit_amount: 200000, // $2,000.00
+            unit_amount: chosen.amount,
             product_data: {
-              name: "NextLook Smart Mirror — 43\" Pre-order",
-              description: "AI-powered 43\" smart beauty mirror. Ships in ~20 days.",
+              name: chosen.name,
+              description: "AI-powered smart beauty mirror. Ships in ~20 days.",
             },
           },
           quantity: 1,
@@ -49,7 +58,7 @@ Deno.serve(async (req) => {
         allowed_countries: ["US", "CA"],
       },
       metadata: {
-        product: "nextlook_smart_mirror",
+        product: `nextlook_${model}`,
         customer_name: name,
         customer_phone: phone,
         ship_line1: address.line1,
