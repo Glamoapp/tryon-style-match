@@ -143,7 +143,7 @@ const TileCard = ({ tile }: { tile: Tile }) => (
           <img
             src={tile.image}
             alt={tile.imageAlt}
-            className="mx-auto h-full max-h-80 w-full object-cover object-top"
+            className="mx-auto h-full max-h-[440px] w-full object-cover object-top"
             loading="lazy"
           />
         </div>
