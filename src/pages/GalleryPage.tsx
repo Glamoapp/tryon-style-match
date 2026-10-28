@@ -13,7 +13,12 @@ type GalleryItem = {
   stylistName: string;
   serviceName: string;
   categories: string[];
+  viewCount: number;
+  city: string;
 };
+
+const formatViews = (n: number) =>
+  n >= 1000 ? `${(n / 1000).toFixed(1).replace(/\.0$/, "")}K` : `${n}`;
 
 const isVideo = (url: string) => /\.(mp4|mov|webm|m4v)(\?|$)/i.test(url);
 
