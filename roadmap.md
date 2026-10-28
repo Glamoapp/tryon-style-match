@@ -31,3 +31,4 @@
 - [x] Give the shop mirror glass its reflection back (bright room reflection behind the widgets).
 - [x] Put an all-black NEXTLOOK-tee stylist holding shears, background removed, in the Book a Stylist card.
 - [x] Show realistic hands holding a blow dryer with NEXTLOOK printed on it, background removed, in the Accessories card.
+- [x] Restyle the rewards card as a tilted brushed-titanium card with a soft shadow and no background panel.
