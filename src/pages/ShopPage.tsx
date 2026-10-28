@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import rewardsImg from "@/assets/rewards-white-metal.jpg";
 import heroBeauty from "@/assets/hero-beauty-mirror-white.jpg";
-import stylistImg from "@/assets/shop-stylist-cutout.png";
+import stylistImg from "@/assets/shop-stylist-black.png";
 import hairImg from "@/assets/shop-hair-cutout.png";
 import mirrorImg from "@/assets/mirror-hero-reflect.png";
 import accessoriesImg from "@/assets/blowdryer-pin.png";
@@ -34,7 +34,7 @@ const TILES: Tile[] = [
     primary: { label: "Book now", to: "/discover" },
     secondary: { label: "Learn more", to: "/stylists" },
     image: stylistImg,
-    imageAlt: "Woman with long black waves looking over her shoulder",
+    imageAlt: "Stylist in an all-black NEXTLOOK t-shirt holding open hair shears",
     cutoutImage: true,
   },
   {
