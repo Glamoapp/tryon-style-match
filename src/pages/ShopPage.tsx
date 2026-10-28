@@ -8,7 +8,7 @@ import rewardsImg from "@/assets/rewards-white-metal.jpg";
 import heroBeauty from "@/assets/hero-beauty-mirror-white.jpg";
 import stylistImg from "@/assets/stylist-1.jpg";
 import hairImg from "@/assets/hair-body-wave.png";
-import mirrorImg from "@/assets/mirror-hero-white.jpg";
+import mirrorImg from "@/assets/mirror-hero-white.png";
 import accessoriesImg from "@/assets/blowdryer-pin.png";
 
 interface Tile {
@@ -109,7 +109,7 @@ const TileCard = ({ tile }: { tile: Tile }) => (
       </div>
     ) : (
       tile.image && (
-        <div className="mt-6 w-full flex-1">
+        <div className={`mt-6 w-full flex-1 ${tile.heroImage ? "pb-16" : ""}`}>
           <img
             src={tile.image}
             alt={tile.imageAlt}
@@ -117,7 +117,7 @@ const TileCard = ({ tile }: { tile: Tile }) => (
             height={tile.heroImage ? 896 : undefined}
             className={
               tile.heroImage
-                ? "mx-auto h-[520px] w-auto max-w-full mix-blend-multiply md:h-[820px]"
+                ? "mx-auto h-[520px] w-auto max-w-full md:h-[820px]"
                 : `mx-auto w-full ${tile.wide ? "h-[360px] object-contain md:h-[500px]" : "h-full max-h-[440px] object-cover object-top"}`
             }
             loading="lazy"
