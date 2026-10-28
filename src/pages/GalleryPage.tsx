@@ -38,7 +38,7 @@ const GalleryPage = () => {
       const providerIds = [...new Set(photos.map((p) => p.provider_id))];
       const serviceIds = [...new Set(photos.map((p) => p.service_id))];
       const [{ data: profiles }, { data: services }] = await Promise.all([
-        supabase.from("public_profiles").select("id, full_name, service_category").in("id", providerIds),
+        supabase.from("public_profiles").select("id, full_name, service_category, city, view_count").in("id", providerIds),
         supabase.from("provider_services").select("id, service_name").in("id", serviceIds),
       ]);
       const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
