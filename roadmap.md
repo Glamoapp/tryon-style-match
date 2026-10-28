@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Sharpen the supplied logo, replace existing brand logos and icons, and verify light and dark placements.
+- [x] Sharpen the supplied logo, replace existing brand logos and icons, and verify light and dark placements.
 
 - [x] Stack Mirrors and Accessories first, rename the mirror heading Welcome, and show a realistic metallic-white rewards card without a star.
 
