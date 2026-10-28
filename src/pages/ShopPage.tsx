@@ -8,7 +8,7 @@ import rewardsImg from "@/assets/rewards-white-metal.jpg";
 import heroBeauty from "@/assets/hero-beauty-mirror-white.jpg";
 import stylistImg from "@/assets/stylist-1.jpg";
 import hairImg from "@/assets/hair-body-wave.png";
-import mirrorImg from "@/assets/mirror-hero-white.png";
+import mirrorImg from "@/assets/mirror-hero-reflect.png";
 import accessoriesImg from "@/assets/blowdryer-pin.png";
 
 interface Tile {
@@ -113,7 +113,7 @@ const TileCard = ({ tile }: { tile: Tile }) => (
           <img
             src={tile.image}
             alt={tile.imageAlt}
-            width={tile.heroImage ? 818 : undefined}
+            width={tile.heroImage ? 832 : undefined}
             height={tile.heroImage ? 896 : undefined}
             className={
               tile.heroImage
@@ -179,7 +179,7 @@ const ShopPage = () => {
 
       {/* Tile grid */}
       <section className="mx-auto grid w-full max-w-[1800px] grid-cols-1 gap-4 px-4 py-10 md:grid-cols-2 md:px-6">
-        {[...TILES.filter((tile) => tile.wide && !tile.card), ...TILES.filter((tile) => !tile.wide), ...TILES.filter((tile) => tile.card)].map((tile) => (
+        {[...TILES.filter((tile) => !tile.wide), ...TILES.filter((tile) => tile.wide && !tile.card), ...TILES.filter((tile) => tile.card)].map((tile) => (
           <TileCard key={tile.title} tile={tile} />
         ))}
       </section>

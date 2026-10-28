@@ -25,3 +25,5 @@
 
 - [x] Add mirror personalization (engraved name + frame color, $500) to the customize section and carry it through checkout and payment.
 - [x] Add a floor stand option ($100) to the customize section and carry it through checkout and payment.
+- [x] Put the Book a Stylist and Shop Hair row above the smart mirror section on the shop page.
+- [x] Give the shop mirror glass its reflection back (bright room reflection behind the widgets).
