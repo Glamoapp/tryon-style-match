@@ -10,12 +10,27 @@ import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
-import mirrorProduct from "@/assets/mirror-product.jpg";
+import genesisImg from "@/assets/mirror-genesis.jpg";
+import genesisProImg from "@/assets/mirror-genesis-pro.jpg";
+import genesisMaxImg from "@/assets/mirror-genesis-max.jpg";
+
+type ModelId = "genesis" | "genesis_pro" | "genesis_max";
+const MODELS: { id: ModelId; name: string; size: string; price: number | null; tag: string; image: string; features: string[] }[] = [
+  { id: "genesis", name: "NEXTLOOK Genesis", size: '32" smart mirror', price: 2500, tag: "", image: genesisImg,
+    features: ["Hair try-on with face scan", "Music, time, weather & daily affirmation", "Gwen voice assistant"] },
+  { id: "genesis_pro", name: "NEXTLOOK Genesis Pro", size: '43" full-length smart mirror', price: 3500, tag: "Most popular", image: genesisProImg,
+    features: ["Everything in Genesis", "Full-length hair & apparel try-on", "4K edge-to-edge display"] },
+  { id: "genesis_max", name: "NEXTLOOK Genesis Max", size: '55" salon smart mirror', price: null, tag: "Coming soon", image: genesisMaxImg,
+    features: ["Everything in Genesis Pro", "Salon & showroom size", "Built for stylists and stores"] },
+];
 
 const MirrorPreorderPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
+  const [selected, setSelected] = useState<ModelId>("genesis_pro");
+  const model = MODELS.find((m) => m.id === selected)!;
+  const priceLabel = `$${(model.price ?? 0).toLocaleString()}`;
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -29,7 +44,7 @@ const MirrorPreorderPage = () => {
   });
 
   useEffect(() => {
-    document.title = "Pre-order NextLook Smart Mirror — $2,000";
+    document.title = "Pre-order NEXTLOOK Genesis Smart Mirrors";
     const status = searchParams.get("status");
     if (status === "success") {
       toast.success("Pre-order confirmed!", {
@@ -53,6 +68,7 @@ const MirrorPreorderPage = () => {
     try {
       const { data, error } = await supabase.functions.invoke("create-mirror-preorder", {
         body: {
+          model: selected,
           name: form.name,
           email: form.email,
           phone: form.phone,
@@ -92,62 +108,65 @@ const MirrorPreorderPage = () => {
             <ArrowLeft className="w-4 h-4" /> Back to Mirror
           </button>
 
+          <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tight mb-10">
+            All mirrors. <span className="text-white/50">Take your pick.</span>
+          </h1>
+
+          <div className="grid md:grid-cols-3 gap-5 mb-16">
+            {MODELS.map((m) => {
+              const active = m.id === selected;
+              return (
+                <div
+                  key={m.id}
+                  className={`rounded-3xl bg-white text-zinc-900 p-6 flex flex-col transition-shadow ${active ? "ring-4 ring-amber-400 shadow-2xl" : "ring-1 ring-black/5"}`}
+                >
+                  <p className="text-xs font-semibold uppercase tracking-wider text-amber-600 h-4">{m.tag}</p>
+                  <h2 className="font-display text-3xl font-bold mt-2">{m.name}</h2>
+                  <p className="text-sm text-zinc-500 mt-1">{m.size}</p>
+                  <img src={m.image} alt={`${m.name} smart mirror`} width={768} height={1024} loading="lazy" className="w-full aspect-[3/4] object-contain my-6" />
+                  <ul className="space-y-1.5 text-sm text-zinc-600 mb-6 flex-1">
+                    {m.features.map((f) => (
+                      <li key={f} className="flex gap-2"><Check className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />{f}</li>
+                    ))}
+                  </ul>
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-base">{m.price ? <>Buy for <strong>${m.price.toLocaleString()}</strong></> : "Price coming soon"}</span>
+                    <Button
+                      type="button"
+                      disabled={!m.price}
+                      onClick={() => { setSelected(m.id); document.getElementById("reserve")?.scrollIntoView({ behavior: "smooth" }); }}
+                      className="rounded-full bg-purple-700 hover:bg-purple-800 text-white px-6"
+                    >
+                      {m.price ? (active ? "Selected" : "Buy") : "Notify me"}
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
           <motion.div
+            id="reserve"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="grid lg:grid-cols-2 gap-10 lg:gap-16"
+            className="grid lg:grid-cols-2 gap-10 lg:gap-16 scroll-mt-28"
           >
-            {/* Product summary */}
             <div>
-              <div className="rounded-3xl overflow-hidden ring-1 ring-white/10 bg-zinc-950">
-                <img
-                  src={mirrorProduct}
-                  alt="NextLook Smart Mirror"
-                  className="w-full h-auto object-cover"
-                />
+              <div className="rounded-3xl overflow-hidden bg-white p-6">
+                <img src={model.image} alt={model.name} className="w-full max-h-[520px] object-contain" />
               </div>
-
-              <div className="mt-8">
-                <p className="text-xs uppercase tracking-[0.3em] text-pink-400 mb-3">Pre-order</p>
-                <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tight">
-                  NextLook Smart Mirror
-                </h1>
-                <p className="mt-4 text-white/70 font-body leading-relaxed">
-                  A 43-inch AI-powered smart mirror. Scan your face, try on hairstyles in real time,
-                  and book a NEXTLOOK stylist — without ever picking up your phone.
-                </p>
-
-                <div className="mt-6 flex items-baseline gap-2">
-                  <span className="font-display text-5xl font-bold">$2,000</span>
-                  <span className="text-white/50">USD</span>
+              <p className="mt-6 text-xs uppercase tracking-[0.3em] text-amber-400 mb-2">Pre-order</p>
+              <h2 className="font-display text-4xl font-bold">{model.name}</h2>
+              <p className="text-white/60 mt-1">{model.size} · Ships in ~20 days · Free white-glove delivery</p>
+              <div className="mt-8 grid grid-cols-2 gap-3 text-sm">
+                <div className="rounded-2xl bg-white/[0.04] ring-1 ring-white/10 p-4">
+                  <Truck className="w-5 h-5 text-amber-400 mb-2" />
+                  <div className="font-semibold">Ships in ~20 days</div>
                 </div>
-
-                <ul className="mt-8 space-y-3 text-white/80 font-body">
-                  {[
-                    "43\" 4K edge-to-edge mirror display",
-                    "On-device neural face tracking (468 points)",
-                    "Wi-Fi 6E · Voice control · Touchscreen",
-                    "Free white-glove delivery",
-                  ].map((f) => (
-                    <li key={f} className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-pink-400 mt-0.5 shrink-0" />
-                      <span>{f}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="mt-8 grid grid-cols-2 gap-3 text-sm">
-                  <div className="rounded-2xl bg-white/[0.04] ring-1 ring-white/10 p-4">
-                    <Truck className="w-5 h-5 text-pink-400 mb-2" />
-                    <div className="font-semibold">Ships in ~20 days</div>
-                    <div className="text-white/55 text-xs mt-1">From order confirmation</div>
-                  </div>
-                  <div className="rounded-2xl bg-white/[0.04] ring-1 ring-white/10 p-4">
-                    <ShieldCheck className="w-5 h-5 text-pink-400 mb-2" />
-                    <div className="font-semibold">Secure checkout</div>
-                    <div className="text-white/55 text-xs mt-1">Powered by Stripe</div>
-                  </div>
+                <div className="rounded-2xl bg-white/[0.04] ring-1 ring-white/10 p-4">
+                  <ShieldCheck className="w-5 h-5 text-amber-400 mb-2" />
+                  <div className="font-semibold">Secure checkout</div>
                 </div>
               </div>
             </div>
@@ -158,7 +177,7 @@ const MirrorPreorderPage = () => {
               className="rounded-3xl bg-gradient-to-b from-white/[0.06] to-white/[0.02] ring-1 ring-white/10 p-6 md:p-10 backdrop-blur-sm h-fit"
             >
               <div className="flex items-center gap-2 mb-6">
-                <Sparkles className="w-5 h-5 text-pink-400" />
+                <Sparkles className="w-5 h-5 text-amber-400" />
                 <h2 className="font-display text-2xl font-semibold">Reserve your mirror</h2>
               </div>
 
@@ -280,16 +299,16 @@ const MirrorPreorderPage = () => {
 
               <div className="mt-8 pt-6 border-t border-white/10">
                 <div className="flex justify-between text-white/70 mb-2">
-                  <span>NextLook Smart Mirror</span>
-                  <span>$2,000.00</span>
+                  <span>{model.name}</span>
+                  <span>{priceLabel}.00</span>
                 </div>
                 <div className="flex justify-between text-white/70 mb-4">
                   <span>White-glove shipping</span>
-                  <span className="text-pink-400">Free</span>
+                  <span className="text-amber-400">Free</span>
                 </div>
                 <div className="flex justify-between font-display text-2xl font-bold">
                   <span>Total</span>
-                  <span>$2,000.00</span>
+                  <span>{priceLabel}.00</span>
                 </div>
               </div>
 
@@ -301,7 +320,7 @@ const MirrorPreorderPage = () => {
                 {loading ? (
                   <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Redirecting…</>
                 ) : (
-                  <>Pay $2,000 & Pre-order</>
+                  <>Pay {priceLabel} & Pre-order</>
                 )}
               </Button>
 
