@@ -15,6 +15,7 @@ export type MirrorModel = {
 };
 
 export const CUSTOMIZATION_PRICE = 500;
+export const STAND_PRICE = 100;
 
 export type MirrorColorId = "silver" | "gold" | "amethyst" | "pink";
 

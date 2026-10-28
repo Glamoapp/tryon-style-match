@@ -17,7 +17,7 @@ Deno.serve(async (req) => {
     });
 
     const body = await req.json();
-    const { name, email, phone, address, model, personalization } = body || {};
+    const { name, email, phone, address, model, personalization, stand } = body || {};
     const MODELS: Record<string, { amount: number; name: string }> = {
       genesis: { amount: 250000, name: 'NEXTLOOK Genesis — 32" Smart Mirror Pre-order' },
       genesis_pro: { amount: 350000, name: 'NEXTLOOK Genesis Pro — 43" Smart Mirror Pre-order' },
@@ -53,6 +53,24 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Optional $100 floor stand add-on.
+    let standLine: Record<string, unknown> | null = null;
+    const standMeta: Record<string, string> = {};
+    if (stand === true || stand === "true" || stand === 1) {
+      standLine = {
+        price_data: {
+          currency: "usd",
+          unit_amount: 10000,
+          product_data: {
+            name: "Mirror Floor Stand",
+            description: "Freestanding floor stand for your NEXTLOOK smart mirror.",
+          },
+        },
+        quantity: 1,
+      };
+      standMeta.includes_stand = "true";
+    }
+
     if (!email || !name || !phone || !address?.line1 || !address?.city || !address?.state || !address?.postal_code) {
       return new Response(
         JSON.stringify({ error: "Missing required customer or shipping information." }),
@@ -79,6 +97,7 @@ Deno.serve(async (req) => {
           quantity: 1,
         },
         ...(personalizationLine ? [personalizationLine] : []),
+        ...(standLine ? [standLine] : []),
       ],
       shipping_address_collection: {
         allowed_countries: ["US", "CA"],
@@ -88,6 +107,7 @@ Deno.serve(async (req) => {
         customer_name: name,
         customer_phone: phone,
         ...personalizationMeta,
+        ...standMeta,
         ship_line1: address.line1,
         ship_line2: address.line2 || "",
         ship_city: address.city,

@@ -11,6 +11,7 @@ import {
   MIRROR_MODELS,
   MIRROR_COLORS,
   CUSTOMIZATION_PRICE,
+  STAND_PRICE,
   isMirrorColorId,
   type ModelId,
 } from "@/lib/mirrorModels";
@@ -22,6 +23,7 @@ const MirrorPreorderPage = () => {
   const [personalize, setPersonalize] = useState(false);
   const [engraving, setEngraving] = useState("");
   const [color, setColor] = useState<string>("silver");
+  const [stand, setStand] = useState(false);
 
   useEffect(() => {
     document.title = "Pre-order NEXTLOOK Genesis Smart Mirrors";
@@ -46,6 +48,7 @@ const MirrorPreorderPage = () => {
       params.set("engraving", engraving.trim());
       params.set("color", isMirrorColorId(color) ? color : "silver");
     }
+    if (stand) params.set("stand", "1");
     navigate(`/mirror/checkout?${params.toString()}`);
   };
 
@@ -113,6 +116,7 @@ const MirrorPreorderPage = () => {
               </h2>
               <p className="text-zinc-500 mt-2 text-sm md:text-base">
                 Engrave your name and even choose your color — for ${CUSTOMIZATION_PRICE} more.
+                <span className="block mt-1">Add a floor stand for ${STAND_PRICE} more.</span>
               </p>
             </div>
             <div className="grid md:grid-cols-2 gap-8 items-center p-6 md:p-10">
@@ -144,6 +148,26 @@ const MirrorPreorderPage = () => {
                   <span>
                     <span className="block font-semibold">Add personalization</span>
                     <span className="block text-sm text-zinc-500">Engraved name + custom color · +${CUSTOMIZATION_PRICE}.00</span>
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={stand}
+                  onClick={() => setStand((s) => !s)}
+                  className="mt-4 flex items-center gap-3 text-left"
+                >
+                  <span
+                    className={`relative h-7 w-12 rounded-full transition-colors shrink-0 ${stand ? "bg-mirror-action" : "bg-zinc-300"}`}
+                  >
+                    <span
+                      className={`absolute top-0.5 left-0.5 h-6 w-6 rounded-full bg-white shadow transition-transform ${stand ? "translate-x-5" : ""}`}
+                    />
+                  </span>
+                  <span>
+                    <span className="block font-semibold">Add floor stand</span>
+                    <span className="block text-sm text-zinc-500">Stands on the floor, no wall mounting · +${STAND_PRICE}.00</span>
                   </span>
                 </button>
 
@@ -187,10 +211,19 @@ const MirrorPreorderPage = () => {
                         ))}
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-zinc-500">
-                      <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
-                      Applied to any mirror you buy below — you'll see the $500 added at checkout.
-                    </div>
+                  </div>
+                )}
+
+                {(personalize || stand) && (
+                  <div className="mt-6 flex items-start gap-2 text-sm text-zinc-500">
+                    <Sparkles className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                    <span>
+                      Added to any mirror you buy below:
+                      {personalize && <> personalization +${CUSTOMIZATION_PRICE}</>}
+                      {personalize && stand && <> and</>}
+                      {stand && <> floor stand +${STAND_PRICE}</>}
+                      . You'll see it itemized at checkout.
+                    </span>
                   </div>
                 )}
               </div>
