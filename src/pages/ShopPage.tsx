@@ -118,13 +118,15 @@ const TileCard = ({ tile }: { tile: Tile }) => (
           <img
             src={tile.image}
             alt={tile.imageAlt}
-            width={tile.heroImage ? 832 : undefined}
-            height={tile.heroImage ? 896 : undefined}
+            width={tile.heroImage ? 832 : tile.tallCutout ? 1024 : undefined}
+            height={tile.heroImage ? 896 : tile.tallCutout ? 1280 : undefined}
             className={
               tile.heroImage
                 ? "mx-auto h-[560px] w-auto max-w-full md:h-[960px]"
-                : tile.cutoutImage
-                  ? "mx-auto h-[440px] w-full object-contain object-bottom"
+                : tile.tallCutout
+                  ? "mx-auto h-[460px] w-auto max-w-full object-contain object-bottom md:h-[720px]"
+                  : tile.cutoutImage
+                    ? "mx-auto h-[440px] w-full object-contain object-bottom"
                   : `mx-auto w-full ${tile.wide ? "h-[360px] object-contain md:h-[500px]" : "h-full max-h-[440px] object-cover object-top"}`
             }
             loading="lazy"
