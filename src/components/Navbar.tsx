@@ -83,7 +83,7 @@ const Navbar = () => {
       <nav aria-label="Main navigation" className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border/50 lg:bg-desktop-nav lg:text-desktop-nav-foreground lg:border-desktop-nav">
         <div className="hidden lg:flex mx-auto max-w-6xl h-14 items-center justify-between gap-3 px-6">
           <Link to="/" aria-label="NEXTLOOK home" className="shrink-0">
-            <img src={logoImg} alt="NEXTLOOK" className="h-7 w-7 object-contain" />
+            <img src={logoImg} alt="NEXTLOOK" className="h-10 w-12 object-contain" />
           </Link>
           {desktopLinks.map((link) => (
             <Button key={link.href} asChild variant="ghost" size="sm" className="h-14 rounded-none px-2 text-xs font-body font-normal text-desktop-nav-foreground/85 hover:bg-transparent hover:text-desktop-nav-foreground">
@@ -117,7 +117,7 @@ const Navbar = () => {
 
           {/* Center: logo + slogan */}
           <Link to="/" className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center leading-none">
-            <span className="font-logo text-4xl sm:text-5xl tracking-[0.04em] text-foreground">NEXTLOOK</span>
+            <img src={logoImg} alt="NEXTLOOK" className="h-12 w-20 object-contain" />
             <span className="text-[10px] sm:text-xs font-body font-bold uppercase tracking-[0.25em] text-purple-900 mt-0.5">
               Beauty On demand
             </span>
