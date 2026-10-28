@@ -78,6 +78,7 @@ Deno.serve(async (req) => {
           },
           quantity: 1,
         },
+        ...(personalizationLine ? [personalizationLine] : []),
       ],
       shipping_address_collection: {
         allowed_countries: ["US", "CA"],
@@ -86,6 +87,7 @@ Deno.serve(async (req) => {
         product: `nextlook_${model}`,
         customer_name: name,
         customer_phone: phone,
+        ...personalizationMeta,
         ship_line1: address.line1,
         ship_line2: address.line2 || "",
         ship_city: address.city,
