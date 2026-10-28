@@ -37,6 +37,7 @@ import MirrorPage from "./pages/MirrorPage.tsx";
 import MirrorPreorderPage from "./pages/MirrorPreorderPage.tsx";
 import MirrorCheckoutPage from "./pages/MirrorCheckoutPage.tsx";
 import ShopPage from "./pages/ShopPage.tsx";
+import GalleryPage from "./pages/GalleryPage.tsx";
 
 import MaintenancePage from "./pages/MaintenancePage.tsx";
 import MaintenanceDetailPage from "./pages/MaintenanceDetailPage.tsx";
@@ -58,6 +59,7 @@ const AppContent = () => {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<PageTransition><ShopPage /></PageTransition>} />
+        <Route path="/gallery" element={<PageTransition><GalleryPage /></PageTransition>} />
         <Route path="/home" element={<PageTransition><Index /></PageTransition>} />
         <Route path="/stylists" element={<PageTransition><StylistsPage /></PageTransition>} />
         <Route path="/discover" element={<PageTransition><StylistDiscoveryPage /></PageTransition>} />
