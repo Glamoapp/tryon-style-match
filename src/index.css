@@ -36,6 +36,9 @@
   --color-charcoal: hsl(var(--charcoal));
   --color-cream: hsl(var(--cream));
   --color-warm-gray: hsl(var(--warm-gray));
+  --color-mirror-action: hsl(var(--mirror-action));
+  --color-mirror-action-hover: hsl(var(--mirror-action-hover));
+  --color-mirror-action-foreground: hsl(var(--mirror-action-foreground));
 
   /* Sidebar Theme Configuration */
   --color-sidebar-background: hsl(var(--sidebar-background));
@@ -97,6 +100,9 @@
   --charcoal: 270 35% 18%;
   --cream: 0 0% 100%;
   --warm-gray: 270 18% 45%;
+  --mirror-action: 0 0% 0%;
+  --mirror-action-hover: 0 0% 15%;
+  --mirror-action-foreground: 0 0% 100%;
 
   --gradient-rose: linear-gradient(135deg, hsl(45 85% 62%), hsl(38 72% 42%));
   --gradient-gold: linear-gradient(135deg, hsl(46 85% 62%), hsl(38 70% 42%));
