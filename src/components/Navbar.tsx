@@ -26,7 +26,7 @@ const navLinks = [
 ];
 
 const desktopLinks = [
-  { label: "Shop", href: "/" },
+  { label: "Home", href: "/" },
   { label: "Book a Stylist", href: "/discover" },
   { label: "Hair", href: "/extensions" },
   { label: "Mirrors", href: "/mirror/preorder" },
