@@ -179,7 +179,7 @@ const ShopPage = () => {
 
       {/* Tile grid */}
       <section className="mx-auto grid w-full max-w-[1800px] grid-cols-1 gap-4 px-4 py-10 md:grid-cols-2 md:px-6">
-        {[...TILES.filter((tile) => tile.wide && !tile.card), ...TILES.filter((tile) => !tile.wide), ...TILES.filter((tile) => tile.card)].map((tile) => (
+        {[...TILES.filter((tile) => !tile.wide), ...TILES.filter((tile) => tile.wide && !tile.card), ...TILES.filter((tile) => tile.card)].map((tile) => (
           <TileCard key={tile.title} tile={tile} />
         ))}
       </section>
