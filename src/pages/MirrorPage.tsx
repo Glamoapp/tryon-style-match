@@ -37,7 +37,7 @@ Beauty, delivered, instantly.`;
 
 const MirrorHead = () => {
   useEffect(() => {
-    document.title = "NextLook Smart Mirror — 43\" Smart Beauty Mirror | Pre-Order $2000";
+    document.title = "NextLook Smart Mirror — 43\" Smart Beauty Mirror | Pre-Order";
     const meta = document.querySelector('meta[name="description"]') || (() => {
       const m = document.createElement("meta");
       m.setAttribute("name", "description");
@@ -46,7 +46,7 @@ const MirrorHead = () => {
     })();
     meta.setAttribute(
       "content",
-      "NextLook Smart Mirror: a 43-inch AI smart mirror. Scan your face, try on hairstyles, and book a stylist — right from the mirror. Pre-order today for $2000."
+      "NextLook Smart Mirror: a 43-inch AI smart mirror. Scan your face, try on hairstyles, and book a stylist — right from the mirror. Pre-order today."
     );
     let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
     if (!canonical) {
@@ -164,7 +164,7 @@ const MirrorPage = () => {
           transition={{ ...fadeUp.transition, delay: 0.25 }}
           className="mt-4 text-sm text-white/60"
         >
-          From $2,000. Ships in ~20 days.
+          Ships in ~20 days.
         </motion.p>
 
         {/* Hero product image */}
@@ -329,13 +329,6 @@ const MirrorPage = () => {
           <p className="mt-5 text-white/70 text-lg max-w-xl mx-auto">
             Reserve your NextLook Smart Mirror now. Estimated delivery in 20 days from order.
           </p>
-
-          <div className="mt-10 inline-flex items-baseline gap-2">
-            <span className="font-canva text-5xl md:text-6xl font-semibold tracking-tight text-white">
-              $2,000
-            </span>
-            <span className="text-white/60">USD</span>
-          </div>
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-5">
             <Button
