@@ -16,7 +16,7 @@ export type MirrorModel = {
 
 export const CUSTOMIZATION_PRICE = 500;
 
-export type MirrorColorId = "silver" | "gold" | "amethyst" | "black";
+export type MirrorColorId = "silver" | "gold" | "amethyst" | "pink";
 
 export type MirrorColor = {
   id: MirrorColorId;
@@ -30,7 +30,7 @@ export const MIRROR_COLORS: MirrorColor[] = [
   { id: "silver", label: "Silver", swatch: "#d1d5db" },
   { id: "gold", label: "Gold", swatch: "#c9a227" },
   { id: "amethyst", label: "Amethyst", swatch: "#6b21a8" },
-  { id: "black", label: "Black", swatch: "#111111" },
+  { id: "pink", label: "Metallic Pink", swatch: "#e3a8bc" },
 ];
 
 export const isMirrorColorId = (value: string | null | undefined): value is MirrorColorId =>
