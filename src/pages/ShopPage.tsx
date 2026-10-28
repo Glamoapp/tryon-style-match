@@ -9,7 +9,7 @@ import heroBeauty from "@/assets/hero-beauty-mirror-white.jpg";
 import stylistImg from "@/assets/shop-stylist-black.png";
 import hairImg from "@/assets/shop-hair-cutout.png";
 import mirrorImg from "@/assets/mirror-hero-reflect.png";
-import accessoriesImg from "@/assets/blowdryer-pin.png";
+import accessoriesImg from "@/assets/accessories-hands-dryer-cut.png";
 
 interface Tile {
   eyebrow?: string;
@@ -24,6 +24,7 @@ interface Tile {
   wide?: boolean;
   heroImage?: boolean;
   cutoutImage?: boolean;
+  tallCutout?: boolean;
 }
 
 const TILES: Tile[] = [
@@ -64,8 +65,9 @@ const TILES: Tile[] = [
     subtitle: "Pins, tools, and finishing touches for every look.",
     primary: { label: "Shop accessories", to: "/extensions" },
     image: accessoriesImg,
-    imageAlt: "NEXTLOOK beauty accessories",
+    imageAlt: "Hands holding a cream and gold blow dryer",
     wide: true,
+    tallCutout: true,
   },
   {
     eyebrow: "NEXTLOOK Rewards",
