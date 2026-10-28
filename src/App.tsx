@@ -35,6 +35,8 @@ import AboutPage from "./pages/AboutPage.tsx";
 import ResetPasswordPage from "./pages/ResetPasswordPage.tsx";
 import MirrorPage from "./pages/MirrorPage.tsx";
 import MirrorPreorderPage from "./pages/MirrorPreorderPage.tsx";
+import MirrorCheckoutPage from "./pages/MirrorCheckoutPage.tsx";
+
 import MaintenancePage from "./pages/MaintenancePage.tsx";
 import MaintenanceDetailPage from "./pages/MaintenanceDetailPage.tsx";
 import JoinStylistPage from "./pages/JoinStylistPage.tsx";
