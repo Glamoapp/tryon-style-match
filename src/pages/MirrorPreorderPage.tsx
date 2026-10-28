@@ -1,16 +1,27 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { SEO } from "@/components/SEO";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowLeft, Check } from "lucide-react";
+import { ArrowLeft, Check, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { MIRROR_MODELS } from "@/lib/mirrorModels";
+import {
+  MIRROR_MODELS,
+  MIRROR_COLORS,
+  CUSTOMIZATION_PRICE,
+  isMirrorColorId,
+  type ModelId,
+} from "@/lib/mirrorModels";
+import personalizationImg from "@/assets/mirror-personalization.jpg";
 
 const MirrorPreorderPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const [personalize, setPersonalize] = useState(false);
+  const [engraving, setEngraving] = useState("");
+  const [color, setColor] = useState<string>("silver");
 
   useEffect(() => {
     document.title = "Pre-order NEXTLOOK Genesis Smart Mirrors";
@@ -23,6 +34,20 @@ const MirrorPreorderPage = () => {
       toast.info("Payment canceled", { description: "Your pre-order was not charged." });
     }
   }, [searchParams]);
+
+  const goCheckout = (id: ModelId) => {
+    if (personalize && !engraving.trim()) {
+      toast.error("Enter the name to engrave, or turn personalization off.");
+      return;
+    }
+    const params = new URLSearchParams({ model: id });
+    if (personalize) {
+      params.set("personalize", "1");
+      params.set("engraving", engraving.trim());
+      params.set("color", isMirrorColorId(color) ? color : "silver");
+    }
+    navigate(`/mirror/checkout?${params.toString()}`);
+  };
 
   return (
     <div className="min-h-screen bg-white text-zinc-900">
@@ -65,7 +90,7 @@ const MirrorPreorderPage = () => {
                   <Button
                     type="button"
                     disabled={!m.price}
-                    onClick={() => navigate(`/mirror/checkout?model=${m.id}`)}
+                    onClick={() => goCheckout(m.id)}
                     className="rounded-full bg-mirror-action hover:bg-mirror-action-hover text-mirror-action-foreground px-6"
                   >
                     {m.price ? "Buy" : "Notify me"}
@@ -74,6 +99,98 @@ const MirrorPreorderPage = () => {
               </div>
             ))}
           </div>
+
+          {/* Personalization section */}
+          <section className="mt-14 rounded-3xl bg-zinc-50 ring-1 ring-black/5 overflow-hidden">
+            <div className="pt-10 px-6 text-center">
+              <h2 className="font-display text-3xl md:text-4xl font-bold tracking-tight">
+                Personalize your mirror.
+              </h2>
+              <p className="text-zinc-500 mt-2 text-sm md:text-base">
+                Engrave your name and even choose your color — for ${CUSTOMIZATION_PRICE} more.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-2 gap-8 items-center p-6 md:p-10">
+              <div className="rounded-2xl bg-white p-4 ring-1 ring-black/5">
+                <img
+                  src={personalizationImg}
+                  alt="NEXTLOOK mirrors in Silver, Gold and Amethyst finishes with a name engraved on the glass"
+                  width={1440}
+                  height={1080}
+                  loading="lazy"
+                  className="w-full aspect-[4/3] object-cover rounded-xl"
+                />
+              </div>
+              <div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={personalize}
+                  onClick={() => setPersonalize((p) => !p)}
+                  className="flex items-center gap-3 text-left"
+                >
+                  <span
+                    className={`relative h-7 w-12 rounded-full transition-colors shrink-0 ${personalize ? "bg-mirror-action" : "bg-zinc-300"}`}
+                  >
+                    <span
+                      className={`absolute top-0.5 left-0.5 h-6 w-6 rounded-full bg-white shadow transition-transform ${personalize ? "translate-x-5" : ""}`}
+                    />
+                  </span>
+                  <span>
+                    <span className="block font-semibold">Add personalization</span>
+                    <span className="block text-sm text-zinc-500">Engraved name + custom color · +${CUSTOMIZATION_PRICE}.00</span>
+                  </span>
+                </button>
+
+                {personalize && (
+                  <div className="mt-6 space-y-5">
+                    <div>
+                      <label htmlFor="engraving" className="text-sm font-medium text-zinc-700">
+                        Name to engrave *
+                      </label>
+                      <Input
+                        id="engraving"
+                        value={engraving}
+                        onChange={(e) => setEngraving(e.target.value.slice(0, 25))}
+                        maxLength={25}
+                        className="mt-1.5 bg-white border-zinc-300 text-zinc-900 placeholder:text-zinc-400"
+                        placeholder="e.g. Rishielle"
+                      />
+                      <p className="mt-1 text-xs text-zinc-400">{engraving.trim().length}/25 characters · engraved near the bottom of the glass</p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-zinc-700 mb-2">Frame color</p>
+                      <div className="flex gap-3">
+                        {MIRROR_COLORS.map((c) => (
+                          <button
+                            key={c.id}
+                            type="button"
+                            onClick={() => setColor(c.id)}
+                            aria-pressed={color === c.id}
+                            className={`flex items-center gap-2 rounded-full pl-1.5 pr-4 py-1.5 ring-1 transition-colors ${
+                              color === c.id
+                                ? "ring-mirror-action bg-white"
+                                : "ring-zinc-200 bg-white hover:ring-zinc-400"
+                            }`}
+                          >
+                            <span
+                              className="h-6 w-6 rounded-full ring-1 ring-black/10 shrink-0"
+                              style={{ backgroundColor: c.swatch }}
+                            />
+                            <span className="text-sm">{c.label}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-zinc-500">
+                      <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
+                      Applied to any mirror you buy below — you'll see the $500 added at checkout.
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
 
           <p className="mt-8 text-center text-sm text-zinc-500">
             Tap Buy to continue to secure checkout, where you'll enter your shipping details.

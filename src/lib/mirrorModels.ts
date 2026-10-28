@@ -14,6 +14,30 @@ export type MirrorModel = {
   features: string[];
 };
 
+export const CUSTOMIZATION_PRICE = 500;
+
+export type MirrorColorId = "silver" | "gold" | "amethyst";
+
+export type MirrorColor = {
+  id: MirrorColorId;
+  label: string;
+  swatch: string;
+};
+
+// Literal product-finish colors (not theme tokens) — these are the actual
+// mirror frame finishes a customer picks between.
+export const MIRROR_COLORS: MirrorColor[] = [
+  { id: "silver", label: "Silver", swatch: "#d1d5db" },
+  { id: "gold", label: "Gold", swatch: "#c9a227" },
+  { id: "amethyst", label: "Amethyst", swatch: "#6b21a8" },
+];
+
+export const isMirrorColorId = (value: string | null | undefined): value is MirrorColorId =>
+  !!value && MIRROR_COLORS.some((c) => c.id === value);
+
+export const getMirrorColor = (value: string | null | undefined): MirrorColor =>
+  MIRROR_COLORS.find((c) => c.id === value) ?? MIRROR_COLORS[0];
+
 export const MIRROR_MODELS: MirrorModel[] = [
   {
     id: "genesis",

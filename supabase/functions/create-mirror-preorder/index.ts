@@ -17,7 +17,7 @@ Deno.serve(async (req) => {
     });
 
     const body = await req.json();
-    const { name, email, phone, address, model } = body || {};
+    const { name, email, phone, address, model, personalization } = body || {};
     const MODELS: Record<string, { amount: number; name: string }> = {
       genesis: { amount: 250000, name: 'NEXTLOOK Genesis — 32" Smart Mirror Pre-order' },
       genesis_pro: { amount: 350000, name: 'NEXTLOOK Genesis Pro — 43" Smart Mirror Pre-order' },
@@ -27,6 +27,30 @@ Deno.serve(async (req) => {
     if (!chosen) {
       return new Response(JSON.stringify({ error: "Please choose an available mirror model." }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 });
+    }
+
+    // Optional $500 personalization: engraved name + custom frame color.
+    let personalizationLine: Record<string, unknown> | null = null;
+    const personalizationMeta: Record<string, string> = {};
+    if (personalization && typeof personalization === "object") {
+      const engraving = typeof personalization.engraving === "string" ? personalization.engraving.trim() : "";
+      const COLOR_LABELS: Record<string, string> = { silver: "Silver", gold: "Gold", amethyst: "Amethyst" };
+      const colorId = typeof personalization.color === "string" ? personalization.color : "";
+      if (engraving.length > 0 && engraving.length <= 40 && COLOR_LABELS[colorId]) {
+        personalizationLine = {
+          price_data: {
+            currency: "usd",
+            unit_amount: 50000,
+            product_data: {
+              name: "Mirror Personalization — Engraved Name & Custom Frame Color",
+              description: `Engraved: "${engraving}" · ${COLOR_LABELS[colorId]} frame finish`,
+            },
+          },
+          quantity: 1,
+        };
+        personalizationMeta.engraving_text = engraving;
+        personalizationMeta.engraving_color = colorId;
+      }
     }
 
     if (!email || !name || !phone || !address?.line1 || !address?.city || !address?.state || !address?.postal_code) {
@@ -54,6 +78,7 @@ Deno.serve(async (req) => {
           },
           quantity: 1,
         },
+        ...(personalizationLine ? [personalizationLine] : []),
       ],
       shipping_address_collection: {
         allowed_countries: ["US", "CA"],
@@ -62,6 +87,7 @@ Deno.serve(async (req) => {
         product: `nextlook_${model}`,
         customer_name: name,
         customer_phone: phone,
+        ...personalizationMeta,
         ship_line1: address.line1,
         ship_line2: address.line2 || "",
         ship_city: address.city,
