@@ -9,7 +9,7 @@ import heroBeauty from "@/assets/hero-beauty-mirror-white.jpg";
 import stylistImg from "@/assets/shop-stylist-black.png";
 import hairImg from "@/assets/shop-hair-cutout.png";
 import mirrorImg from "@/assets/mirror-hero-reflect.png";
-import accessoriesImg from "@/assets/blowdryer-pin.png";
+import accessoriesImg from "@/assets/accessories-hands-dryer-cut.png";
 
 interface Tile {
   eyebrow?: string;
@@ -24,6 +24,7 @@ interface Tile {
   wide?: boolean;
   heroImage?: boolean;
   cutoutImage?: boolean;
+  tallCutout?: boolean;
 }
 
 const TILES: Tile[] = [
@@ -64,8 +65,9 @@ const TILES: Tile[] = [
     subtitle: "Pins, tools, and finishing touches for every look.",
     primary: { label: "Shop accessories", to: "/extensions" },
     image: accessoriesImg,
-    imageAlt: "NEXTLOOK beauty accessories",
+    imageAlt: "Hands holding a cream and gold blow dryer",
     wide: true,
+    tallCutout: true,
   },
   {
     eyebrow: "NEXTLOOK Rewards",
@@ -116,13 +118,15 @@ const TileCard = ({ tile }: { tile: Tile }) => (
           <img
             src={tile.image}
             alt={tile.imageAlt}
-            width={tile.heroImage ? 832 : undefined}
-            height={tile.heroImage ? 896 : undefined}
+            width={tile.heroImage ? 832 : tile.tallCutout ? 1024 : undefined}
+            height={tile.heroImage ? 896 : tile.tallCutout ? 1280 : undefined}
             className={
               tile.heroImage
                 ? "mx-auto h-[560px] w-auto max-w-full md:h-[960px]"
-                : tile.cutoutImage
-                  ? "mx-auto h-[440px] w-full object-contain object-bottom"
+                : tile.tallCutout
+                  ? "mx-auto h-[460px] w-auto max-w-full object-contain object-bottom md:h-[720px]"
+                  : tile.cutoutImage
+                    ? "mx-auto h-[440px] w-full object-contain object-bottom"
                   : `mx-auto w-full ${tile.wide ? "h-[360px] object-contain md:h-[500px]" : "h-full max-h-[440px] object-cover object-top"}`
             }
             loading="lazy"
