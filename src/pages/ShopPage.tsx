@@ -148,9 +148,7 @@ const ShopPage = () => {
         <p className="invisible text-xs font-semibold uppercase tracking-[0.3em] text-amber-400" aria-hidden="true">
           Beauty On Demand
         </p>
-        <h1 className="mt-3 font-display text-5xl md:text-7xl" aria-hidden="true">
-          <span className="invisible">NEXTLOOK</span>
-        </h1>
+        <h1 className="mt-3 font-display text-5xl md:text-7xl">NEXTLOOK</h1>
         <p className="mx-auto mt-3 max-w-xl px-6 text-base text-zinc-300 md:text-lg">
           Book a stylist. Shop luxury hair. Meet your new smart mirror. All in one place.
         </p>
@@ -175,11 +173,7 @@ const ShopPage = () => {
             className="h-[420px] w-full rounded-t-3xl object-cover object-top md:h-[520px]"
           />
         </div>
-        <div className="pb-10 pt-8 text-center" aria-hidden="false">
-          <p className="font-display text-5xl tracking-[0.04em] text-white md:text-7xl">
-            NEXTLOOK
-          </p>
-        </div>
+        <div className="pb-10" />
       </section>
 
       {/* Tile grid */}
