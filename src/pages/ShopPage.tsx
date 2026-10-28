@@ -8,7 +8,7 @@ import rewardsImg from "@/assets/rewards-white-metal.jpg";
 import heroBeauty from "@/assets/hero-beauty-mirror-white.jpg";
 import stylistImg from "@/assets/stylist-1.jpg";
 import hairImg from "@/assets/hair-body-wave.png";
-import mirrorImg from "@/assets/mirror-hero-white.png";
+import mirrorImg from "@/assets/mirror-hero-reflect.png";
 import accessoriesImg from "@/assets/blowdryer-pin.png";
 
 interface Tile {
@@ -113,7 +113,7 @@ const TileCard = ({ tile }: { tile: Tile }) => (
           <img
             src={tile.image}
             alt={tile.imageAlt}
-            width={tile.heroImage ? 818 : undefined}
+            width={tile.heroImage ? 832 : undefined}
             height={tile.heroImage ? 896 : undefined}
             className={
               tile.heroImage
