@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Sparkles } from "lucide-react";
-import heroBeauty from "@/assets/hero-beauty-mirror.jpg";
+import heroBeauty from "@/assets/hero-beauty-mirror-white.jpg";
 import stylistImg from "@/assets/stylist-1.jpg";
 import hairImg from "@/assets/hair-body-wave.png";
 import mirrorImg from "@/assets/mirror-genesis-standless.jpg";
@@ -171,7 +171,7 @@ const ShopPage = () => {
 
       {/* Hero */}
       <section className="bg-zinc-950 pb-0 pt-28 text-center text-white">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-amber-400">
+        <p className="invisible text-xs font-semibold uppercase tracking-[0.3em] text-amber-400" aria-hidden="true">
           Beauty On Demand
         </p>
         <h1 className="mt-3 font-display text-5xl md:text-7xl" aria-hidden="true">
@@ -197,7 +197,7 @@ const ShopPage = () => {
         <div className="mx-auto mt-12 max-w-5xl px-4">
           <img
             src={heroBeauty}
-            alt="A NEXTLOOK client with a finished luxury beauty look"
+            alt="A woman beside a smart mirror in an elegant white room displaying music, time, date, and Psalm 46:10"
             className="h-[420px] w-full rounded-t-3xl object-cover object-top md:h-[520px]"
           />
         </div>
