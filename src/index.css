@@ -42,6 +42,8 @@
   --color-shop-surface: hsl(var(--shop-surface));
   --color-shop-ink: hsl(var(--shop-ink));
   --color-shop-muted: hsl(var(--shop-muted));
+  --color-desktop-nav: hsl(var(--desktop-nav));
+  --color-desktop-nav-foreground: hsl(var(--desktop-nav-foreground));
 
   /* Sidebar Theme Configuration */
   --color-sidebar-background: hsl(var(--sidebar-background));
@@ -109,6 +111,8 @@
   --shop-surface: 240 5% 96%;
   --shop-ink: 240 6% 10%;
   --shop-muted: 240 4% 40%;
+  --desktop-nav: 0 0% 12%;
+  --desktop-nav-foreground: 0 0% 96%;
 
   --gradient-rose: linear-gradient(135deg, hsl(45 85% 62%), hsl(38 72% 42%));
   --gradient-gold: linear-gradient(135deg, hsl(46 85% 62%), hsl(38 70% 42%));

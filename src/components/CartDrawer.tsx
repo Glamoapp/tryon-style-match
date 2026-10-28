@@ -5,13 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { ShoppingCart, Minus, Plus, Trash2, ExternalLink, Loader2, Scissors, Package, Calendar, Sparkles, CheckCircle, Tag, X } from "lucide-react";
+import { ShoppingCart, ShoppingBag, Minus, Plus, Trash2, ExternalLink, Loader2, Scissors, Package, Calendar, Sparkles, CheckCircle, Tag, X } from "lucide-react";
 import { useCartStore } from "@/stores/cartStore";
 import { applyDiscountCode, removeDiscountCode } from "@/lib/shopify";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-export const CartDrawer = () => {
+export const CartDrawer = ({ triggerClassName }: { triggerClassName?: string }) => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [showCrossSell, setShowCrossSell] = useState(false);
@@ -89,8 +89,9 @@ export const CartDrawer = () => {
     <>
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" className="relative">
-            <ShoppingCart className="h-5 w-5" />
+          <Button variant="ghost" size="icon" className={`relative ${triggerClassName ?? ""}`} aria-label="Open shopping bag" title="Shopping bag">
+            <ShoppingCart className="h-5 w-5 lg:hidden" />
+            <ShoppingBag className="hidden h-5 w-5 lg:block" />
             {totalItems > 0 && (
               <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground">
                 {totalItems}
