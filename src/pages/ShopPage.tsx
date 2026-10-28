@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import rewardsImg from "@/assets/rewards-white-metal.jpg";
 import heroBeauty from "@/assets/hero-beauty-mirror-white.jpg";
-import stylistImg from "@/assets/stylist-1.jpg";
+import stylistImg from "@/assets/shop-stylist-cutout.png";
 import hairImg from "@/assets/hair-body-wave.png";
 import mirrorImg from "@/assets/mirror-hero-reflect.png";
 import accessoriesImg from "@/assets/blowdryer-pin.png";
@@ -23,6 +23,7 @@ interface Tile {
   card?: boolean;
   wide?: boolean;
   heroImage?: boolean;
+  cutoutImage?: boolean;
 }
 
 const TILES: Tile[] = [
@@ -33,7 +34,8 @@ const TILES: Tile[] = [
     primary: { label: "Book now", to: "/discover" },
     secondary: { label: "Learn more", to: "/stylists" },
     image: stylistImg,
-    imageAlt: "NEXTLOOK stylist styling a client's hair",
+    imageAlt: "Woman with long black waves looking over her shoulder",
+    cutoutImage: true,
   },
   {
     eyebrow: "NEXTLOOK Hair",
@@ -118,7 +120,9 @@ const TileCard = ({ tile }: { tile: Tile }) => (
             className={
               tile.heroImage
                 ? "mx-auto h-[560px] w-auto max-w-full md:h-[960px]"
-                : `mx-auto w-full ${tile.wide ? "h-[360px] object-contain md:h-[500px]" : "h-full max-h-[440px] object-cover object-top"}`
+                : tile.cutoutImage
+                  ? "mx-auto h-[440px] w-full object-contain object-bottom"
+                  : `mx-auto w-full ${tile.wide ? "h-[360px] object-contain md:h-[500px]" : "h-full max-h-[440px] object-cover object-top"}`
             }
             loading="lazy"
           />
