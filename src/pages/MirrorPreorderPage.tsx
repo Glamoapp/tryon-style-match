@@ -75,7 +75,12 @@ const MirrorPreorderPage = () => {
                 className="rounded-3xl bg-white text-zinc-900 p-6 flex flex-col ring-1 ring-black/5"
               >
                 <p className="text-xs font-semibold uppercase tracking-wider text-amber-600 h-4">{m.tag}</p>
-                <h2 className="font-display text-3xl font-bold mt-2">{m.name}</h2>
+                <h2 className="mt-2 leading-tight">
+                  <span className="block font-display text-2xl md:text-[1.75rem] font-bold tracking-tight">NEXTLOOK</span>
+                  <span className="block font-display text-lg md:text-xl font-bold tracking-tight mt-0.5 text-zinc-800">
+                    {m.name.replace(/^NEXTLOOK\s+/, "")}
+                  </span>
+                </h2>
                 <p className="text-sm text-zinc-500 mt-1">{m.size}</p>
                 <div className="relative my-6">
                   <img src={m.image} alt={`${m.name} smart mirror`} width={768} height={1024} loading="lazy" className="w-full aspect-[3/4] object-contain" />
