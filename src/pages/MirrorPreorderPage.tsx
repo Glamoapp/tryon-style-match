@@ -95,7 +95,7 @@ const MirrorPreorderPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-white text-zinc-900">
       <SEO title="Pre-Order the NEXTLOOK Smart Mirror" description="Reserve your NEXTLOOK Smart Mirror today. Secure your spot for the next generation of at-home beauty technology." path="/mirror/preorder" />
       <Navbar />
 
@@ -103,13 +103,13 @@ const MirrorPreorderPage = () => {
         <div className="max-w-6xl mx-auto">
           <button
             onClick={() => navigate("/mirror")}
-            className="inline-flex items-center gap-2 text-white/60 hover:text-white text-sm mb-8"
+            className="inline-flex items-center gap-2 text-zinc-500 hover:text-zinc-900 text-sm mb-8"
           >
             <ArrowLeft className="w-4 h-4" /> Back to Mirror
           </button>
 
           <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tight mb-10">
-            All mirrors. <span className="text-white/50">Take your pick.</span>
+            All mirrors. <span className="text-zinc-400">Take your pick.</span>
           </h1>
 
           <div className="grid md:grid-cols-3 gap-5 mb-16">
@@ -176,16 +176,16 @@ const MirrorPreorderPage = () => {
                   </div>
                 </div>
               </div>
-              <p className="mt-6 text-xs uppercase tracking-[0.3em] text-amber-400 mb-2">Pre-order</p>
+              <p className="mt-6 text-xs uppercase tracking-[0.3em] text-amber-600 mb-2">Pre-order</p>
               <h2 className="font-display text-4xl font-bold">{model.name}</h2>
-              <p className="text-white/60 mt-1">{model.size} · Ships in ~20 days · Free white-glove delivery</p>
+              <p className="text-zinc-500 mt-1">{model.size} · Ships in ~20 days · Free white-glove delivery</p>
               <div className="mt-8 grid grid-cols-2 gap-3 text-sm">
-                <div className="rounded-2xl bg-white/[0.04] ring-1 ring-white/10 p-4">
-                  <Truck className="w-5 h-5 text-amber-400 mb-2" />
+                <div className="rounded-2xl bg-zinc-50 ring-1 ring-zinc-200 p-4">
+                  <Truck className="w-5 h-5 text-amber-600 mb-2" />
                   <div className="font-semibold">Ships in ~20 days</div>
                 </div>
-                <div className="rounded-2xl bg-white/[0.04] ring-1 ring-white/10 p-4">
-                  <ShieldCheck className="w-5 h-5 text-amber-400 mb-2" />
+                <div className="rounded-2xl bg-zinc-50 ring-1 ring-zinc-200 p-4">
+                  <ShieldCheck className="w-5 h-5 text-amber-600 mb-2" />
                   <div className="font-semibold">Secure checkout</div>
                 </div>
               </div>
@@ -194,121 +194,121 @@ const MirrorPreorderPage = () => {
             {/* Form */}
             <form
               onSubmit={handleSubmit}
-              className="rounded-3xl bg-gradient-to-b from-white/[0.06] to-white/[0.02] ring-1 ring-white/10 p-6 md:p-10 backdrop-blur-sm h-fit"
+              className="rounded-3xl bg-gradient-to-b from-zinc-50 to-white ring-1 ring-zinc-200 p-6 md:p-10 backdrop-blur-sm h-fit"
             >
               <div className="flex items-center gap-2 mb-6">
-                <Sparkles className="w-5 h-5 text-amber-400" />
+                <Sparkles className="w-5 h-5 text-amber-600" />
                 <h2 className="font-display text-2xl font-semibold">Reserve your mirror</h2>
               </div>
 
               <div className="space-y-5">
                 <div>
-                  <Label htmlFor="name" className="text-white/80">Full name *</Label>
+                  <Label htmlFor="name" className="text-zinc-700">Full name *</Label>
                   <Input
                     id="name"
                     value={form.name}
                     onChange={update("name")}
                     required
-                    className="mt-1.5 bg-white/5 border-white/10 text-white placeholder:text-white/30"
+                    className="mt-1.5 bg-white border-zinc-300 text-zinc-900 placeholder:text-zinc-400"
                     placeholder="Jane Doe"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="email" className="text-white/80">Email *</Label>
+                    <Label htmlFor="email" className="text-zinc-700">Email *</Label>
                     <Input
                       id="email"
                       type="email"
                       value={form.email}
                       onChange={update("email")}
                       required
-                      className="mt-1.5 bg-white/5 border-white/10 text-white placeholder:text-white/30"
+                      className="mt-1.5 bg-white border-zinc-300 text-zinc-900 placeholder:text-zinc-400"
                       placeholder="you@email.com"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="phone" className="text-white/80">Phone *</Label>
+                    <Label htmlFor="phone" className="text-zinc-700">Phone *</Label>
                     <Input
                       id="phone"
                       type="tel"
                       value={form.phone}
                       onChange={update("phone")}
                       required
-                      className="mt-1.5 bg-white/5 border-white/10 text-white placeholder:text-white/30"
+                      className="mt-1.5 bg-white border-zinc-300 text-zinc-900 placeholder:text-zinc-400"
                       placeholder="(555) 555-5555"
                     />
                   </div>
                 </div>
 
                 <div className="pt-2">
-                  <p className="text-xs uppercase tracking-[0.2em] text-white/50 mb-3">Shipping address</p>
+                  <p className="text-xs uppercase tracking-[0.2em] text-zinc-500 mb-3">Shipping address</p>
 
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="line1" className="text-white/80">Street address *</Label>
+                      <Label htmlFor="line1" className="text-zinc-700">Street address *</Label>
                       <Input
                         id="line1"
                         value={form.line1}
                         onChange={update("line1")}
                         required
-                        className="mt-1.5 bg-white/5 border-white/10 text-white placeholder:text-white/30"
+                        className="mt-1.5 bg-white border-zinc-300 text-zinc-900 placeholder:text-zinc-400"
                         placeholder="123 Beauty Ave"
                       />
                     </div>
                     <div>
-                      <Label htmlFor="line2" className="text-white/80">Apt, suite (optional)</Label>
+                      <Label htmlFor="line2" className="text-zinc-700">Apt, suite (optional)</Label>
                       <Input
                         id="line2"
                         value={form.line2}
                         onChange={update("line2")}
-                        className="mt-1.5 bg-white/5 border-white/10 text-white placeholder:text-white/30"
+                        className="mt-1.5 bg-white border-zinc-300 text-zinc-900 placeholder:text-zinc-400"
                         placeholder="Unit 4B"
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <Label htmlFor="city" className="text-white/80">City *</Label>
+                        <Label htmlFor="city" className="text-zinc-700">City *</Label>
                         <Input
                           id="city"
                           value={form.city}
                           onChange={update("city")}
                           required
-                          className="mt-1.5 bg-white/5 border-white/10 text-white placeholder:text-white/30"
+                          className="mt-1.5 bg-white border-zinc-300 text-zinc-900 placeholder:text-zinc-400"
                           placeholder="Atlanta"
                         />
                       </div>
                       <div>
-                        <Label htmlFor="state" className="text-white/80">State *</Label>
+                        <Label htmlFor="state" className="text-zinc-700">State *</Label>
                         <Input
                           id="state"
                           value={form.state}
                           onChange={update("state")}
                           required
-                          className="mt-1.5 bg-white/5 border-white/10 text-white placeholder:text-white/30"
+                          className="mt-1.5 bg-white border-zinc-300 text-zinc-900 placeholder:text-zinc-400"
                           placeholder="GA"
                         />
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <Label htmlFor="postal_code" className="text-white/80">ZIP *</Label>
+                        <Label htmlFor="postal_code" className="text-zinc-700">ZIP *</Label>
                         <Input
                           id="postal_code"
                           value={form.postal_code}
                           onChange={update("postal_code")}
                           required
-                          className="mt-1.5 bg-white/5 border-white/10 text-white placeholder:text-white/30"
+                          className="mt-1.5 bg-white border-zinc-300 text-zinc-900 placeholder:text-zinc-400"
                           placeholder="30301"
                         />
                       </div>
                       <div>
-                        <Label htmlFor="country" className="text-white/80">Country</Label>
+                        <Label htmlFor="country" className="text-zinc-700">Country</Label>
                         <Input
                           id="country"
                           value={form.country}
                           onChange={update("country")}
-                          className="mt-1.5 bg-white/5 border-white/10 text-white placeholder:text-white/30"
+                          className="mt-1.5 bg-white border-zinc-300 text-zinc-900 placeholder:text-zinc-400"
                           placeholder="US"
                         />
                       </div>
@@ -317,14 +317,14 @@ const MirrorPreorderPage = () => {
                 </div>
               </div>
 
-              <div className="mt-8 pt-6 border-t border-white/10">
-                <div className="flex justify-between text-white/70 mb-2">
+              <div className="mt-8 pt-6 border-t border-zinc-200">
+                <div className="flex justify-between text-zinc-600 mb-2">
                   <span>{model.name}</span>
                   <span>{priceLabel}.00</span>
                 </div>
-                <div className="flex justify-between text-white/70 mb-4">
+                <div className="flex justify-between text-zinc-600 mb-4">
                   <span>White-glove shipping</span>
-                  <span className="text-amber-400">Free</span>
+                  <span className="text-amber-600">Free</span>
                 </div>
                 <div className="flex justify-between font-display text-2xl font-bold">
                   <span>Total</span>
@@ -335,7 +335,7 @@ const MirrorPreorderPage = () => {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full mt-6 rounded-full bg-white text-black hover:bg-white/90 h-14 font-semibold text-base"
+                className="w-full mt-6 rounded-full bg-purple-700 text-white hover:bg-purple-800 h-14 font-semibold text-base"
               >
                 {loading ? (
                   <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Redirecting…</>
@@ -344,9 +344,9 @@ const MirrorPreorderPage = () => {
                 )}
               </Button>
 
-              <p className="mt-4 text-center text-white/40 text-xs">
+              <p className="mt-4 text-center text-zinc-400 text-xs">
                 Secure payment via Stripe. By placing your pre-order you agree to our{" "}
-                <Link to="/terms" className="underline hover:text-white/70">terms</Link>.
+                <Link to="/terms" className="underline hover:text-zinc-600">terms</Link>.
               </p>
             </form>
           </motion.div>
