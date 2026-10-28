@@ -55,6 +55,8 @@ const GalleryPage = () => {
               stylistName: prof.full_name ?? "NEXTLOOK Stylist",
               serviceName: serviceMap.get(p.service_id) ?? "",
               categories: (prof.service_category ?? "").split(",").map((c) => c.trim()).filter(Boolean),
+              viewCount: prof.view_count ?? 0,
+              city: prof.city ?? "",
             };
           }),
       );
