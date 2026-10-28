@@ -20,3 +20,6 @@
 - [x] Remove the "All mirrors. Take your pick." heading words from the pre-order page while keeping the space it occupied.
 
 - [x] Move the mirror purchase form off the pre-order page onto its own checkout page; Buy now goes there.
+
+- [x] Add mirror personalization (engraved name + frame color, $500) to the customize section and carry it through checkout and payment.
+- [x] Add a floor stand option ($100) to the customize section and carry it through checkout and payment.
