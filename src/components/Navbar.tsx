@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Scissors, Sparkles, Search, ShoppingBag, Star, CalendarDays, UserCog, LogOut, LogIn, User, Store, Info, Monitor, BookOpen, Gift, LayoutGrid } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -25,8 +25,19 @@ const navLinks = [
   { label: "About", href: "/about", icon: Info },
 ];
 
+const desktopLinks = [
+  { label: "Shop", href: "/shop" },
+  { label: "Book a Stylist", href: "/discover" },
+  { label: "Hair", href: "/extensions" },
+  { label: "Mirrors", href: "/mirror/preorder" },
+  { label: "Virtual Try-On", href: "/tryon" },
+  { label: "Rewards", href: "/glowup-monday" },
+  { label: "Blog", href: "/blog" },
+];
+
 const Navbar = () => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
 
@@ -69,17 +80,39 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border/50">
-        <div className="container mx-auto px-6 h-20 flex items-center justify-between relative">
+      <nav aria-label="Main navigation" className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border/50 lg:bg-desktop-nav lg:text-desktop-nav-foreground lg:border-desktop-nav">
+        <div className="hidden lg:flex mx-auto max-w-6xl h-14 items-center justify-between gap-3 px-6">
+          <Link to="/" aria-label="NEXTLOOK home" className="shrink-0">
+            <img src={logoImg} alt="NEXTLOOK" className="h-7 w-7 object-contain" />
+          </Link>
+          {desktopLinks.map((link) => (
+            <Button key={link.href} asChild variant="ghost" size="sm" className="h-14 rounded-none px-2 text-xs font-body font-normal text-desktop-nav-foreground/85 hover:bg-transparent hover:text-desktop-nav-foreground">
+              <Link to={link.href} aria-current={pathname === link.href ? "page" : undefined}>
+                {link.label}
+              </Link>
+            </Button>
+          ))}
+          <Button variant="ghost" size="sm" className="h-14 rounded-none px-2 text-xs font-body font-normal text-desktop-nav-foreground/85 hover:bg-transparent hover:text-desktop-nav-foreground" onClick={() => setIsOpen(true)} aria-label="Open all menu links">
+            More
+          </Button>
+          <Button asChild variant="ghost" size="icon" className="shrink-0 text-desktop-nav-foreground/85 hover:bg-transparent hover:text-desktop-nav-foreground">
+            <Link to="/discover" aria-label="Search stylists" title="Search stylists"><Search /></Link>
+          </Button>
+          <Button asChild variant="ghost" size="icon" className="shrink-0 text-desktop-nav-foreground/85 hover:bg-transparent hover:text-desktop-nav-foreground">
+            <Link to={user ? "/dashboard" : "/auth"} aria-label={user ? "My account" : "Sign in"} title={user ? "My account" : "Sign in"}><User /></Link>
+          </Button>
+          <CartDrawer triggerClassName="text-desktop-nav-foreground/85 hover:bg-transparent hover:text-desktop-nav-foreground" />
+        </div>
+        <div className="container mx-auto px-6 h-20 flex lg:hidden items-center justify-between relative">
           {/* Left: hamburger */}
           <div className="flex items-center">
-            <button
+            <Button variant="ghost" size="icon"
               className="text-foreground hover:text-primary transition-colors p-1"
               onClick={() => setIsOpen(true)}
               aria-label="Open menu"
             >
               <Menu className="w-6 h-6" />
-            </button>
+            </Button>
           </div>
 
           {/* Center: logo + slogan */}
