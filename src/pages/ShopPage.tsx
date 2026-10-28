@@ -175,6 +175,11 @@ const ShopPage = () => {
             className="h-[420px] w-full rounded-t-3xl object-cover object-top md:h-[520px]"
           />
         </div>
+        <div className="pb-10 pt-8 text-center" aria-hidden="false">
+          <p className="font-display text-5xl tracking-[0.04em] text-white md:text-7xl">
+            NEXTLOOK
+          </p>
+        </div>
       </section>
 
       {/* Tile grid */}
