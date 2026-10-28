@@ -37,7 +37,7 @@ Beauty, delivered, instantly.`;
 
 const MirrorHead = () => {
   useEffect(() => {
-    document.title = "NextLook Smart Mirror — 43\" Smart Beauty Mirror | Pre-Order $2000";
+    document.title = "NextLook Smart Mirror — 43\" Smart Beauty Mirror | Pre-Order";
     const meta = document.querySelector('meta[name="description"]') || (() => {
       const m = document.createElement("meta");
       m.setAttribute("name", "description");
@@ -46,7 +46,7 @@ const MirrorHead = () => {
     })();
     meta.setAttribute(
       "content",
-      "NextLook Smart Mirror: a 43-inch AI smart mirror. Scan your face, try on hairstyles, and book a stylist — right from the mirror. Pre-order today for $2000."
+      "NextLook Smart Mirror: a 43-inch AI smart mirror. Scan your face, try on hairstyles, and book a stylist — right from the mirror. Pre-order today."
     );
     let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
     if (!canonical) {
