@@ -35,6 +35,8 @@ import AboutPage from "./pages/AboutPage.tsx";
 import ResetPasswordPage from "./pages/ResetPasswordPage.tsx";
 import MirrorPage from "./pages/MirrorPage.tsx";
 import MirrorPreorderPage from "./pages/MirrorPreorderPage.tsx";
+import MirrorCheckoutPage from "./pages/MirrorCheckoutPage.tsx";
+
 import MaintenancePage from "./pages/MaintenancePage.tsx";
 import MaintenanceDetailPage from "./pages/MaintenanceDetailPage.tsx";
 import JoinStylistPage from "./pages/JoinStylistPage.tsx";
@@ -82,6 +84,8 @@ const AppContent = () => {
         <Route path="/reset-password" element={<PageTransition><ResetPasswordPage /></PageTransition>} />
         <Route path="/mirror" element={<PageTransition><MirrorPage /></PageTransition>} />
         <Route path="/mirror/preorder" element={<PageTransition><MirrorPreorderPage /></PageTransition>} />
+        <Route path="/mirror/checkout" element={<PageTransition><MirrorCheckoutPage /></PageTransition>} />
+
         <Route path="/maintenance" element={<PageTransition><MaintenancePage /></PageTransition>} />
         <Route path="/maintenance/:slug" element={<PageTransition><MaintenanceDetailPage /></PageTransition>} />
         <Route path="/join-stylist" element={<PageTransition><JoinStylistPage /></PageTransition>} />

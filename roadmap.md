@@ -18,3 +18,5 @@
 - [x] Share video guides for converting the website to an app via GitHub.
 
 - [x] Remove the "All mirrors. Take your pick." heading words from the pre-order page while keeping the space it occupied.
+
+- [x] Move the mirror purchase form off the pre-order page onto its own checkout page; Buy now goes there.
