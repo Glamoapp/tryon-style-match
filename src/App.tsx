@@ -82,6 +82,8 @@ const AppContent = () => {
         <Route path="/reset-password" element={<PageTransition><ResetPasswordPage /></PageTransition>} />
         <Route path="/mirror" element={<PageTransition><MirrorPage /></PageTransition>} />
         <Route path="/mirror/preorder" element={<PageTransition><MirrorPreorderPage /></PageTransition>} />
+        <Route path="/mirror/checkout" element={<PageTransition><MirrorCheckoutPage /></PageTransition>} />
+
         <Route path="/maintenance" element={<PageTransition><MaintenancePage /></PageTransition>} />
         <Route path="/maintenance/:slug" element={<PageTransition><MaintenanceDetailPage /></PageTransition>} />
         <Route path="/join-stylist" element={<PageTransition><JoinStylistPage /></PageTransition>} />
