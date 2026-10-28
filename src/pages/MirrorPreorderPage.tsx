@@ -10,9 +10,9 @@ import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
-import genesisImg from "@/assets/mirror-genesis.jpg";
-import genesisProImg from "@/assets/mirror-genesis-pro.jpg";
-import genesisMaxImg from "@/assets/mirror-genesis-max.jpg";
+import genesisImg from "@/assets/mirror-genesis-standless.jpg";
+import genesisProImg from "@/assets/mirror-genesis-pro-fullbody.jpg";
+import genesisMaxImg from "@/assets/mirror-genesis-pro2-standless.jpg";
 
 type ModelId = "genesis" | "genesis_pro" | "genesis_pro_2";
 const MODELS: { id: ModelId; name: string; size: string; price: number | null; tag: string; image: string; features: string[] }[] = [
@@ -145,7 +145,7 @@ const MirrorPreorderPage = () => {
                       type="button"
                       disabled={!m.price}
                       onClick={() => { setSelected(m.id); document.getElementById("reserve")?.scrollIntoView({ behavior: "smooth" }); }}
-                      className="rounded-full bg-purple-700 hover:bg-purple-800 text-white px-6"
+                      className="rounded-full bg-mirror-action hover:bg-mirror-action-hover text-mirror-action-foreground px-6"
                     >
                       {m.price ? (active ? "Selected" : "Buy") : "Notify me"}
                     </Button>
@@ -335,7 +335,7 @@ const MirrorPreorderPage = () => {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full mt-6 rounded-full bg-purple-700 text-white hover:bg-purple-800 h-14 font-semibold text-base"
+                className="w-full mt-6 rounded-full bg-mirror-action text-mirror-action-foreground hover:bg-mirror-action-hover h-14 font-semibold text-base"
               >
                 {loading ? (
                   <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Redirecting…</>
