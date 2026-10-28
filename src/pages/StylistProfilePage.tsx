@@ -104,6 +104,7 @@ const StylistProfilePage = () => {
 
   useEffect(() => {
     if (!id) return;
+    supabase.rpc("increment_profile_views", { profile_id: id }).then(() => {});
     fetchProvider();
     fetchReviews();
   }, [id]);

@@ -13,7 +13,12 @@ type GalleryItem = {
   stylistName: string;
   serviceName: string;
   categories: string[];
+  viewCount: number;
+  city: string;
 };
+
+const formatViews = (n: number) =>
+  n >= 1000 ? `${(n / 1000).toFixed(1).replace(/\.0$/, "")}K` : `${n}`;
 
 const isVideo = (url: string) => /\.(mp4|mov|webm|m4v)(\?|$)/i.test(url);
 
@@ -33,7 +38,7 @@ const GalleryPage = () => {
       const providerIds = [...new Set(photos.map((p) => p.provider_id))];
       const serviceIds = [...new Set(photos.map((p) => p.service_id))];
       const [{ data: profiles }, { data: services }] = await Promise.all([
-        supabase.from("public_profiles").select("id, full_name, service_category").in("id", providerIds),
+        supabase.from("public_profiles").select("id, full_name, service_category, city, view_count").in("id", providerIds),
         supabase.from("provider_services").select("id, service_name").in("id", serviceIds),
       ]);
       const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
@@ -50,6 +55,8 @@ const GalleryPage = () => {
               stylistName: prof.full_name ?? "NEXTLOOK Stylist",
               serviceName: serviceMap.get(p.service_id) ?? "",
               categories: (prof.service_category ?? "").split(",").map((c) => c.trim()).filter(Boolean),
+              viewCount: prof.view_count ?? 0,
+              city: prof.city ?? "",
             };
           }),
       );
@@ -110,7 +117,8 @@ const GalleryPage = () => {
                   <img src={item.url} alt={`${item.serviceName || "Work"} by ${item.stylistName}`} loading="lazy" className="h-full w-full object-cover" />
                 )}
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/70 to-transparent px-2 pb-1.5 pt-6">
-                  <p className="truncate text-xs font-body font-medium text-background">{item.stylistName}</p>
+                  <p className="truncate text-xs font-body font-medium text-background">{formatViews(item.viewCount)} {item.viewCount === 1 ? "view" : "views"}</p>
+                  {item.city && <p className="truncate text-[10px] font-body text-background/80">{item.city}</p>}
                 </div>
               </Link>
             ))}

@@ -427,6 +427,7 @@ export type Database = {
           signup_credit: number
           signup_credit_unlocks_at: string | null
           updated_at: string
+          view_count: number
         }
         Insert: {
           avatar_url?: string | null
@@ -451,6 +452,7 @@ export type Database = {
           signup_credit?: number
           signup_credit_unlocks_at?: string | null
           updated_at?: string
+          view_count?: number
         }
         Update: {
           avatar_url?: string | null
@@ -475,6 +477,7 @@ export type Database = {
           signup_credit?: number
           signup_credit_unlocks_at?: string | null
           updated_at?: string
+          view_count?: number
         }
         Relationships: []
       }
@@ -1164,6 +1167,7 @@ export type Database = {
           role: string | null
           service_category: string | null
           show_location: boolean | null
+          view_count: number | null
         }
         Insert: {
           avatar_url?: string | null
@@ -1180,6 +1184,7 @@ export type Database = {
           role?: string | null
           service_category?: string | null
           show_location?: boolean | null
+          view_count?: number | null
         }
         Update: {
           avatar_url?: string | null
@@ -1196,12 +1201,17 @@ export type Database = {
           role?: string | null
           service_category?: string | null
           show_location?: boolean | null
+          view_count?: number | null
         }
         Relationships: []
       }
     }
     Functions: {
       generate_stylist_referral_code: { Args: never; Returns: string }
+      increment_profile_views: {
+        Args: { profile_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
