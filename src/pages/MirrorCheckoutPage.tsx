@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
-import { getModel, isModelId } from "@/lib/mirrorModels";
+import { getModel, isModelId, getMirrorColor, CUSTOMIZATION_PRICE } from "@/lib/mirrorModels";
 
 const MirrorCheckoutPage = () => {
   const navigate = useNavigate();
@@ -18,7 +18,13 @@ const MirrorCheckoutPage = () => {
   const modelParam = searchParams.get("model");
   const [loading, setLoading] = useState(false);
   const model = getModel(modelParam);
+  const personalizeParam = searchParams.get("personalize") === "1";
+  const engravingParam = (searchParams.get("engraving") || "").trim();
+  const personalized = personalizeParam && engravingParam.length > 0;
+  const mirrorColor = getMirrorColor(searchParams.get("color"));
+  const totalPrice = (model.price ?? 0) + (personalized ? CUSTOMIZATION_PRICE : 0);
   const priceLabel = `$${(model.price ?? 0).toLocaleString()}`;
+  const totalLabel = `$${totalPrice.toLocaleString()}`;
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -56,6 +62,9 @@ const MirrorCheckoutPage = () => {
       const { data, error } = await supabase.functions.invoke("create-mirror-preorder", {
         body: {
           model: modelParam,
+          personalization: personalized
+            ? { engraving: engravingParam, color: mirrorColor.id }
+            : undefined,
           name: form.name,
           email: form.email,
           phone: form.phone,
@@ -114,6 +123,11 @@ const MirrorCheckoutPage = () => {
               <p className="mt-6 text-xs uppercase tracking-[0.3em] text-amber-600 mb-2">Pre-order</p>
               <h1 className="font-display text-4xl font-bold">{model.name}</h1>
               <p className="text-zinc-500 mt-1">{model.size} · Ships in ~20 days · Free white-glove delivery</p>
+              {personalized && (
+                <p className="mt-2 text-sm text-amber-700">
+                  Engraved “{engravingParam}” · {mirrorColor.label} finish (+${CUSTOMIZATION_PRICE})
+                </p>
+              )}
               <div className="mt-8 grid grid-cols-2 gap-3 text-sm">
                 <div className="rounded-2xl bg-zinc-50 ring-1 ring-zinc-200 p-4">
                   <Truck className="w-5 h-5 text-amber-600 mb-2" />
@@ -257,13 +271,22 @@ const MirrorCheckoutPage = () => {
                   <span>{model.name}</span>
                   <span>{priceLabel}.00</span>
                 </div>
+                {personalized && (
+                  <div className="flex justify-between text-zinc-600 mb-2">
+                    <span>
+                      Personalization · {mirrorColor.label} finish
+                      <span className="block text-xs text-zinc-400">Engraved: “{engravingParam}”</span>
+                    </span>
+                    <span>${CUSTOMIZATION_PRICE}.00</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-zinc-600 mb-4">
                   <span>White-glove shipping</span>
                   <span className="text-amber-600">Free</span>
                 </div>
                 <div className="flex justify-between font-display text-2xl font-bold">
                   <span>Total</span>
-                  <span>{priceLabel}.00</span>
+                  <span>{totalLabel}.00</span>
                 </div>
               </div>
 
@@ -275,7 +298,7 @@ const MirrorCheckoutPage = () => {
                 {loading ? (
                   <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Redirecting…</>
                 ) : (
-                  <>Pay {priceLabel} &amp; Pre-order</>
+                  <>Pay {totalLabel} &amp; Pre-order</>
                 )}
               </Button>
 
