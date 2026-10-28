@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Scissors, Sparkles, Search, ShoppingBag, Star, CalendarDays, UserCog, LogOut, LogIn, User, Store, Info, Monitor, BookOpen, Gift, LayoutGrid } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -37,6 +37,7 @@ const desktopLinks = [
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
 
@@ -86,9 +87,9 @@ const Navbar = () => {
           </Link>
           {desktopLinks.map((link) => (
             <Button key={link.href} asChild variant="ghost" size="sm" className="h-14 rounded-none px-2 text-xs font-body font-normal text-desktop-nav-foreground/85 hover:bg-transparent hover:text-desktop-nav-foreground">
-              <NavLink to={link.href} className={({ isActive }) => isActive ? "text-desktop-nav-foreground underline underline-offset-8" : ""}>
+              <Link to={link.href} aria-current={pathname === link.href ? "page" : undefined}>
                 {link.label}
-              </NavLink>
+              </Link>
             </Button>
           ))}
           <Button variant="ghost" size="sm" className="h-14 rounded-none px-2 text-xs font-body font-normal text-desktop-nav-foreground/85 hover:bg-transparent hover:text-desktop-nav-foreground" onClick={() => setIsOpen(true)} aria-label="Open all menu links">
