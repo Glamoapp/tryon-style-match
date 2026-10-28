@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import rewardsImg from "@/assets/rewards-white-metal.jpg";
+import rewardsImg from "@/assets/rewards-titanium.png";
 import heroBeauty from "@/assets/hero-beauty-mirror-white.jpg";
 import stylistImg from "@/assets/shop-stylist-black.png";
 import hairImg from "@/assets/shop-hair-cutout.png";
@@ -109,8 +109,8 @@ const TileCard = ({ tile }: { tile: Tile }) => (
     </div>
 
     {tile.card ? (
-      <div className="my-10 w-full max-w-xl">
-        <img src={rewardsImg} alt="Realistic metallic white NEXTLOOK rewards membership card with a gold chip and no star logo" width={1200} height={800} loading="lazy" className="h-auto w-full rounded-lg" />
+      <div className="my-10 w-full max-w-3xl">
+        <img src={rewardsImg} alt="Realistic brushed titanium NEXTLOOK rewards card floating with a soft shadow and no background" width={1218} height={825} loading="lazy" className="h-auto w-full" />
       </div>
     ) : (
       tile.image && (
