@@ -58,7 +58,13 @@ const MirrorCheckoutPage = () => {
       return;
     }
     setLoading(true);
+    // Open the tab synchronously (on the user gesture) so popup blockers allow it,
+    // and so Stripe Checkout — which refuses to load inside an iframe — works in preview.
+    const checkoutWindow = window.open("about:blank", "_blank");
     try {
+      if (checkoutWindow) {
+        checkoutWindow.document.write("Preparing secure checkout…");
+      }
       const { data, error } = await supabase.functions.invoke("create-mirror-preorder", {
         body: {
           model: modelParam,
@@ -80,8 +86,14 @@ const MirrorCheckoutPage = () => {
       });
       if (error) throw error;
       if (!data?.url) throw new Error("Could not start checkout");
-      window.location.href = data.url;
+      if (checkoutWindow) {
+        checkoutWindow.location.href = data.url;
+        setLoading(false);
+      } else {
+        window.location.href = data.url;
+      }
     } catch (err) {
+      checkoutWindow?.close();
       console.error(err);
       toast.error("Couldn't start checkout", {
         description: err instanceof Error ? err.message : "Please try again.",
