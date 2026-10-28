@@ -108,9 +108,11 @@ const MirrorPreorderPage = () => {
             <ArrowLeft className="w-4 h-4" /> Back to Mirror
           </button>
 
-          <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tight mb-10">
+          {/* Heading words removed; the space they took is kept so the layout stays put. */}
+          <h1 aria-hidden="true" className="font-display text-4xl md:text-5xl font-bold tracking-tight mb-10 invisible">
             All mirrors. <span className="text-zinc-400">Take your pick.</span>
           </h1>
+
 
           <div className="grid md:grid-cols-3 gap-5 mb-16">
             {MODELS.map((m) => {

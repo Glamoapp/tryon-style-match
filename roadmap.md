@@ -16,3 +16,5 @@
 - [x] Speed up photo try-on with optimized selfie uploads and the existing fast image pass first.
 
 - [x] Share video guides for converting the website to an app via GitHub.
+
+- [x] Remove the "All mirrors. Take your pick." heading words from the pre-order page while keeping the space it occupied.
