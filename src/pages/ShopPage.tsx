@@ -8,7 +8,7 @@ import rewardsImg from "@/assets/rewards-white-metal.jpg";
 import heroBeauty from "@/assets/hero-beauty-mirror-white.jpg";
 import stylistImg from "@/assets/stylist-1.jpg";
 import hairImg from "@/assets/hair-body-wave.png";
-import mirrorImg from "@/assets/mirror-genesis-standless.jpg";
+import mirrorImg from "@/assets/mirror-genesis-white.jpg";
 import accessoriesImg from "@/assets/blowdryer-pin.png";
 
 interface Tile {
