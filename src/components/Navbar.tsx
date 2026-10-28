@@ -83,7 +83,7 @@ const Navbar = () => {
       <nav aria-label="Main navigation" className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border/50 lg:bg-desktop-nav lg:text-desktop-nav-foreground lg:border-desktop-nav">
         <div className="hidden lg:flex mx-auto max-w-6xl h-14 items-center justify-between gap-3 px-6">
           <Link to="/" aria-label="NEXTLOOK home" className="shrink-0">
-            <img src={logoImg} alt="NEXTLOOK" className="h-10 w-12 object-contain invert" />
+            <img src={logoImg} alt="NEXTLOOK" className="h-7 w-auto object-contain invert" />
           </Link>
           {desktopLinks.map((link) => (
             <Button key={link.href} asChild variant="ghost" size="sm" className="h-14 rounded-none px-2 text-xs font-body font-normal text-desktop-nav-foreground/85 hover:bg-transparent hover:text-desktop-nav-foreground">
