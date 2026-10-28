@@ -163,6 +163,7 @@ const ShopPage = () => {
   return (
     <div className="min-h-screen bg-white">
       <SEO
+        path="/shop"
         title="NEXTLOOK — Book Stylists, Shop Hair, Mirrors & More"
         description="One place for beauty on demand: book a stylist, shop raw hair and extensions, pre-order the NEXTLOOK Genesis smart mirror, and join the NEXTLOOK Rewards Card."
       />
