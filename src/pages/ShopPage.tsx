@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Sparkles } from "lucide-react";
-import heroBeauty from "@/assets/hero-beauty.jpg";
+import heroBeauty from "@/assets/hero-beauty-mirror.jpg";
 import stylistImg from "@/assets/stylist-1.jpg";
 import hairImg from "@/assets/hair-body-wave.png";
 import mirrorImg from "@/assets/mirror-genesis-standless.jpg";
