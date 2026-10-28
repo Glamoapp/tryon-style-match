@@ -160,7 +160,7 @@ const MirrorPreorderPage = () => {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-zinc-700 mb-2">Frame color</p>
-                      <div className="flex gap-3">
+                      <div className="flex flex-wrap gap-3">
                         {MIRROR_COLORS.map((c) => (
                           <button
                             key={c.id}
