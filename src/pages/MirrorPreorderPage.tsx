@@ -14,13 +14,13 @@ import genesisImg from "@/assets/mirror-genesis.jpg";
 import genesisProImg from "@/assets/mirror-genesis-pro.jpg";
 import genesisMaxImg from "@/assets/mirror-genesis-max.jpg";
 
-type ModelId = "genesis" | "genesis_pro" | "genesis_max";
+type ModelId = "genesis" | "genesis_pro" | "genesis_pro_2";
 const MODELS: { id: ModelId; name: string; size: string; price: number | null; tag: string; image: string; features: string[] }[] = [
   { id: "genesis", name: "NEXTLOOK Genesis", size: '32" smart mirror', price: 2500, tag: "", image: genesisImg,
     features: ["Hair try-on with face scan", "Music, time, weather & daily affirmation", "Gwen voice assistant"] },
   { id: "genesis_pro", name: "NEXTLOOK Genesis Pro", size: '43" full-length smart mirror', price: 3500, tag: "Most popular", image: genesisProImg,
     features: ["Everything in Genesis", "Full-length hair & apparel try-on", "4K edge-to-edge display"] },
-  { id: "genesis_max", name: "NEXTLOOK Genesis Max", size: '55" salon smart mirror', price: null, tag: "Coming soon", image: genesisMaxImg,
+  { id: "genesis_pro_2", name: "NEXTLOOK Genesis Pro 2", size: '55" salon smart mirror', price: 5000, tag: "Largest", image: genesisMaxImg,
     features: ["Everything in Genesis Pro", "Salon & showroom size", "Built for stylists and stores"] },
 ];
 
@@ -123,7 +123,14 @@ const MirrorPreorderPage = () => {
                   <p className="text-xs font-semibold uppercase tracking-wider text-amber-600 h-4">{m.tag}</p>
                   <h2 className="font-display text-3xl font-bold mt-2">{m.name}</h2>
                   <p className="text-sm text-zinc-500 mt-1">{m.size}</p>
-                  <img src={m.image} alt={`${m.name} smart mirror`} width={768} height={1024} loading="lazy" className="w-full aspect-[3/4] object-contain my-6" />
+                  <div className="relative my-6">
+                    <img src={m.image} alt={`${m.name} smart mirror`} width={768} height={1024} loading="lazy" className="w-full aspect-[3/4] object-contain" />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="font-display text-xl font-bold tracking-[0.18em] uppercase text-white/85 [text-shadow:0_1px_8px_rgba(0,0,0,0.55)] text-center px-4">
+                        {m.name.replace("NEXTLOOK ", "")}
+                      </span>
+                    </div>
+                  </div>
                   <ul className="space-y-1.5 text-sm text-zinc-600 mb-6 flex-1">
                     {m.features.map((f) => (
                       <li key={f} className="flex gap-2"><Check className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />{f}</li>
@@ -154,7 +161,14 @@ const MirrorPreorderPage = () => {
           >
             <div>
               <div className="rounded-3xl overflow-hidden bg-white p-6">
-                <img src={model.image} alt={model.name} className="w-full max-h-[520px] object-contain" />
+                <div className="relative">
+                  <img src={model.image} alt={model.name} className="w-full max-h-[520px] object-contain" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="font-display text-2xl font-bold tracking-[0.18em] uppercase text-white/85 [text-shadow:0_1px_8px_rgba(0,0,0,0.55)] text-center px-4">
+                      {model.name.replace("NEXTLOOK ", "")}
+                    </span>
+                  </div>
+                </div>
               </div>
               <p className="mt-6 text-xs uppercase tracking-[0.3em] text-amber-400 mb-2">Pre-order</p>
               <h2 className="font-display text-4xl font-bold">{model.name}</h2>

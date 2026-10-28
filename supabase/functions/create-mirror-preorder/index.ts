@@ -21,6 +21,7 @@ Deno.serve(async (req) => {
     const MODELS: Record<string, { amount: number; name: string }> = {
       genesis: { amount: 250000, name: 'NEXTLOOK Genesis — 32" Smart Mirror Pre-order' },
       genesis_pro: { amount: 350000, name: 'NEXTLOOK Genesis Pro — 43" Smart Mirror Pre-order' },
+      genesis_pro_2: { amount: 500000, name: 'NEXTLOOK Genesis Pro 2 — 55" Smart Mirror Pre-order' },
     };
     const chosen = MODELS[model as string];
     if (!chosen) {
