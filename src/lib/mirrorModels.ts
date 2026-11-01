@@ -44,7 +44,7 @@ export const MIRROR_MODELS: MirrorModel[] = [
   {
     id: "genesis",
     name: "NEXTLOOK Genesis",
-    size: '32" smart mirror',
+    size: '43" smart mirror',
     price: 2500,
     tag: "",
     image: genesisImg,
@@ -53,7 +53,7 @@ export const MIRROR_MODELS: MirrorModel[] = [
   {
     id: "genesis_pro",
     name: "NEXTLOOK Genesis Pro",
-    size: '43" full-length smart mirror',
+    size: '49" full-length smart mirror',
     price: 3500,
     tag: "Most popular",
     image: genesisProImg,
