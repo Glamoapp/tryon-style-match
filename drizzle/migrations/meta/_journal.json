@@ -8,6 +8,13 @@
       "when": 1793197443870,
       "tag": "0000_add_profile_view_count",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1795410632933,
+      "tag": "0001_restrict_schedule_and_rewards_reads",
+      "breakpoints": true
     }
   ]
 }
