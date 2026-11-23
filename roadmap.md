@@ -32,3 +32,5 @@
 - [x] Put an all-black NEXTLOOK-tee stylist holding shears, background removed, in the Book a Stylist card.
 - [x] Show realistic hands holding a blow dryer with NEXTLOOK printed on it, background removed, in the Accessories card.
 - [x] Restyle the rewards card as a tilted brushed-titanium card with a soft shadow and no background panel.
+
+- [x] Black Friday/Cyber Monday: buy 2 extensions get 3rd free (code), 4 bundles free sew-in (code), 2nd service 50% off (code), refer 5 friends free service; deals page; verify checkout.

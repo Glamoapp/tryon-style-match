@@ -15,6 +15,7 @@ import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { useCartStore } from "@/stores/cartStore";
 import { loadStripe } from "@stripe/stripe-js";
+import { evaluatePromo, applyReferralReward, normalizeCode, type PromoResult } from "@/lib/promotions";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
 // Initialize Stripe — publishable key is public by design
@@ -188,7 +189,9 @@ const CheckoutPage = () => {
   const [paymentReady, setPaymentReady] = useState(false);
   const [loadingPayment, setLoadingPayment] = useState(false);
   const [promoInput, setPromoInput] = useState("");
-  const [promoApplied, setPromoApplied] = useState(false);
+  const [appliedCode, setAppliedCode] = useState<string | null>(null);
+  const [useReferralReward, setUseReferralReward] = useState(false);
+  const [availableRewards, setAvailableRewards] = useState(0);
 
   const hasPhysicalProducts = products.length > 0;
   const hasServices = services.length > 0;
@@ -200,6 +203,12 @@ const CheckoutPage = () => {
       if (user) {
         if (!email) setEmail(user.email || "");
         if (!fullName) setFullName(user.user_metadata?.full_name || "");
+        supabase
+          .from("referral_rewards")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", user.id)
+          .eq("status", "available")
+          .then(({ count }) => setAvailableRewards(count || 0));
       }
     });
   }, []);
@@ -221,59 +230,54 @@ const CheckoutPage = () => {
   const deliveryFee = hasPhysicalProducts && deliveryType === "express" ? expressFee : 0;
   const productSubtotal = products.reduce((sum, p) => sum + parseFloat(p.price) * p.quantity, 0);
 
-  // Promo: REPENTNOW — free sew-in or wig installation WITH a hair extensions purchase.
-  const isEligibleInstallService = (name: string) => {
-    const n = name.toLowerCase();
-    return (
-      n.includes("sew-in") || n.includes("sew in") || n.includes("sewin") ||
-      (n.includes("wig") && (n.includes("install") || n.includes("installation")))
-    );
-  };
-  const promoQualifies = hasPhysicalProducts && services.some(s => isEligibleInstallService(s.serviceName));
-  // Cheapest eligible service becomes free when the promo is applied
-  const freeServicePrice = promoApplied && promoQualifies
-    ? Math.min(...services.filter(s => isEligibleInstallService(s.serviceName)).map(s => s.price))
-    : 0;
+  // Promotions — rules live in src/lib/promotions.ts. One offer per order.
+  const promo: PromoResult | null = useReferralReward
+    ? applyReferralReward(products, services)
+    : appliedCode
+      ? evaluatePromo(appliedCode, products, services)
+      : null;
+  const activePromo = promo && promo.ok ? promo : null;
+  const pricedProducts = activePromo ? activePromo.products : products;
+  const pricedServices = activePromo ? activePromo.services : services;
 
+  const productSubtotalAfter = pricedProducts.reduce((sum, p) => sum + parseFloat(p.price) * p.quantity, 0);
   const serviceSubtotal = services.reduce((sum, s) => sum + s.price, 0);
-  const discountedServiceSubtotal = Math.max(0, serviceSubtotal - freeServicePrice);
+  const discountedServiceSubtotal = pricedServices.reduce((sum, s) => sum + s.price, 0);
   // 10% booking fee applied to services only (after discount)
   const bookingFee = +(discountedServiceSubtotal * 0.10).toFixed(2);
-  const subtotal = productSubtotal + discountedServiceSubtotal;
+  const subtotal = productSubtotalAfter + discountedServiceSubtotal;
   const total = subtotal + deliveryFee + bookingFee;
 
   const applyPromo = () => {
-    const code = promoInput.trim().toUpperCase();
-    if (code !== "REPENTNOW") {
-      toast.error("Invalid promo code");
+    const result = evaluatePromo(promoInput, products, services);
+    if (result.ok === false) {
+      toast.error(result.error);
       return;
     }
-    if (!hasPhysicalProducts) {
-      toast.error("Add hair extensions to your cart to use this code");
-      return;
-    }
-    if (!services.some(s => isEligibleInstallService(s.serviceName))) {
-      toast.error("Add a sew-in or wig installation service to use this code");
-      return;
-    }
-    setPromoApplied(true);
-    toast.success("Promo applied — installation is free!");
+    setUseReferralReward(false);
+    setAppliedCode(normalizeCode(promoInput));
+    toast.success(`Promo applied — you save $${result.discount.toFixed(2)}!`);
   };
 
-  // Zero out the cheapest eligible service when the promo is applied
-  const buildDiscountedServices = () => {
-    if (!promoApplied || !promoQualifies) return services;
-    let discounted = false;
-    return services.map(s => {
-      if (!discounted && isEligibleInstallService(s.serviceName) && s.price === freeServicePrice) {
-        discounted = true;
-        return { ...s, price: 0, serviceName: `${s.serviceName} (FREE — REPENTNOW)` };
-      }
-      return s;
-    });
+  const applyReward = () => {
+    const result = applyReferralReward(products, services);
+    if (result.ok === false) {
+      toast.error(result.error);
+      return;
+    }
+    setAppliedCode(null);
+    setPromoInput("");
+    setUseReferralReward(true);
+    toast.success("Your free service reward is applied!");
   };
 
+  const removePromo = () => {
+    setAppliedCode(null);
+    setUseReferralReward(false);
+    setPromoInput("");
+  };
 
+  const buildDiscountedServices = () => pricedServices;
 
   /** Create PaymentIntent and get client secret */
   const initializePayment = async () => {
@@ -298,7 +302,7 @@ const CheckoutPage = () => {
     setLoadingPayment(true);
     try {
       const allProducts = [
-        ...products,
+        ...pricedProducts,
         ...(deliveryFee > 0
           ? [{ title: "Express Delivery (20 min)", price: String(expressFee), quantity: 1, imageUrl: null }]
           : []),
@@ -376,7 +380,7 @@ const CheckoutPage = () => {
       }
 
       const allProducts = [
-        ...products,
+        ...pricedProducts,
         ...(deliveryFee > 0
           ? [{ title: "Express Delivery (20 min)", price: String(expressFee), quantity: 1, imageUrl: null }]
           : []),
@@ -406,6 +410,7 @@ const CheckoutPage = () => {
 
       if (error) throw error;
       if (!data?.url) throw new Error("No Klarna checkout URL returned");
+      if (useReferralReward) await supabase.rpc("redeem_referral_reward");
 
       if (checkoutWindow) {
         checkoutWindow.location.href = data.url;
@@ -422,6 +427,9 @@ const CheckoutPage = () => {
   };
 
   const handlePaymentSuccess = async () => {
+    if (useReferralReward) {
+      await supabase.rpc("redeem_referral_reward");
+    }
     // Save payment_intent_id to all service bookings
     if (paymentIntentId && fromCart) {
       const bookingIds = serviceItems.map(s => s.id);
@@ -800,17 +808,17 @@ const CheckoutPage = () => {
                       <span>${bookingFee.toFixed(2)}</span>
                     </div>
                   )}
-                  {promoApplied && freeServicePrice > 0 && (
+                  {activePromo && activePromo.discount > 0 && (
                     <div className="flex justify-between text-primary font-semibold">
-                      <span>Promo (REPENTNOW)</span>
-                      <span>−${freeServicePrice.toFixed(2)}</span>
+                      <span>{activePromo.label}</span>
+                      <span>−${activePromo.discount.toFixed(2)}</span>
                     </div>
                   )}
                 </div>
 
                 {/* Promo code */}
                 <div className="mb-4">
-                  {!promoApplied ? (
+                  {!activePromo ? (
                     <div className="flex gap-2">
                       <Input
                         value={promoInput}
@@ -832,11 +840,12 @@ const CheckoutPage = () => {
                   ) : (
                     <div className="flex items-center justify-between bg-primary/5 border border-primary/20 rounded-lg px-3 py-2 text-sm">
                       <span className="font-body text-primary flex items-center gap-1">
-                        <CheckCircle className="w-4 h-4" /> REPENTNOW applied
+                        <CheckCircle className="w-4 h-4" />
+                        {activePromo.code === "REFERRAL" ? "Free service reward applied" : `${activePromo.code} applied`}
                       </span>
                       <button
                         type="button"
-                        onClick={() => { setPromoApplied(false); setPromoInput(""); }}
+                        onClick={removePromo}
                         className="text-xs text-muted-foreground hover:text-foreground"
                         disabled={paymentReady}
                       >
@@ -844,11 +853,22 @@ const CheckoutPage = () => {
                       </button>
                     </div>
                   )}
-                  {!promoApplied && promoQualifies && (
-                    <p className="text-[11px] text-muted-foreground font-body mt-1">
-                      Try <span className="font-semibold">REPENTNOW</span> — free install with your extensions.
-                    </p>
+                  {appliedCode && promo && promo.ok === false && (
+                    <p className="text-[11px] text-destructive font-body mt-1">{promo.error}</p>
                   )}
+                  {!activePromo && availableRewards > 0 && hasServices && (
+                    <button
+                      type="button"
+                      onClick={applyReward}
+                      disabled={paymentReady}
+                      className="mt-2 w-full text-left text-xs font-body text-primary border border-primary/30 rounded-lg px-3 py-2 hover:bg-primary/5"
+                    >
+                      You earned a free service for referring 5 friends — tap to use it
+                    </button>
+                  )}
+                  <p className="text-[11px] text-muted-foreground font-body mt-1">
+                    One offer per order. <Link to="/deals" className="underline">See this week's deals</Link>
+                  </p>
                 </div>
 
 

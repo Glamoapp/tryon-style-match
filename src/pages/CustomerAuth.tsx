@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,13 +9,19 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import logoImg from "@/assets/logo.png";
+import { rememberReferralCode } from "@/hooks/useReferralClaim";
 
 const CustomerAuth = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/stylists";
 
-  const [mode, setMode] = useState<"login" | "signup">("login");
+  const refCode = searchParams.get("ref");
+  const [mode, setMode] = useState<"login" | "signup">(refCode || searchParams.get("mode") === "signup" ? "signup" : "login");
+
+  useEffect(() => {
+    if (refCode) rememberReferralCode(refCode);
+  }, [refCode]);
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -88,6 +94,12 @@ const CustomerAuth = () => {
               {mode === "login" ? "Sign in to message stylists and book services" : "Sign up to connect with stylists"}
             </p>
           </div>
+
+          {refCode && mode === "signup" && (
+            <p className="text-center text-sm font-body text-primary bg-primary/5 border border-primary/20 rounded-lg px-3 py-2">
+              A friend invited you to NEXTLOOK — create your account to join them.
+            </p>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {mode === "signup" && (

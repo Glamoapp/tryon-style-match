@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useCartSync } from "@/hooks/useCartSync";
+import { useReferralClaim } from "@/hooks/useReferralClaim";
 import { AnimatePresence } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
 import Index from "./pages/Index.tsx";
@@ -49,16 +50,19 @@ import FreeInstallPromoPage from "./pages/FreeInstallPromoPage.tsx";
 import AdminBeautyVideoPage from "./pages/AdminBeautyVideoPage.tsx";
 import StylistLandingPage from "./pages/StylistLandingPage.tsx";
 import StylistInvitePage from "./pages/StylistInvitePage.tsx";
+import DealsPage from "./pages/DealsPage.tsx";
 
 const queryClient = new QueryClient();
 
 const AppContent = () => {
   useCartSync();
+  useReferralClaim();
   const location = useLocation();
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<PageTransition><ShopPage /></PageTransition>} />
+        <Route path="/deals" element={<PageTransition><DealsPage /></PageTransition>} />
         <Route path="/gallery" element={<PageTransition><GalleryPage /></PageTransition>} />
         <Route path="/home" element={<PageTransition><Index /></PageTransition>} />
         <Route path="/stylists" element={<PageTransition><StylistsPage /></PageTransition>} />

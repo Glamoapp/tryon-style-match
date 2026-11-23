@@ -17,6 +17,7 @@ const navLinks = [
   { label: "NextLook Smart Mirror", href: "/mirror", icon: Monitor },
   { label: "Find Stylists", href: "/stylists", icon: Search },
   { label: "Shop Extensions", href: "/extensions", icon: ShoppingBag },
+  { label: "Black Friday Deals", href: "/deals", icon: Gift },
   { label: "Free Install Promo", href: "/promo/free-install", icon: Gift },
   { label: "GlowUp Monday", href: "/glowup-monday", icon: Star },
   { label: "Blog", href: "/blog", icon: BookOpen },
@@ -33,6 +34,7 @@ const desktopLinks = [
   { label: "Hair", href: "/extensions" },
   { label: "Mirrors", href: "/mirror/preorder" },
   { label: "Virtual Try-On", href: "/tryon" },
+  { label: "Deals", href: "/deals" },
   { label: "Rewards", href: "/glowup-monday" },
   { label: "Blog", href: "/blog" },
 ];

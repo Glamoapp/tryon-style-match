@@ -128,6 +128,33 @@ export type Database = {
         }
         Relationships: []
       }
+      customer_referrals: {
+        Row: {
+          created_at: string
+          id: string
+          qualified_at: string | null
+          referral_code: string
+          referred_id: string
+          referrer_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          qualified_at?: string | null
+          referral_code: string
+          referred_id: string
+          referrer_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          qualified_at?: string | null
+          referral_code?: string
+          referred_id?: string
+          referrer_id?: string
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
@@ -609,6 +636,30 @@ export type Database = {
           endpoint?: string
           id?: string
           p256dh?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      referral_rewards: {
+        Row: {
+          earned_at: string
+          id: string
+          redeemed_at: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          earned_at?: string
+          id?: string
+          redeemed_at?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          earned_at?: string
+          id?: string
+          redeemed_at?: string | null
+          status?: string
           user_id?: string
         }
         Relationships: []
@@ -1207,11 +1258,14 @@ export type Database = {
       }
     }
     Functions: {
+      claim_customer_referral: { Args: { _code: string }; Returns: boolean }
       generate_stylist_referral_code: { Args: never; Returns: string }
+      get_my_referral_code: { Args: never; Returns: string }
       increment_profile_views: {
         Args: { profile_id: string }
         Returns: undefined
       }
+      redeem_referral_reward: { Args: never; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

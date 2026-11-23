@@ -13,6 +13,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import ReferFriendsCard from "@/components/promotions/ReferFriendsCard";
 
 const serviceVideos: Record<string, { url: string; title: string; description: string }> = {
   braids: { url: "https://www.youtube.com/embed/dQw4w9WgXcQ", title: "All About Braids", description: "Learn what to expect during your braiding appointment and how to maintain your braids." },
@@ -380,6 +381,10 @@ const CustomerDashboard = () => {
           </h1>
           <p className="text-muted-foreground font-body mb-8">Track, manage, and review your appointments</p>
         </motion.div>
+
+        <div className="mb-8">
+          <ReferFriendsCard />
+        </div>
 
         <Tabs defaultValue="upcoming" className="w-full">
           <TabsList className="w-full mb-6">
